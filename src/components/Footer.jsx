@@ -18,6 +18,7 @@ const resources = [
   { label: 'Charte',        url: '/CharteEngagement',         internal: true },
   { label: 'Programme',     url: '/ProgrammeComplet',         internal: true },
   { label: 'Confidentialité', url: '/PolitiqueConfidentialite', internal: true },
+  { label: 'Mentions légales', url: '/MentionsLegales', internal: true },
 ];
 
 export default function Footer() {

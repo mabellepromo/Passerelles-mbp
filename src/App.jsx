@@ -30,6 +30,7 @@ import CriteresSelection from './pages/CriteresSelection';
 import MentorRegistration from './pages/MentorRegistration';
 import MentoreRegistration from './pages/MentoreRegistration';
 import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
+import MentionsLegales from './pages/MentionsLegales';
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -77,6 +78,7 @@ const AuthenticatedApp = () => {
         <Route path="/MentorRegistration" element={<LayoutWrapper currentPageName="MentorRegistration"><MentorRegistration /></LayoutWrapper>} />
         <Route path="/MentoreRegistration" element={<LayoutWrapper currentPageName="MentoreRegistration"><MentoreRegistration /></LayoutWrapper>} />
         <Route path="/PolitiqueConfidentialite" element={<LayoutWrapper currentPageName="PolitiqueConfidentialite"><PolitiqueConfidentialite /></LayoutWrapper>} />
+        <Route path="/MentionsLegales" element={<LayoutWrapper currentPageName="MentionsLegales"><MentionsLegales /></LayoutWrapper>} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
     </PageTransition>
