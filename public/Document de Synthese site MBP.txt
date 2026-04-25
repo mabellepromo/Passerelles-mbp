@@ -1,0 +1,176 @@
+Document de synthèse — Clone Ma Belle Promo
+Généré le 17 avril 2026
+
+Section 1 : Contexte du projet
+Client / Association : FDD Ma Belle Promo (MBP) — Association des diplômés de la Faculté de Droit du Développement (FDD), Université de Lomé, Togo. Promotion 1994–2000. Fondée le 1er décembre 2018, reconnue officiellement le 03 octobre 2019 (N°0920/MATDCL-SG-DLPAP-DOCA).
+
+Présidente : Fabienne SENAYA-ATAYI
+
+Objectif du site : Remplacer le site Wix existant par un site React moderne, autonome, administrable sans développeur via un dashboard intégré. Le site doit refléter les valeurs de l'association (solidarité, droit, jeunesse, engagement) et permettre la gestion des membres, actualités, événements, projets et médias.
+
+Public cible : Membres de la promotion (Lomé + diaspora), partenaires institutionnels, donateurs potentiels, jeunes juristes togolais.
+
+Section 2 : Stack technique retenue
+Élément	Choix	Raison
+Frontend	React 18 + Vite	Rapidité, ecosystème riche
+Style	TailwindCSS + CSS variables	Theming clair/sombre, utilitaires
+Animations	Framer Motion	Fluidité, parallax, entrées
+Routing	React Router v6	SPA standard
+Backend/BDD	Supabase (PostgreSQL)	Temps réel, Auth, Storage, gratuit
+Stockage médias	Supabase Storage (bucket mbp-media)	1 Go gratuit, URLs publiques stables
+Typographie	Cormorant Garamond (headings) + Lato (body)	Élégance éditoriale
+Markdown/WYSIWYG	ReactMarkdown + ReactQuill	Articles riches en HTML ou Markdown
+Hébergement	vercel	CI/CD automatique, _redirects SPA
+Auth locale	LocalAuth.jsx (localStorage)	Mode dev sans Supabase Auth
+Table Supabase : mbp_store — clé/valeur JSON avec colonnes key, value, updated_at
+Bucket Storage : mbp-media → dossiers images/ et videos/
+
+Section 3 : Architecture du site
+Navigation principale
+
+/ (Accueil)
+/association/
+  credo · ambition · equipe · sponsors
+/activites/
+  evenements · projets · programmes
+/implications/
+  adhesion · cotisation · soutenir
+/informations/
+  actualites · actualites/:id · mediatheque · documents · contacts · communiques
+/annuaire
+/ressources
+/blog
+/don · /don/merci
+/espace-membre
+/login
+/dashboard
+Fonctionnalités par page clé
+Accueil (Home.jsx) : HeroSection (bulle + présidente + message) → MissionSection → ActualitesSection → EvenementsSection → DonnezSection → TestimonialsSection → SoutenirSection → NewsletterSection → ContactSection → FooterSection
+
+Actualités (Actualites.jsx) : Recherche texte, filtres par catégorie, regroupement par année, layout adaptatif (HeroCard / MediumCard / ListCard selon le nombre d'articles)
+
+Détail article (ArticleDetail.jsx) : Hero feuilleté, contenu HTML/Markdown, multi-vidéos (YouTube/Vimeo/fichier), galerie photos avec lightbox (prev/next/clavier/compteur)
+
+Dashboard (Dashboard.jsx) : CRUD complet pour articles, membres, événements, projets, programmes, documents, médias — lecture/écriture Supabase uniquement (plus de localStorage)
+
+Section 4 : État d'avancement actuel
+✅ Fait
+Structure complète du site (toutes les pages)
+Dashboard admin fonctionnel (CRUD Supabase)
+Upload photos → Supabase Storage (uploadImage)
+Upload vidéos → Supabase Storage (uploadVideo)
+Galerie photos : drag-and-drop, object-contain, lightbox avec navigation
+Multi-vidéos par article (YouTube, Vimeo, fichier direct)
+Parser YouTube robuste (youtu.be, Shorts, params multiples)
+Page Actualités redessinée (style magazine éditorial, groupement par année)
+Hero page d'accueil redessiné (fond vert moyen, bulle + photo présidente + message)
+Fondu bas du hero vers la section suivante
+Backup de l'ancien hero (HeroSection.original.jsx)
+Suppression totale de localStorage dans useCrud (fix définitif storage plein)
+🔄 En cours
+Ajustements visuels du Hero (couleur, équilibre bulle/photo)
+❌ Reste à faire
+Re-upload des galeries photos nettoyées par SQL (base64 → Storage)
+Vérification mobile du nouveau hero (colonne photo masquée sur mobile)
+Tests complets Dashboard après refonte localStorage
+Éventuellement : mode sombre du nouveau hero
+Section 5 : Décisions importantes prises
+localStorage banni du Dashboard — useCrud lit/écrit uniquement sur Supabase. Au montage, chaque clé mbp_store_* est purgée du localStorage. Décision prise après 2 jours de bugs en cascade dus au stockage base64 (5 Mo limite dépassée).
+
+Photos stockées dans Supabase Storage, jamais en base64 — uploadImage() retourne une URL publique. Le champ image d'un article contient toujours une URL, jamais une chaîne base64.
+
+useContent (pages publiques) ≠ useCrud (dashboard) — pages publiques = lecture seule depuis Supabase avec cache localStorage acceptable. Dashboard = Supabase strict.
+
+Contenu article : détecter HTML vs Markdown — article.contenu.trim().startsWith("<") → dangerouslySetInnerHTML, sinon <ReactMarkdown>.
+
+Vidéos : tableau videos[] remplace le champ unique youtube — rétrocompatibilité maintenue (fallback sur article.youtube si videos vide).
+
+Lightbox : index-based, pas URL-based — useState(null) pour l'index courant, useCallback pour prev/next, useEffect pour les touches clavier. Déclaration de galleryPhotos obligatoirement AVANT tous les hooks.
+
+HeroSection original sauvegardé dans HeroSection.original.jsx — peut être restauré à tout moment.
+
+Section 6 : Points en suspens
+Question	Statut
+Re-upload des anciennes galeries (photos base64 supprimées par SQL)	À faire manuellement dans le dashboard
+Affichage mobile du hero (photo présidente masquée sur < lg)	À vérifier / potentiellement adapter
+Page /espace-membre — contenu et droits d'accès	Non défini
+Système de dons (/don) — intégration paiement réel ?	Non implémenté
+Newsletter — backend réel ou formulaire simple ?	Non connecté
+Mode sombre du nouveau hero (fond clair vs fond vert selon le thème)	Non traité
+Migration complète base64 restante en Storage	Bouton "Migrer" dans dashboard — à utiliser
+Section 7 : Code clé produit
+useCrud — Supabase uniquement, sans localStorage
+
+function useCrud(storeKey, staticData) {
+  const KEY = "mbp_store_" + storeKey;
+  const [items, setItems] = useState(staticData);
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    try { localStorage.removeItem(KEY); } catch {}
+    sbGet(KEY).then(remote => {
+      if (remote !== null) setItems(mergeWithStatic(remote, staticData));
+      setLoading(false);
+    });
+  }, [KEY]);
+  function save(data) { setItems(data); sbSet(KEY, data); }
+  function add(item) { save([...items, { ...item, id: item.id || Date.now() }]); }
+  function update(id, data) { save(items.map(it => String(it.id) === String(id) ? { ...it, ...data } : it)); }
+  function remove(id) { if (confirm("Supprimer ?")) save(items.filter(it => String(it.id) !== String(id))); }
+  return { items, add, update, remove, save };
+}
+uploadToStorage — Supabase Storage partagé
+
+async function uploadToStorage(file, folder) {
+  const ext = file.name.split(".").pop().toLowerCase();
+  const filename = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const { error } = await supabase.storage.from("mbp-media")
+    .upload(filename, file, { cacheControl: "3600", upsert: false });
+  if (error) throw error;
+  const { data: { publicUrl } } = supabase.storage.from("mbp-media").getPublicUrl(filename);
+  return publicUrl;
+}
+export async function uploadImage(file) { return uploadToStorage(file, "images"); }
+export async function uploadVideo(file) { return uploadToStorage(file, "videos"); }
+Parser YouTube robuste
+
+const toEmbed = (url) => {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes("youtube.com") || u.hostname.includes("youtu.be")) {
+      const id = u.searchParams.get("v") || u.pathname.replace(/^\//, "").split("/").pop();
+      return id ? `https://www.youtube.com/embed/${id}` : null;
+    }
+    if (u.hostname.includes("vimeo.com")) {
+      const id = u.pathname.replace(/^\//, "").split("/")[0];
+      return id ? `https://player.vimeo.com/video/${id}` : null;
+    }
+  } catch {}
+  return null;
+};
+Lightbox — navigation index-based (ArticleDetail.jsx)
+
+const [lightboxIdx, setLightboxIdx] = useState(null);
+const closeLightbox = useCallback(() => setLightboxIdx(null), []);
+const prevPhoto = useCallback((e) => {
+  e.stopPropagation();
+  setLightboxIdx(i => (i - 1 + galleryPhotos.length) % galleryPhotos.length);
+}, [galleryPhotos.length]);
+const nextPhoto = useCallback((e) => {
+  e.stopPropagation();
+  setLightboxIdx(i => (i + 1) % galleryPhotos.length);
+}, [galleryPhotos.length]);
+// ⚠️ galleryPhotos doit être déclaré AVANT ces hooks
+Fichiers importants
+Fichier	Rôle
+src/lib/supabase.js	Client Supabase, sbGet/sbSet, uploadImage/uploadVideo
+src/lib/localStore.js	useContent (lecture publique)
+src/lib/LocalAuth.jsx	Auth locale dev (comptes prédéfinis)
+src/pages/Dashboard.jsx	Admin complet
+src/pages/ArticleDetail.jsx	Détail article + lightbox
+src/pages/Actualites.jsx	Liste articles style magazine
+src/components/HeroSection.jsx	Hero accueil (version actuelle)
+src/components/HeroSection.original.jsx	Backup hero sombre original
+src/data/members.js	43 membres statiques
+src/data/equipe.js	Bureau (9 membres)
+src/data/articles.js	Articles statiques (fallback)
+Document de référence — à mettre à jour à chaque session de travail.

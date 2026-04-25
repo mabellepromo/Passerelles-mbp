@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide du Mentoré — Programme PASSERELLES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --violet: #4c1d95;
+    --violet-med: #6d28d9;
+    --violet-clair: #f5f3ff;
+    --or: #b8941f;
+    --or-clair: #d4aa35;
+    --or-pale: #fef9e7;
+    --ivoire: #faf8f2;
+    --vert: #0f5530;
+    --gris: #374151;
+    --gris-clair: #6b7280;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'EB Garamond', Georgia, serif;
+    background: var(--ivoire);
+    color: var(--gris);
+    line-height: 1.8;
+    font-size: 17px;
+  }
+
+  .gold-line {
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--or), var(--or-clair), var(--or), transparent);
+  }
+
+  .header {
+    background: linear-gradient(160deg, #1e0a4e 0%, #3b0764 40%, #4c1d95 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      -45deg,
+      rgba(255,255,255,0.015) 0px,
+      rgba(255,255,255,0.015) 1px,
+      transparent 1px,
+      transparent 40px
+    );
+  }
+  .header-inner {
+    position: relative;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 40px 48px;
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+  .logo-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid rgba(212,170,53,0.5);
+    flex-shrink: 0;
+    object-fit: cover;
+    box-shadow: 0 0 0 4px rgba(184,148,31,0.15);
+  }
+  .header-text { flex: 1; }
+  .header-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--or-clair);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    display: block;
+  }
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 42px);
+    color: white;
+    line-height: 1.2;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .header-sub {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+  }
+  .bandeau {
+    background: rgba(184,148,31,0.12);
+    border-bottom: 1px solid rgba(184,148,31,0.25);
+    padding: 14px 40px;
+  }
+  .bandeau-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .bandeau-inner::before { content: '«'; color: var(--or-clair); font-size: 20px; }
+  .bandeau-inner::after  { content: '»'; color: var(--or-clair); font-size: 20px; }
+
+  .content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--violet-med);
+    font-size: 14px;
+    text-decoration: none;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+  }
+  .back-btn::before { content: '←'; }
+
+  /* DROITS BOX */
+  .droits-box {
+    background: linear-gradient(135deg, #1e0a4e, #3b0764);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .droits-box::before {
+    content: '🛡';
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.08;
+  }
+  .droits-title {
+    font-family: 'Playfair Display', serif;
+    color: #c4b5fd;
+    font-size: 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .droits-title::before { content: '🛡'; font-size: 20px; }
+  .droits-text {
+    color: rgba(255,255,255,0.85);
+    font-size: 16px;
+    line-height: 1.8;
+  }
+
+  /* INTRO BOX */
+  .intro-box {
+    background: white;
+    border-left: 4px solid var(--violet-med);
+    border-radius: 0 12px 12px 0;
+    padding: 28px 32px;
+    margin-bottom: 48px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+  }
+  .intro-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--violet-med);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .section { margin-bottom: 52px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(184,148,31,0.2);
+  }
+  .section-num {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--violet), var(--violet-med));
+    color: white;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--violet);
+    font-weight: 700;
+  }
+
+  .items-grid { display: flex; flex-direction: column; gap: 10px; }
+  .item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 18px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+  }
+  .item:hover {
+    border-color: rgba(109,40,217,0.2);
+    box-shadow: 0 4px 16px rgba(109,40,217,0.08);
+    transform: translateX(4px);
+  }
+  .item-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--violet-clair);
+    color: var(--violet-med);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Cinzel', serif;
+    margin-top: 1px;
+  }
+  .item-text { font-size: 16px; line-height: 1.7; }
+
+  /* ALERTE */
+  .ethique-box {
+    background: linear-gradient(135deg, #7f1d1d, #991b1b);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 52px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ethique-box::before {
+    content: '⚠';
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.08;
+  }
+  .ethique-title {
+    font-family: 'Playfair Display', serif;
+    color: #fca5a5;
+    font-size: 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ethique-title::before { content: '⚠'; font-size: 20px; }
+  .ethique-item {
+    color: rgba(255,255,255,0.85);
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    gap: 10px;
+  }
+  .ethique-item:last-child { border-bottom: none; }
+  .ethique-item::before { content: '›'; color: #fca5a5; font-size: 18px; flex-shrink: 0; }
+
+  /* SIGNATURE */
+  .signature-box {
+    background: white;
+    border: 2px solid rgba(109,40,217,0.2);
+    border-radius: 16px;
+    padding: 36px;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  .signature-title {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--violet-med);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .signature-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .signature-field {
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    padding-bottom: 8px;
+    text-align: left;
+  }
+  .signature-field label {
+    font-size: 12px;
+    color: var(--gris-clair);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 24px;
+  }
+  .signature-note { font-style: italic; color: var(--gris-clair); font-size: 14px; }
+
+  /* ── CTA PLATEFORME ── */
+  .cta-wrap { text-align: center; margin-bottom: 36px; }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #0f5530, #1a7a45);
+    color: white;
+    border: 1px solid rgba(212,170,53,0.4);
+    padding: 11px 26px;
+    border-radius: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(15,85,48,0.22);
+  }
+  .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(15,85,48,0.32); }
+
+  .footer {
+    background: linear-gradient(180deg, #1e0a4e, #0d0521);
+    padding: 32px 40px;
+    text-align: center;
+  }
+  .footer-inner { max-width: 860px; margin: 0 auto; }
+  .footer-logo { font-family: 'Playfair Display', serif; color: white; font-size: 18px; margin-bottom: 8px; }
+  .footer-logo span { color: var(--or-clair); }
+  .footer-sub { font-size: 13px; color: rgba(255,255,255,0.4); }
+  .footer-line { height: 1px; background: linear-gradient(90deg, transparent, rgba(212,170,53,0.4), transparent); margin: 20px 0; }
+
+  @media (max-width: 640px) {
+    .header-inner { flex-direction: column; text-align: center; padding: 36px 20px 32px; }
+    .content { padding: 40px 20px; }
+    .signature-fields { grid-template-columns: 1fr; }
+    .bandeau { padding: 12px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="gold-line"></div>
+  <div class="header-inner">
+    <img src="/logo-mbp.png" alt="Ma Belle Promo" class="logo-circle" />
+    <div class="header-text">
+      <span class="header-tag">Association Ma Belle Promo · Lomé, Togo</span>
+      <h1 class="header-title">Guide du Mentoré</h1>
+      <p class="header-sub">Programme de Mentorat « PASSERELLES » · Cohorte 1 · 2026</p>
+    </div>
+  </div>
+  <div class="bandeau">
+    <div class="bandeau-inner">Créer des passerelles durables entre les talents et les opportunités</div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="cta-wrap">
+    <a href="https://passerelles-mbp.vercel.app/" class="cta-btn">🌐 Accéder à la plateforme</a>
+  </div>
+
+  <div class="droits-box">
+    <div class="droits-title">Vos Droits en tant que Mentoré(e)</div>
+    <p class="droits-text">
+      Le mentoré bénéficie d'un <strong>environnement sûr, respectueux</strong> et dépourvu de toute forme d'abus. Aucune demande de contrepartie, service personnel, faveur ou relation ne peut être exigée en échange du mentorat. Le mentoré a le droit de <strong>signaler immédiatement</strong> au coordinateur tout comportement inapproprié, toute forme de « quid pro quo », de harcèlement ou de pression.
+    </p>
+  </div>
+
+  <div class="intro-box">
+    <div class="intro-label">Introduction</div>
+    <p>Ce guide est conçu pour accompagner les mentorés dans leur parcours de mentorat. Il définit leurs engagements, leurs droits et les bonnes pratiques pour tirer le meilleur parti de l'accompagnement proposé. Le mentorat est une relation de <strong>confiance, de respect mutuel et de co-construction</strong>.</p>
+  </div>
+
+  <!-- A -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">A</div>
+      <div class="section-title">Engagement Volontaire et Clarté</div>
+    </div>
+    <div class="items-grid">
+      <div class="item"><div class="item-num">1</div><div class="item-text">Le mentoré entre dans le programme sur motivation, avec une <strong>volonté sincère d'évolution</strong> personnelle et professionnelle.</div></div>
+      <div class="item"><div class="item-num">2</div><div class="item-text">Il définit ses objectifs académiques et professionnels en début de programme et les partage avec son mentor.</div></div>
+      <div class="item"><div class="item-num">3</div><div class="item-text">Il adhère pleinement à la charte d'engagement mutuel : respect des règles du programme et des obligations fixées.</div></div>
+    </div>
+  </div>
+
+  <!-- B -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">B</div>
+      <div class="section-title">Responsabilité et Communication</div>
+    </div>
+    <div class="items-grid">
+      <div class="item"><div class="item-num">4</div><div class="item-text">Le mentoré respecte le temps et l'engagement de son mentor, <strong>communique ses contraintes honnêtement</strong>.</div></div>
+      <div class="item"><div class="item-num">5</div><div class="item-text"><strong>Présence et ponctualité</strong> : assiduité aux rencontres et signalement rapide de toute absence.</div></div>
+      <div class="item"><div class="item-num">6</div><div class="item-text"><strong>Communication proactive</strong> : informer régulièrement son mentor et le coordinateur en cas de besoin.</div></div>
+    </div>
+  </div>
+
+  <!-- C -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">C</div>
+      <div class="section-title">Préparation Active et Co-Construction</div>
+    </div>
+    <div class="items-grid">
+      <div class="item"><div class="item-num">7</div><div class="item-text">Préparation de chaque rendez-vous : questions, objectifs, points de discussion concrets.</div></div>
+      <div class="item"><div class="item-num">8</div><div class="item-text">Expression claire de ses besoins, difficultés et attentes, dans une démarche honnête et proactive.</div></div>
+      <div class="item"><div class="item-num">9</div><div class="item-text"><strong>Co-construction du parcours</strong> : le mentoré est acteur de son évolution avec l'appui du mentor.</div></div>
+      <div class="item"><div class="item-num">10</div><div class="item-text">Ouverture au feedback du mentor et acceptation des conseils reçus avec discernement.</div></div>
+      <div class="item"><div class="item-num">11</div><div class="item-text">Suivi personnel : le mentoré utilise les fiches de suivi pour mesurer sa progression.</div></div>
+    </div>
+  </div>
+
+  <!-- D -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">D</div>
+      <div class="section-title">Engagements Collectifs</div>
+    </div>
+    <div class="items-grid">
+      <div class="item"><div class="item-num">12</div><div class="item-text">Participation aux ateliers, rencontres collectives et événements proposés par l'association.</div></div>
+      <div class="item"><div class="item-num">13</div><div class="item-text">Participation effective aux bilans (mi-parcours, fin de programme), contribution à l'amélioration du dispositif.</div></div>
+      <div class="item"><div class="item-num">14</div><div class="item-text">Mise en valeur de ses acquis, reconnaissance de ses progrès, partage de ses succès.</div></div>
+    </div>
+  </div>
+
+  <!-- E -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">E</div>
+      <div class="section-title">Respect des Limites et Confidentialité</div>
+    </div>
+    <div class="items-grid">
+      <div class="item"><div class="item-num">15</div><div class="item-text">Confidentialité des échanges, sauf en cas de signalement nécessaire.</div></div>
+      <div class="item"><div class="item-num">16</div><div class="item-text">Respect des limites du mentorat (pas de sollicitation hors cadre défini).</div></div>
+      <div class="item"><div class="item-num">17</div><div class="item-text">Ajustement du parcours en fonction de ses évolutions, objectifs et disponibilités.</div></div>
+      <div class="item"><div class="item-num">18</div><div class="item-text">Sollicitation d'aide : le mentoré peut contacter le coordinateur en cas de difficulté spécifique.</div></div>
+    </div>
+  </div>
+
+  <!-- F -->
+  <div class="ethique-box">
+    <div class="ethique-title">F. Intégrité Éthique — Environnement Sûr et Respectueux</div>
+    <div class="ethique-item">Le mentoré bénéficie du droit inviolable d'être traité avec dignité. Aucune demande de contrepartie, service personnel, faveur ou relation de quelque nature que ce soit ne peut être exigée en échange du mentorat.</div>
+    <div class="ethique-item">Toute forme de « quid pro quo », de harcèlement ou de pression, notamment d'ordre moral, psychologique, sexiste ou sexuel, est strictement interdite.</div>
+    <div class="ethique-item">Le mentoré est encouragé et aidé à signaler immédiatement au coordinateur toute situation ou comportement perçu comme inapproprié, sans crainte de représailles.</div>
+  </div>
+
+  <!-- Signature -->
+  <div class="signature-box">
+    <div class="signature-title">Engagement Formel du Mentoré</div>
+    <p style="font-style:italic; color: var(--gris-clair); margin-bottom: 28px; font-size: 15px;">
+      Je soussigné(e) m'engage à respecter l'ensemble des principes énoncés dans ce guide du mentoré, notamment le droit à un environnement sûr et mon droit de signaler tout comportement inapproprié ou toute forme d'abus.
+    </p>
+    <div class="signature-fields">
+      <div class="signature-field"><label>Nom complet</label></div>
+      <div class="signature-field"><label>Date</label></div>
+    </div>
+    <div class="signature-field" style="border-bottom: 1px solid rgba(0,0,0,0.12); padding-bottom: 8px; margin-bottom: 8px;">
+      <label>Signature</label>
+    </div>
+    <p class="signature-note">Document officiel — Programme PASSERELLES · Ma Belle Promo · Cohorte 1 · 2026</p>
+  </div>
+</div>
+
+
+</body>
+</html>
+</html>

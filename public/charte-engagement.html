@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Charte d'Engagement Mutuel — Programme PASSERELLES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --or-fonce: #92400e;
+    --or: #b8941f;
+    --or-clair: #d4aa35;
+    --or-pale: #fef9e7;
+    --vert: #0f5530;
+    --vert-med: #1a7a45;
+    --ivoire: #faf8f2;
+    --gris: #374151;
+    --gris-clair: #6b7280;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'EB Garamond', Georgia, serif;
+    background: var(--ivoire);
+    color: var(--gris);
+    line-height: 1.8;
+    font-size: 17px;
+  }
+
+  .gold-line { height: 3px; background: linear-gradient(90deg, transparent, var(--or), var(--or-clair), var(--or), transparent); }
+
+  .header {
+    background: linear-gradient(160deg, #451a03 0%, #78350f 40%, #92400e 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 20% 50%, rgba(255,255,255,0.03) 0%, transparent 60%),
+                      radial-gradient(circle at 80% 20%, rgba(255,255,255,0.03) 0%, transparent 60%);
+  }
+  .header-inner {
+    position: relative;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 40px 48px;
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+  .logo-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid rgba(212,170,53,0.5);
+    flex-shrink: 0;
+    object-fit: cover;
+    box-shadow: 0 0 0 4px rgba(184,148,31,0.15);
+  }
+  .header-tag { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px; color: var(--or-clair); margin-bottom: 10px; text-transform: uppercase; display: block; }
+  .header-title { font-family: 'Playfair Display', serif; font-size: clamp(26px, 4vw, 40px); color: white; line-height: 1.2; font-weight: 700; margin-bottom: 8px; }
+  .header-sub { font-style: italic; color: rgba(255,255,255,0.6); font-size: 16px; }
+  .bandeau { background: rgba(184,148,31,0.15); border-bottom: 1px solid rgba(184,148,31,0.3); padding: 14px 40px; }
+  .bandeau-inner { max-width: 860px; margin: 0 auto; font-size: 14px; color: rgba(255,255,255,0.75); font-style: italic; display: flex; align-items: center; gap: 10px; }
+  .bandeau-inner::before { content: '«'; color: var(--or-clair); font-size: 20px; }
+  .bandeau-inner::after  { content: '»'; color: var(--or-clair); font-size: 20px; }
+
+  .content { max-width: 860px; margin: 0 auto; padding: 60px 40px; }
+
+  .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--or-fonce); font-size: 14px; text-decoration: none; font-family: 'Cinzel', serif; letter-spacing: 1px; margin-bottom: 40px; }
+  .back-btn::before { content: '←'; }
+
+  .intro-box {
+    background: white;
+    border-left: 4px solid var(--or);
+    border-radius: 0 12px 12px 0;
+    padding: 28px 32px;
+    margin-bottom: 48px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+  }
+  .intro-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px; color: var(--or); text-transform: uppercase; margin-bottom: 12px; }
+
+  /* PRINCIPES */
+  .principes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 52px; }
+  .principe-card {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 20px 22px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .principe-card::before {
+    content: attr(data-num);
+    position: absolute;
+    right: 16px;
+    top: 12px;
+    font-family: 'Cinzel', serif;
+    font-size: 28px;
+    color: rgba(184,148,31,0.12);
+    font-weight: 600;
+  }
+  .principe-card:hover { border-color: rgba(184,148,31,0.3); box-shadow: 0 6px 20px rgba(184,148,31,0.1); transform: translateY(-2px); }
+  .principe-title { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--or-fonce); margin-bottom: 8px; font-weight: 600; }
+  .principe-text { font-size: 14px; line-height: 1.6; color: var(--gris-clair); }
+
+  /* CONSÉQUENCES */
+  .consequences-box {
+    background: linear-gradient(135deg, #1c1917, #292524);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 52px;
+  }
+  .consequences-title { font-family: 'Playfair Display', serif; color: var(--or-clair); font-size: 18px; margin-bottom: 20px; }
+  .consequence-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    color: rgba(255,255,255,0.8);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+  .consequence-item:last-child { border-bottom: none; }
+  .consequence-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+
+  /* ENGAGEMENTS FINAUX */
+  .engagements { display: flex; flex-direction: column; gap: 10px; margin-bottom: 52px; }
+  .engagement-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 18px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+  }
+  .engagement-item:hover { border-color: rgba(184,148,31,0.25); transform: translateX(4px); }
+  .eng-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--or-pale);
+    color: var(--or-fonce);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Cinzel', serif;
+    margin-top: 1px;
+  }
+  .eng-text { font-size: 16px; line-height: 1.7; }
+
+  /* SECTION TITLE */
+  .section-header { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; padding-bottom: 14px; border-bottom: 1px solid rgba(184,148,31,0.2); }
+  .section-num-or { width: 42px; height: 42px; border-radius: 10px; background: linear-gradient(135deg, var(--or-fonce), var(--or)); color: white; font-family: 'Cinzel', serif; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--or-fonce); font-weight: 700; }
+
+  /* DOUBLE SIGNATURE */
+  .double-signature {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 28px;
+  }
+  .sig-block {
+    background: white;
+    border: 2px solid rgba(184,148,31,0.2);
+    border-radius: 14px;
+    padding: 28px;
+    text-align: center;
+  }
+  .sig-role {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--or);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+  .sig-line {
+    border-bottom: 1px solid rgba(0,0,0,0.12);
+    margin-bottom: 8px;
+    height: 40px;
+  }
+  .sig-label { font-size: 11px; color: var(--gris-clair); font-family: 'Cinzel', serif; letter-spacing: 1px; text-transform: uppercase; }
+  .sig-fields { display: flex; flex-direction: column; gap: 16px; }
+
+  /* ── CTA PLATEFORME ── */
+  .cta-wrap { text-align: center; margin-bottom: 36px; }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #0f5530, #1a7a45);
+    color: white;
+    border: 1px solid rgba(212,170,53,0.4);
+    padding: 11px 26px;
+    border-radius: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(15,85,48,0.22);
+  }
+  .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(15,85,48,0.32); }
+
+  .cta-box {
+    background: linear-gradient(135deg, var(--vert), var(--vert-med));
+    border-radius: 14px;
+    padding: 24px 32px;
+    text-align: center;
+    color: white;
+    margin-bottom: 52px;
+  }
+  .cta-box p { font-size: 15px; margin-bottom: 12px; opacity: 0.9; }
+  .cta-contact { font-family: 'Cinzel', serif; font-size: 14px; color: var(--or-clair); letter-spacing: 1px; }
+
+  .footer { background: linear-gradient(180deg, #451a03, #1c0a00); padding: 32px 40px; text-align: center; }
+  .footer-inner { max-width: 860px; margin: 0 auto; }
+  .footer-logo { font-family: 'Playfair Display', serif; color: white; font-size: 18px; margin-bottom: 8px; }
+  .footer-logo span { color: var(--or-clair); }
+  .footer-sub { font-size: 13px; color: rgba(255,255,255,0.4); }
+  .footer-line { height: 1px; background: linear-gradient(90deg, transparent, rgba(212,170,53,0.4), transparent); margin: 20px 0; }
+
+  @media (max-width: 640px) {
+    .header-inner { flex-direction: column; text-align: center; padding: 36px 20px 32px; }
+    .content { padding: 40px 20px; }
+    .principes-grid { grid-template-columns: 1fr; }
+    .double-signature { grid-template-columns: 1fr; }
+    .bandeau { padding: 12px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="gold-line"></div>
+  <div class="header-inner">
+    <img src="/logo-mbp.png" alt="Ma Belle Promo" class="logo-circle" />
+    <div style="flex:1">
+      <span class="header-tag">Association Ma Belle Promo · Lomé, Togo</span>
+      <h1 class="header-title">Charte d'Engagement Mutuel</h1>
+      <p class="header-sub">Programme de Mentorat « PASSERELLES » · Cohorte 1 · 2026</p>
+    </div>
+  </div>
+  <div class="bandeau">
+    <div class="bandeau-inner">Créer des passerelles durables entre les talents et les opportunités</div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="cta-wrap">
+    <a href="https://passerelles-mbp.vercel.app/" class="cta-btn">🌐 Accéder à la plateforme</a>
+  </div>
+
+  <div class="intro-box">
+    <div class="intro-label">Introduction</div>
+    <p>Cette charte formalise les <strong>engagements réciproques</strong> entre le mentor et le mentoré. Elle repose sur des valeurs de respect, de bienveillance et de responsabilité partagée. Elle constitue le <strong>socle éthique</strong> du programme de mentorat initié par Ma Belle Promo et doit être signée par les deux parties en début de parcours.</p>
+  </div>
+
+  <!-- PRINCIPES FONDAMENTAUX -->
+  <div style="margin-bottom: 48px;">
+    <div class="section-header">
+      <div class="section-num-or">§</div>
+      <div class="section-title">Principes Fondamentaux</div>
+    </div>
+
+    <div class="principes-grid">
+      <div class="principe-card" data-num="01">
+        <div class="principe-title">Volontariat et Équité</div>
+        <p class="principe-text">L'engagement est volontaire, non rémunéré, et ouvert à tous selon des critères de sélection transparents et équitables.</p>
+      </div>
+      <div class="principe-card" data-num="02">
+        <div class="principe-title">Respect Mutuel et Confiance</div>
+        <p class="principe-text">Chaque partie agit dans un climat de confiance et valorise la richesse du parcours de l'autre.</p>
+      </div>
+      <div class="principe-card" data-num="03">
+        <div class="principe-title">Confidentialité Absolue</div>
+        <p class="principe-text">Toutes les discussions et documents partagés sont strictement confidentiels, sauf obligation légale ou signalement requis.</p>
+      </div>
+      <div class="principe-card" data-num="04">
+        <div class="principe-title">Disponibilité et Régularité</div>
+        <p class="principe-text">Une fréquence minimale de rencontres est définie d'un commun accord (minimum 2h/mois).</p>
+      </div>
+      <div class="principe-card" data-num="05">
+        <div class="principe-title">Objectifs SMART et Co-Construction</div>
+        <p class="principe-text">Mentor et mentoré élaborent ensemble des buts Spécifiques, Mesurables, Atteignables, Réalistes, Temporels et les suivent régulièrement.</p>
+      </div>
+      <div class="principe-card" data-num="06">
+        <div class="principe-title">Préparation Active</div>
+        <p class="principe-text">Préparation active des séances par les deux parties pour une efficacité maximale.</p>
+      </div>
+      <div class="principe-card" data-num="07">
+        <div class="principe-title">Communication Ouverte</div>
+        <p class="principe-text">Communication ouverte et proactive tout au long du dispositif.</p>
+      </div>
+      <div class="principe-card" data-num="08">
+        <div class="principe-title">Non-Substitution</div>
+        <p class="principe-text">Le mentorat n'est ni du tutorat académique payant, ni du recrutement, ni du conseil juridique, ni une relation professionnelle exploratrice.</p>
+      </div>
+      <div class="principe-card" data-num="09">
+        <div class="principe-title">Promotion de l'Inclusion</div>
+        <p class="principe-text">Respect des diversités de parcours, d'origine et de genre, sans discrimination ni jugement de valeur.</p>
+      </div>
+      <div class="principe-card" data-num="10">
+        <div class="principe-title">Signalement Rapide</div>
+        <p class="principe-text">Chaque partie s'engage à signaler rapidement les difficultés, conflits ou comportements inappropriés à l'association.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTÉGRITÉ ÉTHIQUE -->
+  <div style="margin-bottom: 52px;">
+    <div class="section-header">
+      <div class="section-num-or">11</div>
+      <div class="section-title">Intégrité Éthique — Clause Centrale</div>
+    </div>
+    <div class="consequences-box">
+      <div class="consequences-title">Interdiction Absolue du Quid Pro Quo et du Harcèlement</div>
+      <div class="consequence-item">
+        <span class="consequence-icon">⚖</span>
+        Le mentor et le mentoré s'engagent formellement à n'exiger aucune contrepartie matérielle, financière, relationnelle ou de toute autre nature en échange de l'accompagnement.
+      </div>
+      <div class="consequence-item">
+        <span class="consequence-icon">🚫</span>
+        Toute forme de « quid pro quo », de harcèlement moral, sexuel ou sexiste, de pression, d'intimidation, de manipulation ou d'abus de position est strictement interdite.
+      </div>
+      <div class="consequence-item">
+        <span class="consequence-icon">📢</span>
+        Tout manquement doit être signalé sans délai au coordinateur — <strong style="color: var(--or-clair)">contact@mabellepromo.org</strong> ou <strong style="color: var(--or-clair)">+228 96 09 07 07</strong>.
+      </div>
+      <div style="margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1);">
+        <p style="color: rgba(255,255,255,0.6); font-size: 14px; margin-bottom: 8px; font-style: italic;">Conséquences en cas de manquement :</p>
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+          <div style="background: rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; text-align: center; color: rgba(255,255,255,0.75); font-size: 13px;">⚡ Médiation ou avertissement</div>
+          <div style="background: rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; text-align: center; color: rgba(255,255,255,0.75); font-size: 13px;">🔴 Suspension ou rupture</div>
+          <div style="background: rgba(255,255,255,0.06); border-radius: 8px; padding: 12px; text-align: center; color: rgba(255,255,255,0.75); font-size: 13px;">⚖ Signalement aux autorités</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTRES ENGAGEMENTS -->
+  <div style="margin-bottom: 52px;">
+    <div class="section-header">
+      <div class="section-num-or">+</div>
+      <div class="section-title">Autres Engagements Réciproques</div>
+    </div>
+    <div class="engagements">
+      <div class="engagement-item"><div class="eng-num">12</div><div class="eng-text">Appui du coordinateur MBP pour la médiation, l'écoute et le suivi du binôme en cas de difficultés.</div></div>
+      <div class="engagement-item"><div class="eng-num">13</div><div class="eng-text">Suivi régulier et fiches de suivi : utilisation et transmission des fiches mensuelles, bilans intermédiaires et bilan final.</div></div>
+      <div class="engagement-item"><div class="eng-num">14</div><div class="eng-text">Feedback mutuel continu pour améliorer la relation et le programme.</div></div>
+      <div class="engagement-item"><div class="eng-num">15</div><div class="eng-text">Participation aux temps forts collectifs tels que les ateliers, événements, webinaires.</div></div>
+      <div class="engagement-item"><div class="eng-num">16</div><div class="eng-text">Adaptation évolutive du mentorat en fonction des besoins ou contraintes évolutives du binôme.</div></div>
+      <div class="engagement-item"><div class="eng-num">17</div><div class="eng-text">Rupture possible avec formalisation à tout moment, avec un délai de préavis de 2 semaines recommandé.</div></div>
+      <div class="engagement-item"><div class="eng-num">18</div><div class="eng-text">Valorisation et reconnaissance mutuelles, encouragement à la progression.</div></div>
+      <div class="engagement-item"><div class="eng-num">19</div><div class="eng-text">Clôture formalisée du parcours de mentorat par bilan, reconnaissance et éventuel témoignage.</div></div>
+      <div class="engagement-item"><div class="eng-num">20</div><div class="eng-text">Révision annuelle de la charte pour intégrer les retours d'expérience et faire évoluer le programme.</div></div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="cta-box">
+    <p>Pour tout signalement ou difficulté, contactez immédiatement le coordinateur du programme :</p>
+    <div class="cta-contact">contact@mabellepromo.org · +228 96 09 07 07</div>
+  </div>
+
+  <!-- DOUBLE SIGNATURE -->
+  <div class="section-header">
+    <div class="section-num-or">✍</div>
+    <div class="section-title">Engagement Formel des Deux Parties</div>
+  </div>
+  <p style="font-style:italic; color: var(--gris-clair); margin-bottom: 28px; font-size: 15px;">
+    Nous soussignés, mentor et mentoré, nous engageons à respecter l'ensemble des principes énoncés dans cette charte, notamment l'intégrité éthique absolue, l'interdiction du quid pro quo et du harcèlement, le signalement immédiat de tout comportement inapproprié, et le respect des droits et de la dignité de chacun.
+  </p>
+
+  <div class="double-signature">
+    <div class="sig-block">
+      <div class="sig-role">Le Mentor</div>
+      <div class="sig-fields">
+        <div><div class="sig-line"></div><div class="sig-label">Nom complet</div></div>
+        <div><div class="sig-line"></div><div class="sig-label">Signature</div></div>
+        <div><div class="sig-line"></div><div class="sig-label">Date</div></div>
+      </div>
+    </div>
+    <div class="sig-block">
+      <div class="sig-role">Le Mentoré</div>
+      <div class="sig-fields">
+        <div><div class="sig-line"></div><div class="sig-label">Nom complet</div></div>
+        <div><div class="sig-line"></div><div class="sig-label">Signature</div></div>
+        <div><div class="sig-line"></div><div class="sig-label">Date</div></div>
+      </div>
+    </div>
+  </div>
+
+  <p style="text-align:center; font-style:italic; color: var(--gris-clair); font-size: 14px;">
+    Document officiel — Programme PASSERELLES · Ma Belle Promo · Cohorte 1 · 2026
+  </p>
+</div>
+
+
+</body>
+</html>

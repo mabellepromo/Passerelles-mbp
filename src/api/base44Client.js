@@ -59,7 +59,7 @@ const makeEntity = (tableName) => ({
 });
 
 // Liste des emails admin
-const ADMIN_EMAILS = ['mabellepromo@gmail.com'];
+const ADMIN_EMAILS = ['contact@mabellepromo.org', 'senayhola@gmail.com'];
 
 const isUserAdmin = (user) => {
   if (!user) return false;
@@ -71,14 +71,26 @@ const isUserAdmin = (user) => {
 const auth = {
   isUserAdmin,
   me: async () => {
-    await supabase.auth.refreshSession();
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const { data: { session }, error } = await supabase.auth.getSession();
     if (error) throw error;
+    const user = session?.user;
     if (!user) return null;
+
+    let full_name = user.user_metadata?.full_name;
+
+    // Si pas de nom dans les métadonnées, chercher dans les tables mentor/mentore
+    if (!full_name) {
+      const [mentorRes, mentoreRes] = await Promise.all([
+        supabase.from('mentor').select('full_name').eq('email', user.email).maybeSingle(),
+        supabase.from('mentore').select('full_name').eq('email', user.email).maybeSingle(),
+      ]);
+      full_name = mentorRes.data?.full_name || mentoreRes.data?.full_name || user.email;
+    }
+
     return {
       id: user.id,
       email: user.email,
-      full_name: user.user_metadata?.full_name || user.email,
+      full_name,
       role: isUserAdmin(user) ? 'admin' : (user.user_metadata?.role || user.app_metadata?.role || 'user'),
     };
   },
@@ -115,11 +127,9 @@ const functions = {
         supabase.from('mentore').select('*').eq('status', 'matched'),
       ]);
       return { data: { binomes: binomes.data ?? [], mentors: mentors.data ?? [], mentores: mentores.data ?? [] } };
-    }if (name === 'getMyBinomes') {
-  await supabase.auth.refreshSession();
-  const { data: { user } } = await supabase.auth.getUser();
-  console.log('USER:', user?.email, 'IS_ADMIN:', isUserAdmin(user));
-  // ... reste du code
+    } else if (name === 'getMyBinomes') {
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) return { data: { binomes: [] } };
 
       if (isUserAdmin(user)) {
@@ -144,6 +154,16 @@ const integrations = {
       if (error) throw error;
       const { data: urlData } = supabase.storage.from('passerelles-files').getPublicUrl(path);
       return { file_url: urlData.publicUrl };
+    },
+    SendEmail: async ({ to, subject, body }) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ to, subject, text: body }),
+      });
+      if (!res.ok) throw new Error('Échec envoi email');
     },
   },
 };

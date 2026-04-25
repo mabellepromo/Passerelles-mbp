@@ -1,0 +1,205 @@
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 0 0% 100%;
+    --foreground: 220 15% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 15% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 15% 12%;
+    --primary: 148 60% 28%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 148 20% 95%;
+    --secondary-foreground: 148 60% 20%;
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 10% 50%;
+    --accent: 148 35% 92%;
+    --accent-foreground: 148 60% 20%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 13% 90%;
+    --input: 220 13% 90%;
+    --ring: 148 60% 28%;
+    --chart-1: 148 60% 35%;
+    --chart-2: 210 70% 55%;
+    --chart-3: 38 90% 50%;
+    --chart-4: 280 55% 55%;
+    --chart-5: 0 75% 55%;
+    --radius: 0.75rem;
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 148 60% 28%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 148 20% 95%;
+    --sidebar-accent-foreground: 148 60% 20%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 148 60% 28%;
+
+    /* Brand tokens */
+    --brand-green: #1a7a45;
+    --brand-green-dark: #0f5530;
+    --brand-green-light: #2ea05c;
+    --brand-green-50: #f0fdf4;
+    --brand-gold: #b8941f;
+    --brand-gold-light: #d4aa35;
+    --brand-cream: #f8f6f0;
+    --brand-slate: #1c2536;
+    --brand-surface: #fafafa;
+  }
+
+  .dark {
+    --background: 220 15% 8%;
+    --foreground: 0 0% 98%;
+    --card: 220 15% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 220 15% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 148 50% 45%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 220 15% 15%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 220 15% 15%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 220 15% 18%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 220 15% 18%;
+    --input: 220 15% 18%;
+    --ring: 148 50% 45%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'DM Sans', 'Inter', sans-serif;
+    font-feature-settings: "liga" 1, "kern" 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  input, textarea, select {
+    color: #111827;
+  }
+  input::placeholder, textarea::placeholder {
+    color: #9ca3af;
+  }
+
+  h1, h2, h3 {
+    font-family: 'Libre Baskerville', serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+@layer utilities {
+  /* Premium card style */
+  .card-premium {
+    @apply bg-white rounded-2xl shadow-sm border border-gray-100 hover:shadow-md transition-all duration-300;
+  }
+
+  /* Brand gradient */
+  .gradient-brand {
+    background: linear-gradient(135deg, #0f5530 0%, #1a7a45 50%, #2ea05c 100%);
+  }
+
+  /* Gold accent */
+  .text-gold {
+    color: var(--brand-gold);
+  }
+
+  /* Section divider */
+  .section-divider {
+    @apply border-t border-gray-100 my-8;
+  }
+
+  /* Premium input */
+  .input-premium {
+    @apply w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-sm focus:outline-none focus:border-green-500 focus:ring-2 focus:ring-green-100 shadow-sm transition-all;
+  }
+
+  /* Scrollbar globale fine et élégante */
+  ::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.15);
+    border-radius: 999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0,0,0,0.28);
+  }
+
+  /* Scrollbar premium (zones sombres) */
+  .scrollbar-thin::-webkit-scrollbar { width: 4px; height: 4px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.18); border-radius: 999px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.32); }
+
+  /* Micro-interaction boutons */
+  button:not([disabled]):active,
+  a[role="button"]:active {
+    transform: scale(0.97);
+    transition: transform 0.08s ease;
+  }
+
+  /* Glass effect */
+  .glass {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+  }
+
+  /* Animated underline */
+  .link-underline {
+    position: relative;
+  }
+  .link-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--brand-gold);
+    transition: width 0.3s ease;
+  }
+  .link-underline:hover::after {
+    width: 100%;
+  }
+
+  /* Hero text gradient */
+  .text-gradient-green {
+    background: linear-gradient(135deg, #2ea05c, #1a7a45);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Noise texture */
+  .noise-bg {
+    position: relative;
+  }
+  .noise-bg::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.04;
+    pointer-events: none;
+  }
+}

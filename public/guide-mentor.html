@@ -1,0 +1,523 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guide du Mentor — Programme PASSERELLES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vert: #0f5530;
+    --vert-med: #1a7a45;
+    --vert-clair: #f0fdf4;
+    --or: #b8941f;
+    --or-clair: #d4aa35;
+    --or-pale: #fef9e7;
+    --ivoire: #faf8f2;
+    --gris: #374151;
+    --gris-clair: #6b7280;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'EB Garamond', Georgia, serif;
+    background: var(--ivoire);
+    color: var(--gris);
+    line-height: 1.8;
+    font-size: 17px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: linear-gradient(160deg, #071f14 0%, #0f5530 50%, #1a7a45 100%);
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      45deg,
+      rgba(255,255,255,0.015) 0px,
+      rgba(255,255,255,0.015) 1px,
+      transparent 1px,
+      transparent 40px
+    );
+  }
+  .gold-line {
+    height: 3px;
+    background: linear-gradient(90deg, transparent, var(--or), var(--or-clair), var(--or), transparent);
+  }
+  .header-inner {
+    position: relative;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 56px 40px 48px;
+    display: flex;
+    align-items: center;
+    gap: 36px;
+  }
+  .logo-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    border: 2px solid rgba(212,170,53,0.5);
+    flex-shrink: 0;
+    object-fit: cover;
+    box-shadow: 0 0 0 4px rgba(184,148,31,0.15);
+  }
+  .header-text { flex: 1; }
+  .header-tag {
+    display: inline-block;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--or-clair);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+  }
+  .header-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 42px);
+    color: white;
+    line-height: 1.2;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .header-sub {
+    font-family: 'EB Garamond', serif;
+    font-style: italic;
+    color: rgba(255,255,255,0.6);
+    font-size: 16px;
+  }
+
+  /* ── BANDEAU ── */
+  .bandeau {
+    background: rgba(184,148,31,0.12);
+    border-bottom: 1px solid rgba(184,148,31,0.25);
+    padding: 14px 40px;
+  }
+  .bandeau-inner {
+    max-width: 860px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+    font-style: italic;
+  }
+  .bandeau-inner::before { content: '«'; color: var(--or-clair); font-size: 20px; }
+  .bandeau-inner::after  { content: '»'; color: var(--or-clair); font-size: 20px; }
+
+  /* ── CONTENU ── */
+  .content {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 60px 40px;
+  }
+
+  /* ── INTRO BOX ── */
+  .intro-box {
+    background: white;
+    border-left: 4px solid var(--vert-med);
+    border-radius: 0 12px 12px 0;
+    padding: 28px 32px;
+    margin-bottom: 48px;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.05);
+  }
+  .intro-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--vert-med);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .intro-text {
+    font-size: 17px;
+    line-height: 1.8;
+    color: var(--gris);
+  }
+
+  /* ── SECTIONS ── */
+  .section { margin-bottom: 52px; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 28px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(184,148,31,0.25);
+  }
+  .section-num {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--vert), var(--vert-med));
+    color: white;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    letter-spacing: 1px;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    color: var(--vert);
+    font-weight: 700;
+  }
+
+  /* ── SUBSECTION ── */
+  .subsection { margin-bottom: 28px; }
+  .subsection-title {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--or);
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .subsection-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(184,148,31,0.2);
+  }
+
+  /* ── ITEMS ── */
+  .items-grid { display: flex; flex-direction: column; gap: 10px; }
+  .item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 18px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+  }
+  .item:hover {
+    border-color: rgba(26,122,69,0.2);
+    box-shadow: 0 4px 16px rgba(26,122,69,0.08);
+    transform: translateX(4px);
+  }
+  .item-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: var(--vert-clair);
+    color: var(--vert);
+    font-size: 12px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Cinzel', serif;
+    margin-top: 1px;
+  }
+  .item-text {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--gris);
+  }
+
+  /* ── ALERTE ÉTHIQUE ── */
+  .ethique-box {
+    background: linear-gradient(135deg, #7f1d1d, #991b1b);
+    border-radius: 16px;
+    padding: 32px 36px;
+    margin-bottom: 52px;
+    position: relative;
+    overflow: hidden;
+  }
+  .ethique-box::before {
+    content: '⚠';
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.08;
+  }
+  .ethique-title {
+    font-family: 'Playfair Display', serif;
+    color: #fca5a5;
+    font-size: 18px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .ethique-title::before { content: '⚠'; font-size: 20px; }
+  .ethique-item {
+    color: rgba(255,255,255,0.85);
+    font-size: 15px;
+    line-height: 1.7;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    display: flex;
+    gap: 10px;
+  }
+  .ethique-item:last-child { border-bottom: none; }
+  .ethique-item::before { content: '›'; color: #fca5a5; font-size: 18px; flex-shrink: 0; }
+
+  /* ── SIGNATURE ── */
+  .signature-box {
+    background: white;
+    border: 2px solid rgba(184,148,31,0.3);
+    border-radius: 16px;
+    padding: 36px;
+    text-align: center;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  }
+  .signature-title {
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--or);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .signature-fields {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    margin-bottom: 24px;
+  }
+  .signature-field {
+    border-bottom: 1px solid rgba(0,0,0,0.15);
+    padding-bottom: 8px;
+    text-align: left;
+  }
+  .signature-field label {
+    font-size: 12px;
+    color: var(--gris-clair);
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 24px;
+  }
+  .signature-note {
+    font-style: italic;
+    color: var(--gris-clair);
+    font-size: 14px;
+  }
+
+  /* ── CTA PLATEFORME ── */
+  .cta-wrap { text-align: center; margin-bottom: 36px; }
+  .cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, #0f5530, #1a7a45);
+    color: white;
+    border: 1px solid rgba(212,170,53,0.4);
+    padding: 11px 26px;
+    border-radius: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.2s;
+    box-shadow: 0 4px 14px rgba(15,85,48,0.22);
+  }
+  .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(15,85,48,0.32); }
+
+  /* ── FOOTER ── */
+  .footer {
+    background: linear-gradient(180deg, #0a3320, #071f14);
+    padding: 32px 40px;
+    text-align: center;
+  }
+  .footer-inner { max-width: 860px; margin: 0 auto; }
+  .footer-logo {
+    font-family: 'Playfair Display', serif;
+    color: white;
+    font-size: 18px;
+    margin-bottom: 8px;
+  }
+  .footer-logo span { color: var(--or-clair); }
+  .footer-sub {
+    font-size: 13px;
+    color: rgba(255,255,255,0.4);
+  }
+  .footer-line {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,170,53,0.4), transparent);
+    margin: 20px 0;
+  }
+
+  /* ── PRINT / BACK ── */
+  .back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--vert-med);
+    font-size: 14px;
+    text-decoration: none;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+    margin-bottom: 40px;
+    transition: gap 0.2s;
+  }
+  .back-btn:hover { gap: 12px; }
+  .back-btn::before { content: '←'; }
+
+  @media (max-width: 640px) {
+    .header-inner { flex-direction: column; text-align: center; padding: 36px 20px 32px; }
+    .content { padding: 40px 20px; }
+    .signature-fields { grid-template-columns: 1fr; }
+    .bandeau { padding: 12px 20px; }
+    .section-header { gap: 12px; }
+  }
+
+  @media print {
+    .back-btn { display: none; }
+    .item:hover { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="gold-line"></div>
+  <div class="header-inner">
+    <img src="/logo-mbp.png" alt="Ma Belle Promo" class="logo-circle" />
+    <div class="header-text">
+      <div class="header-tag">Association Ma Belle Promo · Lomé, Togo</div>
+      <h1 class="header-title">Guide du Mentor</h1>
+      <p class="header-sub">Programme de Mentorat « PASSERELLES » · Cohorte 1 · 2026</p>
+    </div>
+  </div>
+  <div class="bandeau">
+    <div class="bandeau-inner">Créer des passerelles durables entre les talents et les opportunités</div>
+  </div>
+</div>
+
+<div class="content">
+  <div class="cta-wrap">
+    <a href="https://passerelles-mbp.vercel.app/" class="cta-btn">🌐 Accéder à la plateforme</a>
+  </div>
+
+  <div class="intro-box">
+    <div class="intro-label">Introduction</div>
+    <p class="intro-text">
+      Ce guide est destiné à accompagner les mentors dans leur rôle au sein du programme de mentorat de Ma Belle Promo. Il définit les engagements, les responsabilités et les bonnes pratiques à adopter pour garantir un accompagnement <strong>bienveillant, structuré et efficace</strong>.
+    </p>
+  </div>
+
+  <!-- A. Engagement Volontaire -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">A</div>
+      <div class="section-title">Engagement Volontaire et Cadre Éthique</div>
+    </div>
+    <div class="items-grid">
+      <div class="item"><div class="item-num">1</div><div class="item-text">Le mentor agit dans un cadre <strong>volontaire, non rémunéré et sociétal</strong>, motivé par la transmission et l'accompagnement.</div></div>
+      <div class="item"><div class="item-num">2</div><div class="item-text">Le mentor s'engage à comprendre les objectifs du programme et à partager l'esprit de Ma Belle Promo (excellence, entraide, équité, leadership).</div></div>
+      <div class="item"><div class="item-num">3</div><div class="item-text">Il garantit la <strong>confidentialité absolue</strong> des échanges, sauf obligation légale ou signalement requis.</div></div>
+    </div>
+  </div>
+
+  <!-- B. Disponibilité -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">B</div>
+      <div class="section-title">Disponibilité et Préparation</div>
+    </div>
+    <div class="items-grid">
+      <div class="item"><div class="item-num">4</div><div class="item-text">Le mentor consacre régulièrement du temps au mentoré (<strong>minimum 2h/mois</strong>) avec ponctualité et disponibilité.</div></div>
+      <div class="item"><div class="item-num">5</div><div class="item-text">Il prépare chaque séance avec des objectifs clairs adaptés au parcours et au profil du mentoré.</div></div>
+    </div>
+  </div>
+
+  <!-- C. Pratiques pédagogiques -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">C</div>
+      <div class="section-title">Pratiques Pédagogiques</div>
+    </div>
+    <div class="items-grid">
+      <div class="item"><div class="item-num">6</div><div class="item-text">Il pratique une <strong>écoute active</strong> : valoriser les forces du mentoré, poser des questions ouvertes, éviter le jugement.</div></div>
+      <div class="item"><div class="item-num">7</div><div class="item-text">Le mentor partage sincèrement ses réussites, erreurs et apprentissages.</div></div>
+      <div class="item"><div class="item-num">8</div><div class="item-text">Il encourage l'autonomie du mentoré et la prise de décision personnelle.</div></div>
+      <div class="item"><div class="item-num">9</div><div class="item-text">Il respecte le rythme et les besoins du mentoré sans projeter ses propres attentes.</div></div>
+      <div class="item"><div class="item-num">10</div><div class="item-text">Il aide à définir, suivre et réévaluer les objectifs du mentoré au fil des rencontres.</div></div>
+      <div class="item"><div class="item-num">11</div><div class="item-text"><strong>Parcours co-construit</strong> : le mentor adapte son accompagnement aux aspirations du mentoré.</div></div>
+      <div class="item"><div class="item-num">12</div><div class="item-text"><strong>Feedback régulier</strong> : le mentor donne des retours constructifs, bienveillants et utiles.</div></div>
+    </div>
+  </div>
+
+  <!-- D. Respect des limites -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">D</div>
+      <div class="section-title">Respect des Limites</div>
+    </div>
+    <div class="items-grid">
+      <div class="item"><div class="item-num">13</div><div class="item-text">Le mentor ne se substitue ni aux parents, ni au recruteur, ni au conseiller juridique, ni à un professionnel de santé.</div></div>
+      <div class="item"><div class="item-num">14</div><div class="item-text">Il valorise les progrès et les réussites du mentoré pour renforcer sa confiance et motivation.</div></div>
+      <div class="item"><div class="item-num">15</div><div class="item-text"><strong>Souplesse</strong> : le mentor ajuste son accompagnement selon les évolutions et objectifs du mentoré.</div></div>
+    </div>
+  </div>
+
+  <!-- E. Conformité -->
+  <div class="section">
+    <div class="section-header">
+      <div class="section-num">E</div>
+      <div class="section-title">Conformité, Formation et Suivi</div>
+    </div>
+    <div class="items-grid">
+      <div class="item"><div class="item-num">16</div><div class="item-text">Le mentor suit les formations proposées par l'association pour améliorer sa posture et ses techniques.</div></div>
+      <div class="item"><div class="item-num">17</div><div class="item-text">Le mentor respecte, promeut et incarne la <strong>charte d'engagement mutuel</strong> de Ma Belle Promo.</div></div>
+      <div class="item"><div class="item-num">18</div><div class="item-text">Tout problème ou difficulté doit être signalé rapidement au coordinateur du programme.</div></div>
+      <div class="item"><div class="item-num">19</div><div class="item-text">Participation active aux bilans intermédiaires et finaux du programme.</div></div>
+      <div class="item"><div class="item-num">20</div><div class="item-text">Il accompagne la clôture de la relation mentorale par un bilan et des perspectives pour l'avenir.</div></div>
+    </div>
+  </div>
+
+  <!-- F. Intégrité éthique -->
+  <div class="ethique-box">
+    <div class="ethique-title">F. Intégrité Éthique — Interdiction Absolue du Quid Pro Quo et du Harcèlement</div>
+    <div class="ethique-item">Le mentor s'interdit toute forme de « quid pro quo » (contrepartie, avantage ou faveur exigés en échange de l'accompagnement), ainsi que toute forme de harcèlement, de pression ou de comportement inapproprié, notamment d'ordre moral, psychologique, sexiste ou sexuel.</div>
+    <div class="ethique-item">Tout abus de position, tentative de manipulation, chantage ou sollicitation abusive est strictement prohibé et peut entraîner l'exclusion du programme et, le cas échéant, un signalement aux instances compétentes.</div>
+    <div class="ethique-item">Le mentor doit signaler immédiatement au coordinateur toute difficulté relationnelle, dysfonctionnement ou suspicion de violation de cette clause.</div>
+  </div>
+
+  <!-- Signature -->
+  <div class="signature-box">
+    <div class="signature-title">Engagement Formel du Mentor</div>
+    <p style="font-style:italic; color: var(--gris-clair); margin-bottom: 28px; font-size: 15px;">
+      Je soussigné(e) m'engage à respecter l'ensemble des principes énoncés dans ce guide du mentor, notamment les clauses d'intégrité éthique et d'interdiction du quid pro quo et du harcèlement.
+    </p>
+    <div class="signature-fields">
+      <div class="signature-field">
+        <label>Nom complet</label>
+      </div>
+      <div class="signature-field">
+        <label>Date</label>
+      </div>
+    </div>
+    <div class="signature-field" style="border-bottom: 1px solid rgba(0,0,0,0.15); padding-bottom: 8px; margin-bottom: 8px;">
+      <label>Signature</label>
+    </div>
+    <p class="signature-note">Document officiel — Programme PASSERELLES · Ma Belle Promo · Cohorte 1 · 2026</p>
+  </div>
+</div>
+
+
+</body>
+</html>

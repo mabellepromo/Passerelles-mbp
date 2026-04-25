@@ -37,7 +37,6 @@ export default function AuthCallback() {
 
       const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
       if (error) {
-        console.error('AuthCallback getSessionFromUrl error:', error);
         setCallbackError('Impossible de récupérer la session : ' + error.message);
         setMode('error');
         return;
@@ -55,7 +54,6 @@ export default function AuthCallback() {
     handleAuthCallback();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('AuthCallback event:', event);
       if (event === 'PASSWORD_RECOVERY') {
         setMode('reset');
       } else if (event === 'SIGNED_IN' && session) {

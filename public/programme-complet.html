@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Programme Complet PASSERELLES — Ma Belle Promo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --vert: #0f5530;
+    --vert-med: #1a7a45;
+    --vert-clair: #f0fdf4;
+    --or: #b8941f;
+    --or-clair: #d4aa35;
+    --or-pale: #fef9e7;
+    --ivoire: #faf8f2;
+    --gris: #374151;
+    --gris-clair: #6b7280;
+    --violet: #4c1d95;
+    --violet-med: #6d28d9;
+    --bordeaux: #7f1d1d;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'EB Garamond', Georgia, serif; background: var(--ivoire); color: var(--gris); line-height: 1.8; font-size: 17px; }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(160deg, #071f14 0%, #0f5530 45%, #1a7a45 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse at 10% 50%, rgba(212,170,53,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 20%, rgba(212,170,53,0.04) 0%, transparent 50%),
+      repeating-linear-gradient(45deg, rgba(255,255,255,0.01) 0px, rgba(255,255,255,0.01) 1px, transparent 1px, transparent 50px);
+  }
+  .gold-line { height: 3px; background: linear-gradient(90deg, transparent, var(--or), var(--or-clair), var(--or), transparent); }
+  .hero-inner {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 70px 40px 60px;
+    text-align: center;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--or-clair);
+    background: rgba(184,148,31,0.15);
+    border: 1px solid rgba(184,148,31,0.35);
+    padding: 8px 18px;
+    border-radius: 50px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 5vw, 56px);
+    color: white;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .hero-title span { color: var(--or-clair); }
+  .hero-tagline {
+    font-style: italic;
+    color: rgba(255,255,255,0.55);
+    font-size: 18px;
+    margin-bottom: 40px;
+  }
+  .hero-pillars {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+  }
+  .pillar-badge {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.8);
+    padding: 7px 16px;
+    border-radius: 50px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .pillar-badge .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--or-clair); }
+  .hero-nav {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+  .nav-btn-or {
+    background: linear-gradient(135deg, var(--or), var(--or-clair));
+    color: white;
+  }
+  .nav-btn-ghost {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.8);
+  }
+  .nav-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+  /* ── TOC ── */
+  .toc {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 48px 40px 0;
+  }
+  .toc-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 60px;
+  }
+  .toc-item {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+    text-decoration: none;
+    color: var(--gris);
+  }
+  .toc-item:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); border-color: rgba(184,148,31,0.3); }
+  .toc-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .toc-num { font-family: 'Cinzel', serif; font-size: 11px; color: var(--gris-clair); letter-spacing: 1px; margin-bottom: 2px; }
+  .toc-label { font-family: 'Playfair Display', serif; font-size: 14px; font-weight: 600; }
+
+  /* ── CONTENU ── */
+  .content { max-width: 900px; margin: 0 auto; padding: 0 40px 80px; }
+
+  /* ── SECTION ── */
+  .doc-section { margin-bottom: 80px; scroll-margin-top: 20px; }
+  .section-hero {
+    border-radius: 20px;
+    padding: 36px 40px;
+    margin-bottom: 36px;
+    position: relative;
+    overflow: hidden;
+  }
+  .section-hero::before {
+    content: attr(data-icon);
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 80px;
+    opacity: 0.1;
+  }
+  .section-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 10px; opacity: 0.7; }
+  .section-title { font-family: 'Playfair Display', serif; font-size: clamp(22px, 3vw, 30px); font-weight: 700; }
+
+  /* couleurs par section */
+  .s-green { background: linear-gradient(135deg, #0a3320, #0f5530); color: white; }
+  .s-green .section-label { color: var(--or-clair); }
+  .s-violet { background: linear-gradient(135deg, #1e0a4e, #3b0764); color: white; }
+  .s-violet .section-label { color: #c4b5fd; }
+  .s-or { background: linear-gradient(135deg, #451a03, #78350f); color: white; }
+  .s-or .section-label { color: var(--or-clair); }
+  .s-blue { background: linear-gradient(135deg, #0c1a3e, #1e3a8a); color: white; }
+  .s-blue .section-label { color: #93c5fd; }
+  .s-teal { background: linear-gradient(135deg, #042f2e, #0d5354); color: white; }
+  .s-teal .section-label { color: #5eead4; }
+
+  /* ── PRÉAMBULE ── */
+  .preambule {
+    background: white;
+    border-left: 4px solid var(--or);
+    border-radius: 0 14px 14px 0;
+    padding: 32px 36px;
+    margin-bottom: 36px;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+  }
+  .preambule-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 3px; color: var(--or); text-transform: uppercase; margin-bottom: 14px; }
+  .preambule-text { font-size: 17px; line-height: 1.9; }
+
+  .pillars-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin: 28px 0; }
+  .pillar-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px 22px;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+  }
+  .pillar-icon { font-size: 22px; flex-shrink: 0; }
+  .pillar-name { font-family: 'Playfair Display', serif; font-size: 15px; color: var(--vert); font-weight: 600; margin-bottom: 4px; }
+  .pillar-desc { font-size: 14px; color: var(--gris-clair); line-height: 1.5; }
+
+  /* ── CRITÈRES ── */
+  .criteres-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 36px; }
+  .critere-card {
+    background: white;
+    border-radius: 14px;
+    padding: 24px;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .critere-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+  .critere-points {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: var(--or-pale);
+    color: var(--or);
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 50px;
+    border: 1px solid rgba(184,148,31,0.25);
+  }
+  .critere-title { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--vert); font-weight: 700; margin-bottom: 10px; padding-right: 60px; }
+  .critere-desc { font-size: 14px; color: var(--gris-clair); line-height: 1.6; margin-bottom: 14px; }
+  .critere-subs { display: flex; flex-direction: column; gap: 6px; }
+  .critere-sub { font-size: 13px; color: var(--gris); display: flex; gap: 8px; align-items: flex-start; }
+  .critere-sub::before { content: '›'; color: var(--or); font-size: 16px; flex-shrink: 0; }
+
+  /* ── PROCESSUS ── */
+  .processus { display: flex; flex-direction: column; gap: 0; margin-bottom: 36px; position: relative; }
+  .processus::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 24px;
+    bottom: 24px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--vert-med), var(--or-clair));
+    z-index: 0;
+  }
+  .process-step {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    padding: 20px 0;
+    position: relative;
+    z-index: 1;
+  }
+  .step-num {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--vert-med);
+    color: var(--vert);
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-weight: 600;
+  }
+  .step-content { flex: 1; padding-top: 8px; }
+  .step-title { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--vert); font-weight: 600; margin-bottom: 4px; }
+  .step-desc { font-size: 14px; color: var(--gris-clair); line-height: 1.6; }
+  .step-date { display: inline-block; font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px; color: var(--or); background: var(--or-pale); border: 1px solid rgba(184,148,31,0.25); padding: 3px 10px; border-radius: 50px; margin-top: 6px; }
+
+  /* ── FICHE DE SUIVI ── */
+  .fiche-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 36px; }
+  .fiche-card {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    text-align: center;
+  }
+  .fiche-icon { font-size: 28px; margin-bottom: 10px; }
+  .fiche-title { font-family: 'Playfair Display', serif; font-size: 14px; color: #0d5354; font-weight: 600; margin-bottom: 6px; }
+  .fiche-desc { font-size: 13px; color: var(--gris-clair); line-height: 1.5; }
+
+  /* ── ITEMS LISTE ── */
+  .items-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .list-item {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 18px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+  }
+  .list-item:hover { border-color: rgba(26,122,69,0.2); transform: translateX(4px); }
+  .list-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--vert-med); flex-shrink: 0; margin-top: 9px; }
+  .list-text { font-size: 16px; line-height: 1.7; }
+
+  /* ── CONTACT CTA ── */
+  .contact-box {
+    background: linear-gradient(135deg, var(--vert), var(--vert-med));
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    color: white;
+    margin-top: 60px;
+  }
+  .contact-title { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 12px; }
+  .contact-sub { color: rgba(255,255,255,0.7); font-size: 16px; margin-bottom: 24px; }
+  .contact-links { display: flex; justify-content: center; gap: 16px; flex-wrap: wrap; }
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .contact-link:hover { background: rgba(255,255,255,0.2); }
+
+  /* ── BACK + FOOTER ── */
+  .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--vert-med); font-size: 14px; text-decoration: none; font-family: 'Cinzel', serif; letter-spacing: 1px; margin-bottom: 40px; }
+  .back-btn::before { content: '←'; }
+  .footer { background: linear-gradient(180deg, #0a3320, #071f14); padding: 32px 40px; text-align: center; margin-top: 80px; }
+  .footer-inner { max-width: 900px; margin: 0 auto; }
+  .footer-logo { font-family: 'Playfair Display', serif; color: white; font-size: 18px; margin-bottom: 8px; }
+  .footer-logo span { color: var(--or-clair); }
+  .footer-sub { font-size: 13px; color: rgba(255,255,255,0.4); }
+  .footer-line { height: 1px; background: linear-gradient(90deg, transparent, rgba(212,170,53,0.4), transparent); margin: 20px 0; }
+
+  @media (max-width: 640px) {
+    .hero-inner { padding: 48px 20px 40px; }
+    .toc { padding: 32px 20px 0; }
+    .content { padding: 0 20px 60px; }
+    .pillars-grid { grid-template-columns: 1fr; }
+    .criteres-grid { grid-template-columns: 1fr; }
+    .fiche-grid { grid-template-columns: repeat(2, 1fr); }
+    .section-hero { padding: 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="gold-line"></div>
+  <div class="hero-inner">
+    <div class="hero-badge">⚖ Association Ma Belle Promo · Lomé, Togo · 2026</div>
+    <h1 class="hero-title">Programme de Mentorat<br><span>« PASSERELLES »</span></h1>
+    <p class="hero-tagline">Relier Ambitions &amp; Opportunités · Créer des passerelles durables entre les talents et les opportunités</p>
+    <div class="hero-pillars">
+      <div class="pillar-badge"><div class="dot"></div>Bienveillance</div>
+      <div class="pillar-badge"><div class="dot"></div>Équité</div>
+      <div class="pillar-badge"><div class="dot"></div>Intégrité éthique</div>
+      <div class="pillar-badge"><div class="dot"></div>Responsabilité partagée</div>
+    </div>
+    <div class="hero-nav">
+      <a href="#preambule" class="nav-btn nav-btn-or">Lire le programme ↓</a>
+      <a href="https://passerelles-mbp.vercel.app/" class="nav-btn nav-btn-ghost"> Retour à l'accueil</a>
+
+    </div>
+  </div>
+</div>
+
+<!-- TABLE DES MATIÈRES -->
+<div class="toc">
+  <div class="toc-grid">
+    <a href="#mentor" class="toc-item">
+      <div class="toc-icon" style="background:#f0fdf4; color:#0f5530;">👨‍💼</div>
+      <div><div class="toc-num">SECTION I</div><div class="toc-label">Guide du Mentor</div></div>
+    </a>
+    <a href="#mentore" class="toc-item">
+      <div class="toc-icon" style="background:#f5f3ff; color:#6d28d9;">🎓</div>
+      <div><div class="toc-num">SECTION II</div><div class="toc-label">Guide du Mentoré</div></div>
+    </a>
+    <a href="#charte" class="toc-item">
+      <div class="toc-icon" style="background:#fef9e7; color:#92400e;">🤝</div>
+      <div><div class="toc-num">SECTION III</div><div class="toc-label">Charte d'Engagement</div></div>
+    </a>
+    <a href="#criteres" class="toc-item">
+      <div class="toc-icon" style="background:#eff6ff; color:#1e3a8a;">✅</div>
+      <div><div class="toc-num">SECTION IV</div><div class="toc-label">Critères de Sélection</div></div>
+    </a>
+    <a href="#suivi" class="toc-item">
+      <div class="toc-icon" style="background:#f0fdfa; color:#0d5354;">📋</div>
+      <div><div class="toc-num">SECTION V</div><div class="toc-label">Fiche de Suivi</div></div>
+    </a>
+  </div>
+</div>
+
+<!-- CONTENU -->
+<div class="content">
+
+  <!-- PRÉAMBULE -->
+  <div id="preambule" class="doc-section">
+    <div class="preambule">
+      <div class="preambule-label">Préambule Général</div>
+      <p class="preambule-text">
+        Le programme <strong>PASSERELLES</strong> est une initiative de l'Association Ma Belle Promo (MBP) visant à accompagner des étudiants en droit des universités togolaises — Université de Lomé, Université de Kara et établissements privés — dans leur épanouissement académique, professionnel et personnel.
+      </p>
+    </div>
+    <div class="pillars-grid">
+      <div class="pillar-card"><div class="pillar-icon">🛡</div><div><div class="pillar-name">Bienveillance structurée</div><div class="pillar-desc">Accompagnement volontaire, non rémunéré et co-construit</div></div></div>
+      <div class="pillar-card"><div class="pillar-icon">⚖</div><div><div class="pillar-name">Équité et inclusion</div><div class="pillar-desc">Accès égal, transparent, sans discrimination</div></div></div>
+      <div class="pillar-card"><div class="pillar-icon">🔒</div><div><div class="pillar-name">Intégrité éthique</div><div class="pillar-desc">Interdiction absolue du quid pro quo, du harcèlement et de tout abus</div></div></div>
+      <div class="pillar-card"><div class="pillar-icon">🤝</div><div><div class="pillar-name">Responsabilité partagée</div><div class="pillar-desc">Engagements clairs, suivi régulier, mécanismes de signalement</div></div></div>
+    </div>
+  </div>
+
+  <!-- I. GUIDE DU MENTOR -->
+  <div id="mentor" class="doc-section">
+    <div class="section-hero s-green" data-icon="👨‍💼">
+      <div class="section-label">Section I</div>
+      <div class="section-title">Guide du Mentor</div>
+    </div>
+    <div class="items-list">
+      <div class="list-item"><div class="list-dot"></div><div class="list-text"><strong>Engagement volontaire</strong> : Le mentor agit dans un cadre non rémunéré et sociétal, motivé par la transmission et l'accompagnement.</div></div>
+      <div class="list-item"><div class="list-dot"></div><div class="list-text"><strong>Disponibilité</strong> : Minimum 2h/mois, avec préparation de chaque séance selon le profil du mentoré.</div></div>
+      <div class="list-item"><div class="list-dot"></div><div class="list-text"><strong>Pratiques pédagogiques</strong> : Écoute active, feedback constructif, encouragement de l'autonomie et co-construction du parcours.</div></div>
+      <div class="list-item"><div class="list-dot"></div><div class="list-text"><strong>Confidentialité absolue</strong> : Tous les échanges sont strictement confidentiels, sauf obligation légale.</div></div>
+      <div class="list-item"><div class="list-dot"></div><div class="list-text"><strong>Intégrité éthique</strong> : Interdiction formelle de tout quid pro quo, harcèlement ou comportement inapproprié.</div></div>
+    </div>
+    <p style="text-align:center; margin-top: 16px;">
+      <a href="/GuideMentor" style="color: var(--vert-med); font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 1px; text-decoration: none; border-bottom: 1px solid var(--vert-med); padding-bottom: 2px;">Lire le guide complet du mentor →</a>
+    </p>
+  </div>
+
+  <!-- II. GUIDE DU MENTORÉ -->
+  <div id="mentore" class="doc-section">
+    <div class="section-hero s-violet" data-icon="🎓">
+      <div class="section-label">Section II</div>
+      <div class="section-title">Guide du Mentoré</div>
+    </div>
+    <div class="items-list">
+      <div class="list-item"><div class="list-dot" style="background:#6d28d9;"></div><div class="list-text"><strong>Droits fondamentaux</strong> : Environnement sûr, respectueux, sans demande de contrepartie de quelque nature.</div></div>
+      <div class="list-item"><div class="list-dot" style="background:#6d28d9;"></div><div class="list-text"><strong>Engagement actif</strong> : Préparation de chaque séance, définition d'objectifs clairs, communication proactive.</div></div>
+      <div class="list-item"><div class="list-dot" style="background:#6d28d9;"></div><div class="list-text"><strong>Co-construction</strong> : Le mentoré est acteur de son évolution, avec l'appui du mentor.</div></div>
+      <div class="list-item"><div class="list-dot" style="background:#6d28d9;"></div><div class="list-text"><strong>Signalement</strong> : Droit inviolable de signaler tout comportement inapproprié sans crainte de représailles.</div></div>
+      <div class="list-item"><div class="list-dot" style="background:#6d28d9;"></div><div class="list-text"><strong>Clôture active</strong> : Bilan final, valorisation du programme, invitation potentielle à devenir mentor.</div></div>
+    </div>
+    <p style="text-align:center; margin-top: 16px;">
+      <a href="/GuideMentore" style="color: #6d28d9; font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 1px; text-decoration: none; border-bottom: 1px solid #6d28d9; padding-bottom: 2px;">Lire le guide complet du mentoré →</a>
+    </p>
+  </div>
+
+  <!-- III. CHARTE -->
+  <div id="charte" class="doc-section">
+    <div class="section-hero s-or" data-icon="🤝">
+      <div class="section-label">Section III</div>
+      <div class="section-title">Charte d'Engagement Mutuel</div>
+    </div>
+    <div class="items-list">
+      <div class="list-item"><div class="list-dot" style="background:#92400e;"></div><div class="list-text"><strong>Volontariat et équité</strong> · <strong>Respect mutuel</strong> · <strong>Confidentialité absolue</strong></div></div>
+      <div class="list-item"><div class="list-dot" style="background:#92400e;"></div><div class="list-text"><strong>Objectifs SMART</strong> co-construits et suivis régulièrement par les deux parties.</div></div>
+      <div class="list-item"><div class="list-dot" style="background:#92400e;"></div><div class="list-text"><strong>Interdiction absolue</strong> du quid pro quo, du harcèlement moral, sexuel ou sexiste, et de tout abus de position.</div></div>
+      <div class="list-item"><div class="list-dot" style="background:#92400e;"></div><div class="list-text"><strong>Rupture possible</strong> à tout moment avec un préavis recommandé de 2 semaines et bilan partagé.</div></div>
+      <div class="list-item"><div class="list-dot" style="background:#92400e;"></div><div class="list-text"><strong>Révision annuelle</strong> de la charte pour intégrer les retours d'expérience.</div></div>
+    </div>
+    <p style="text-align:center; margin-top: 16px;">
+      <a href="/CharteEngagement" style="color: #92400e; font-family: 'Cinzel', serif; font-size: 13px; letter-spacing: 1px; text-decoration: none; border-bottom: 1px solid #92400e; padding-bottom: 2px;">Lire la charte complète →</a>
+    </p>
+  </div>
+
+  <!-- IV. CRITÈRES DE SÉLECTION -->
+  <div id="criteres" class="doc-section">
+    <div class="section-hero s-blue" data-icon="✅">
+      <div class="section-label">Section IV</div>
+      <div class="section-title">Critères de Sélection des Mentorés</div>
+    </div>
+    <p style="margin-bottom: 28px; font-style: italic; color: var(--gris-clair);">
+      Sélection parmi un minimum de 50 candidatures, exclusivement parmi les étudiants en <strong>L3, M1 et M2</strong>, sur une grille pondérée sur 100 points.
+    </p>
+    <div class="criteres-grid">
+      <div class="critere-card">
+        <div class="critere-points">30 pts</div>
+        <div class="critere-title">Motivation</div>
+        <div class="critere-desc">Identifier un engagement sincère envers le programme et des aspirations claires en droit.</div>
+        <div class="critere-subs">
+          <div class="critere-sub">Authenticité de la motivation (15 pts)</div>
+          <div class="critere-sub">Clarté des objectifs (10 pts)</div>
+          <div class="critere-sub">Alignement avec les valeurs MBP (5 pts)</div>
+        </div>
+      </div>
+      <div class="critere-card">
+        <div class="critere-points">25 pts</div>
+        <div class="critere-title">Niveau d'Études</div>
+        <div class="critere-desc">Prioriser les étudiants en L3, M1 et M2, phases critiques pour l'orientation professionnelle.</div>
+        <div class="critere-subs">
+          <div class="critere-sub">Inscription en L3/M1/M2 (10 pts)</div>
+          <div class="critere-sub">Performance académique (10 pts)</div>
+          <div class="critere-sub">Pertinence du parcours (5 pts)</div>
+        </div>
+      </div>
+      <div class="critere-card">
+        <div class="critere-points">20 pts</div>
+        <div class="critere-title">Disponibilité</div>
+        <div class="critere-desc">Garantir l'engagement actif dans les rencontres mensuelles et activités collectives.</div>
+        <div class="critere-subs">
+          <div class="critere-sub">Respect du calendrier (10 pts)</div>
+          <div class="critere-sub">Flexibilité pour activités collectives (7 pts)</div>
+          <div class="critere-sub">Engagement déclaré (3 pts)</div>
+        </div>
+      </div>
+      <div class="critere-card">
+        <div class="critere-points">25 pts</div>
+        <div class="critere-title">Engagement Civique et Leadership</div>
+        <div class="critere-desc">Sélectionner des candidats avec un potentiel d'impact dans leur communauté.</div>
+        <div class="critere-subs">
+          <div class="critere-sub">Implication associative ou citoyenne (10 pts)</div>
+          <div class="critere-sub">Alignement avec les valeurs MBP (10 pts)</div>
+          <div class="critere-sub">Potentiel de leadership (5 pts)</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Processus de sélection -->
+    <h3 style="font-family:'Playfair Display',serif; font-size:20px; color:var(--vert); margin-bottom: 20px; margin-top: 36px;">Processus de Sélection</h3>
+    <div class="processus">
+      <div class="process-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">Appel à Candidatures</div>
+          <div class="step-desc">Diffusion via réseaux sociaux, affiches dans les universités et courriers ciblés aux doyens. Cible : minimum 50 candidatures de L3/M1/M2.</div>
+          <div class="step-date">A communiquer</div>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">Réception des Dossiers</div>
+          <div class="step-desc">Formulaire en ligne incluant CV, relevé de notes, lettre de motivation et déclaration d'engagement.</div>
+          <div class="step-date">Date limite : A communiquer</div>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">Analyse par le Comité</div>
+          <div class="step-desc">Évaluation par un comité de 3 à 5 membres MBP, scores pondérés sur 100. Durée : 1 semaine.</div>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <div class="step-title">Notification des Résultats</div>
+          <div class="step-desc">Lettres d'acceptation envoyées sous 2 semaines. Les candidats acceptés reçoivent une invitation à l'atelier de lancement.</div>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">5</div>
+        <div class="step-content">
+          <div class="step-title">Appel de Réserve</div>
+          <div class="step-desc">Liste d'attente constituée pour pallier tout désistement des mentorés sélectionnés.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- V. FICHE DE SUIVI -->
+  <div id="suivi" class="doc-section">
+    <div class="section-hero s-teal" data-icon="📋">
+      <div class="section-label">Section V</div>
+      <div class="section-title">Fiche de Suivi des Rencontres</div>
+    </div>
+    <div class="preambule" style="border-color: #0d5354;">
+      <div class="preambule-label" style="color:#0d5354;">Objectif</div>
+      <p>La fiche de suivi garantit un suivi <strong>structuré, mesurable et aligné</strong> sur les objectifs du programme. Elle est utilisée mensuellement pour tracker les progrès, identifier les défis et planifier les actions futures.</p>
+    </div>
+    <div class="fiche-grid">
+      <div class="fiche-card"><div class="fiche-icon">📝</div><div class="fiche-title">Documenter</div><div class="fiche-desc">Enregistrer les points clés des rencontres : objectifs, discussions, actions.</div></div>
+      <div class="fiche-card"><div class="fiche-icon">📊</div><div class="fiche-title">Évaluer</div><div class="fiche-desc">Mesurer la satisfaction et les progrès académiques, professionnels et personnels.</div></div>
+      <div class="fiche-card"><div class="fiche-icon">🗓</div><div class="fiche-title">Planifier</div><div class="fiche-desc">Définir des actions concrètes avec échéances pour maintenir la dynamique.</div></div>
+      <div class="fiche-card"><div class="fiche-icon">🌍</div><div class="fiche-title">Assurer l'inclusion</div><div class="fiche-desc">Permettre des ajustements pour répondre aux besoins spécifiques.</div></div>
+      <div class="fiche-card"><div class="fiche-icon">🔔</div><div class="fiche-title">Signaler</div><div class="fiche-desc">Documenter tout incident, préoccupation ou comportement inapproprié.</div></div>
+      <div class="fiche-card"><div class="fiche-icon">💻</div><div class="fiche-title">Format numérique</div><div class="fiche-desc">Disponible directement sur la plateforme PASSERELLES.</div></div>
+    </div>
+    <div class="items-list">
+      <div class="list-item"><div class="list-dot" style="background:#0d5354;"></div><div class="list-text"><strong>Fréquence</strong> : Une fiche par rencontre mensuelle (1 à 2 heures, présentiel ou virtuel).</div></div>
+      <div class="list-item"><div class="list-dot" style="background:#0d5354;"></div><div class="list-text"><strong>Responsabilité</strong> : Complétée conjointement par le mentor et le mentoré à la fin de chaque rencontre.</div></div>
+      <div class="list-item"><div class="list-dot" style="background:#0d5354;"></div><div class="list-text"><strong>Archivage</strong> : Soumise à l'équipe MBP pour suivi et analyse.</div></div>
+      <div class="list-item"><div class="list-dot" style="background:#0d5354;"></div><div class="list-text"><strong>Confidentialité</strong> : Les informations restent confidentielles, conformément à la Charte d'Engagement.</div></div>
+    </div>
+  </div>
+
+  <!-- CONTACT -->
+  <div class="contact-box">
+    <div class="contact-title">Une question sur le programme ?</div>
+    <p class="contact-sub">L'équipe Ma Belle Promo est disponible pour vous accompagner.</p>
+    <div class="contact-links">
+      <a href="mailto:contact@mabellepromo.org" class="contact-link">📧 contact@mabellepromo.org</a>
+      <a href="tel:+22896090707" class="contact-link">📞 +228 96 09 07 07</a>
+     <a href="https://passerelles-mbp.vercel.app/" class="cta-btn">🌐 Accéder à la plateforme</a>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-inner">
+    <div class="footer-line"></div>
+    <div class="footer-logo">Passerelles <span>· Ma Belle Promo</span></div>
+    <div class="footer-sub">contact@mabellepromo.org · +228 96 09 07 07 · Lomé, Togo · 12 BP 335 Baguida</div>
+    <div class="footer-line"></div>
+    <div class="footer-sub">© 2026 Ma Belle Promo · Programme PASSERELLES · Tous droits réservés</div>
+  </div>
+</div>
+
+</body>
+</html>

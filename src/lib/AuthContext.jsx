@@ -12,9 +12,9 @@ export const AuthProvider = ({ children }) => {
   const refreshAuth = useCallback(async () => {
     setIsLoadingAuth(true);
     try {
-      await supabase.auth.refreshSession();
-      const { data: { user: currentUser }, error: userError } = await supabase.auth.getUser();
-      if (userError) throw userError;
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) throw sessionError;
+      const currentUser = session?.user ?? null;
       if (!currentUser) {
         setUser(null);
         setIsAuthenticated(false);
@@ -31,7 +31,7 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       setUser(null);
       setIsAuthenticated(false);
-      setAuthError(error || { message: 'Erreur d’authentification' });
+      setAuthError(error || { message: 'Erreur authentification' });
     } finally {
       setIsLoadingAuth(false);
     }

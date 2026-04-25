@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Critères de Sélection — Programme PASSERELLES</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=EB+Garamond:ital,wght@0,400;0,500;1,400&family=Cinzel:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bleu: #1e3a8a;
+    --bleu-med: #2563eb;
+    --bleu-clair: #eff6ff;
+    --or: #b8941f;
+    --or-clair: #d4aa35;
+    --or-pale: #fef9e7;
+    --ivoire: #faf8f2;
+    --vert: #0f5530;
+    --vert-med: #1a7a45;
+    --gris: #374151;
+    --gris-clair: #6b7280;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'EB Garamond', Georgia, serif; background: var(--ivoire); color: var(--gris); line-height: 1.8; font-size: 17px; }
+
+  /* ── HERO ── */
+  .hero {
+    background: linear-gradient(160deg, #0c1a3e 0%, #1e3a8a 50%, #2563eb 100%);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      radial-gradient(ellipse at 80% 20%, rgba(212,170,53,0.08) 0%, transparent 50%),
+      repeating-linear-gradient(-45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 40px);
+  }
+  .gold-line { height: 3px; background: linear-gradient(90deg, transparent, var(--or), var(--or-clair), var(--or), transparent); }
+
+  .hero-inner {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 64px 40px 56px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 40px;
+    align-items: center;
+  }
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--or-clair);
+    background: rgba(184,148,31,0.15);
+    border: 1px solid rgba(184,148,31,0.35);
+    padding: 7px 16px;
+    border-radius: 50px;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(26px, 4vw, 44px);
+    color: white;
+    font-weight: 700;
+    line-height: 1.15;
+    margin-bottom: 12px;
+  }
+  .hero-title span { color: var(--or-clair); }
+  .hero-sub { font-style: italic; color: rgba(255,255,255,0.6); font-size: 16px; margin-bottom: 28px; }
+
+  .total-badge {
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 24px 32px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .total-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 64px;
+    color: var(--or-clair);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .total-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 2px; color: rgba(255,255,255,0.6); text-transform: uppercase; }
+
+  /* ── OBJECTIF ── */
+  .objectif-bar {
+    background: rgba(184,148,31,0.12);
+    border-bottom: 1px solid rgba(184,148,31,0.25);
+    padding: 14px 40px;
+  }
+  .objectif-inner {
+    max-width: 900px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.8);
+    font-style: italic;
+  }
+  .objectif-inner strong { color: var(--or-clair); font-style: normal; }
+
+  /* ── CONTENU ── */
+  .content { max-width: 900px; margin: 0 auto; padding: 60px 40px 80px; }
+  .back-btn { display: inline-flex; align-items: center; gap: 8px; color: var(--bleu-med); font-size: 14px; text-decoration: none; font-family: 'Cinzel', serif; letter-spacing: 1px; margin-bottom: 40px; }
+  .back-btn::before { content: '←'; }
+
+  /* ── PRINCIPES ── */
+  .principes-row {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-bottom: 60px;
+  }
+  .principe {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 18px 14px;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+  }
+  .principe:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(30,58,138,0.1); border-color: rgba(37,99,235,0.25); }
+  .principe-icon { font-size: 24px; margin-bottom: 10px; }
+  .principe-name { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px; color: var(--bleu); text-transform: uppercase; margin-bottom: 6px; }
+  .principe-desc { font-size: 12px; color: var(--gris-clair); line-height: 1.5; }
+
+  /* ── CRITÈRES ── */
+  .criteres-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 26px;
+    color: var(--bleu);
+    margin-bottom: 8px;
+  }
+  .criteres-sub { font-size: 15px; color: var(--gris-clair); font-style: italic; margin-bottom: 36px; }
+
+  .critere-block { margin-bottom: 36px; }
+  .critere-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .critere-num-box {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    color: white;
+    font-family: 'Cinzel', serif;
+  }
+  .critere-num-box .num { font-size: 20px; font-weight: 600; line-height: 1; }
+  .critere-num-box .pts { font-size: 9px; letter-spacing: 1px; opacity: 0.8; text-transform: uppercase; }
+  .critere-title-group { flex: 1; }
+  .critere-name { font-family: 'Playfair Display', serif; font-size: 22px; color: var(--gris); font-weight: 700; }
+  .critere-objectif { font-size: 14px; color: var(--gris-clair); font-style: italic; }
+
+  /* Barre de progression */
+  .progress-bar-wrap { margin-bottom: 20px; }
+  .progress-label { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .progress-label span { font-family: 'Cinzel', serif; font-size: 11px; letter-spacing: 1px; color: var(--gris-clair); }
+  .progress-label strong { font-family: 'Cinzel', serif; font-size: 12px; }
+  .progress-bg { height: 8px; background: rgba(0,0,0,0.06); border-radius: 50px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 50px; transition: width 1s ease; }
+
+  /* Sous-critères */
+  .subcriteres { display: flex; flex-direction: column; gap: 10px; }
+  .subcritere {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    padding: 14px 18px;
+    background: white;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.05);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+  }
+  .subcritere:hover { transform: translateX(4px); }
+  .subcritere-pts {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 50px;
+    flex-shrink: 0;
+    white-space: nowrap;
+    margin-top: 2px;
+  }
+  .subcritere-text { font-size: 15px; line-height: 1.6; }
+  .subcritere-text strong { display: block; margin-bottom: 2px; font-size: 15px; }
+  .subcritere-text span { font-size: 13px; color: var(--gris-clair); }
+
+  /* Méthode */
+  .methode {
+    background: rgba(30,58,138,0.04);
+    border: 1px solid rgba(30,58,138,0.12);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-top: 14px;
+    font-size: 14px;
+    color: var(--gris-clair);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .methode::before { content: '🔍'; flex-shrink: 0; font-size: 16px; }
+
+  /* DIVISEUR */
+  .divider { height: 1px; background: linear-gradient(90deg, transparent, rgba(30,58,138,0.15), transparent); margin: 48px 0; }
+
+  /* PROCESSUS */
+  .processus-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--bleu); margin-bottom: 32px; }
+  .processus { position: relative; padding-left: 60px; }
+  .processus::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    bottom: 20px;
+    width: 2px;
+    background: linear-gradient(180deg, var(--bleu-med), var(--or-clair));
+  }
+  .step {
+    position: relative;
+    margin-bottom: 28px;
+    padding: 20px 24px;
+    background: white;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+  }
+  .step:hover { box-shadow: 0 8px 24px rgba(30,58,138,0.08); border-color: rgba(37,99,235,0.2); }
+  .step-bubble {
+    position: absolute;
+    left: -48px;
+    top: 20px;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: white;
+    border: 2px solid var(--bleu-med);
+    color: var(--bleu);
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .step-title { font-family: 'Playfair Display', serif; font-size: 17px; color: var(--bleu); font-weight: 600; margin-bottom: 6px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .step-date { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 1px; color: white; background: var(--bleu-med); padding: 3px 10px; border-radius: 50px; }
+  .step-desc { font-size: 15px; color: var(--gris-clair); line-height: 1.6; }
+
+  /* INCLUSION */
+  .inclusion-title { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--bleu); margin-bottom: 24px; }
+  .inclusion-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 60px; }
+  .inclusion-card {
+    background: white;
+    border-radius: 14px;
+    border: 1px solid rgba(0,0,0,0.06);
+    padding: 24px 20px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    transition: all 0.2s;
+  }
+  .inclusion-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(30,58,138,0.08); }
+  .inclusion-icon { font-size: 32px; margin-bottom: 12px; }
+  .inclusion-name { font-family: 'Playfair Display', serif; font-size: 16px; color: var(--bleu); font-weight: 600; margin-bottom: 8px; }
+  .inclusion-desc { font-size: 13px; color: var(--gris-clair); line-height: 1.6; }
+
+  /* CTA */
+  .cta {
+    background: linear-gradient(135deg, var(--bleu), var(--bleu-med));
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    color: white;
+  }
+  .cta-title { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 10px; }
+  .cta-sub { color: rgba(255,255,255,0.7); font-size: 15px; margin-bottom: 24px; }
+  .cta-links { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+  .cta-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .cta-btn:hover { background: rgba(255,255,255,0.2); }
+
+  /* FOOTER */
+  .footer { background: linear-gradient(180deg, #0c1a3e, #050e24); padding: 32px 40px; text-align: center; margin-top: 0; }
+  .footer-inner { max-width: 900px; margin: 0 auto; }
+  .footer-logo { font-family: 'Playfair Display', serif; color: white; font-size: 18px; margin-bottom: 8px; }
+  .footer-logo span { color: var(--or-clair); }
+  .footer-sub { font-size: 13px; color: rgba(255,255,255,0.4); }
+  .footer-line { height: 1px; background: linear-gradient(90deg, transparent, rgba(212,170,53,0.4), transparent); margin: 20px 0; }
+
+  /* Couleurs par critère */
+  .c1 { background: linear-gradient(135deg, #1e3a8a, #2563eb); }
+  .c2 { background: linear-gradient(135deg, #065f46, #059669); }
+  .c3 { background: linear-gradient(135deg, #92400e, #b45309); }
+  .c4 { background: linear-gradient(135deg, #4c1d95, #7c3aed); }
+
+  .bar1 { background: linear-gradient(90deg, #1e3a8a, #60a5fa); width: 30%; }
+  .bar2 { background: linear-gradient(90deg, #065f46, #34d399); width: 25%; }
+  .bar3 { background: linear-gradient(90deg, #92400e, #fbbf24); width: 20%; }
+  .bar4 { background: linear-gradient(90deg, #4c1d95, #a78bfa); width: 25%; }
+
+  .pts1 { background: rgba(30,58,138,0.1); color: #1e3a8a; }
+  .pts2 { background: rgba(6,95,70,0.1); color: #065f46; }
+  .pts3 { background: rgba(146,64,14,0.1); color: #92400e; }
+  .pts4 { background: rgba(76,29,149,0.1); color: #4c1d95; }
+
+  .hover1:hover { border-color: rgba(30,58,138,0.2) !important; }
+  .hover2:hover { border-color: rgba(6,95,70,0.2) !important; }
+  .hover3:hover { border-color: rgba(146,64,14,0.2) !important; }
+  .hover4:hover { border-color: rgba(76,29,149,0.2) !important; }
+
+  @media (max-width: 640px) {
+    .hero-inner { grid-template-columns: 1fr; padding: 40px 20px; }
+    .total-badge { display: none; }
+    .content { padding: 40px 20px 60px; }
+    .principes-row { grid-template-columns: repeat(2, 1fr); }
+    .inclusion-grid { grid-template-columns: 1fr; }
+    .processus { padding-left: 50px; }
+    .objectif-bar { padding: 12px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="gold-line"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-badge">✅ Association Ma Belle Promo · Programme PASSERELLES</div>
+      <h1 class="hero-title">Critères de Sélection<br><span>des Mentorés</span></h1>
+      <p class="hero-sub">Programme « PASSERELLES » · Cohorte 1 · 2026</p>
+      <p style="font-size:15px; color:rgba(255,255,255,0.65); max-width: 480px; line-height:1.7;">
+        Grille d'évaluation pondérée sur <strong style="color:white;">100 points</strong> pour une sélection équitable, inclusive et objective des mentorés.
+      </p>
+    </div>
+    <div class="total-badge">
+      <div class="total-num">100</div>
+      <div class="total-label">Points<br>au total</div>
+    </div>
+  </div>
+  <div class="objectif-bar">
+    <div class="objectif-inner">
+      Objectif : Sélectionner <strong>10 mentorés</strong> parmi un minimum de <strong>50 candidatures</strong> — exclusivement en <strong>L3, M1 et M2</strong>
+    </div>
+  </div>
+</div>
+
+<div class="content">
+  <a href="/" class="back-btn">Retour à l'accueil</a>
+
+  <!-- PRINCIPES GÉNÉRAUX -->
+  <div class="principes-row">
+    <div class="principe">
+      <div class="principe-icon">⚖</div>
+      <div class="principe-name">Équité</div>
+      <div class="principe-desc">Processus transparent, sans biais de genre, d'origine ou de statut</div>
+    </div>
+    <div class="principe">
+      <div class="principe-icon">🌍</div>
+      <div class="principe-name">Inclusion</div>
+      <div class="principe-desc">Minimum 50% de femmes, équilibre Lomé / Kara</div>
+    </div>
+    <div class="principe">
+      <div class="principe-icon">🎯</div>
+      <div class="principe-name">Pertinence</div>
+      <div class="principe-desc">Focus sur L3, M1 et M2 en phase de spécialisation</div>
+    </div>
+    <div class="principe">
+      <div class="principe-icon">📊</div>
+      <div class="principe-name">Objectivité</div>
+      <div class="principe-desc">Grille standardisée et anonymisée pour éviter les biais</div>
+    </div>
+    <div class="principe">
+      <div class="principe-icon">🤲</div>
+      <div class="principe-name">Accessibilité</div>
+      <div class="principe-desc">Accompagnement à la complétion des candidatures</div>
+    </div>
+  </div>
+
+  <!-- TITRE SECTION -->
+  <div class="criteres-title">Critères de Sélection Détaillés</div>
+  <p class="criteres-sub">Chaque critère est pondéré et évalué via une grille standardisée. Le total est de 100 points.</p>
+
+  <!-- VUE D'ENSEMBLE BARRES -->
+  <div style="background:white; border-radius:16px; padding:28px 32px; margin-bottom:48px; border:1px solid rgba(0,0,0,0.06); box-shadow:0 2px 12px rgba(0,0,0,0.04);">
+    <p style="font-family:'Cinzel',serif; font-size:11px; letter-spacing:2px; color:var(--gris-clair); text-transform:uppercase; margin-bottom:20px;">Vue d'ensemble — Répartition des points</p>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div class="progress-bar-wrap">
+        <div class="progress-label"><span>1. Motivation</span><strong style="color:#1e3a8a;">30 pts</strong></div>
+        <div class="progress-bg"><div class="progress-fill bar1"></div></div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-label"><span>2. Niveau d'Études</span><strong style="color:#065f46;">25 pts</strong></div>
+        <div class="progress-bg"><div class="progress-fill bar2"></div></div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-label"><span>3. Disponibilité</span><strong style="color:#92400e;">20 pts</strong></div>
+        <div class="progress-bg"><div class="progress-fill bar3"></div></div>
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-label"><span>4. Engagement Civique et Leadership</span><strong style="color:#4c1d95;">25 pts</strong></div>
+        <div class="progress-bg"><div class="progress-fill bar4"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CRITÈRE 1 -->
+  <div class="critere-block">
+    <div class="critere-header">
+      <div class="critere-num-box c1"><div class="num">01</div><div class="pts">30 pts</div></div>
+      <div class="critere-title-group">
+        <div class="critere-name">Motivation</div>
+        <div class="critere-objectif">Identifier un engagement sincère et des aspirations claires en droit</div>
+      </div>
+    </div>
+    <div class="subcriteres">
+      <div class="subcritere hover1">
+        <div class="subcritere-pts pts1">15 pts</div>
+        <div class="subcritere-text">
+          <strong>Authenticité de la motivation</strong>
+          <span>Démonstration d'un intérêt sincère via une lettre de motivation (500 mots max), reflétant des besoins spécifiques à L3/M1/M2.</span>
+        </div>
+      </div>
+      <div class="subcritere hover1">
+        <div class="subcritere-pts pts1">10 pts</div>
+        <div class="subcritere-text">
+          <strong>Clarté des objectifs</strong>
+          <span>Définition d'aspirations académiques et professionnelles alignées avec le stade L3/M1/M2.</span>
+        </div>
+      </div>
+      <div class="subcritere hover1">
+        <div class="subcritere-pts pts1">5 pts</div>
+        <div class="subcritere-text">
+          <strong>Alignement avec les valeurs MBP</strong>
+          <span>Engagement envers l'excellence, l'entraide et le leadership.</span>
+        </div>
+      </div>
+    </div>
+    <div class="methode">
+      Lettre de motivation évaluée sur une échelle de 1 à 10 (authenticité, clarté, cohérence). Questions ouvertes dans le formulaire. Exemple : un étudiant M1 décrivant son projet de devenir juriste d'entreprise avec un plan de stage obtient un score élevé.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- CRITÈRE 2 -->
+  <div class="critere-block">
+    <div class="critere-header">
+      <div class="critere-num-box c2"><div class="num">02</div><div class="pts">25 pts</div></div>
+      <div class="critere-title-group">
+        <div class="critere-name">Niveau d'Études</div>
+        <div class="critere-objectif">Prioriser les étudiants en L3, M1 et M2 — phases critiques pour l'orientation professionnelle</div>
+      </div>
+    </div>
+    <div class="subcriteres">
+      <div class="subcritere hover2">
+        <div class="subcritere-pts pts2">10 pts</div>
+        <div class="subcritere-text">
+          <strong>Inscription en L3 / M1 / M2</strong>
+          <span>Exclusivité aux étudiants inscrits en Licence 3, Master 1 ou Master 2 dans une université ciblée (Lomé, Kara, privées).</span>
+        </div>
+      </div>
+      <div class="subcritere hover2">
+        <div class="subcritere-pts pts2">10 pts</div>
+        <div class="subcritere-text">
+          <strong>Performance académique</strong>
+          <span>Moyenne ≥ 10/20. Vérification des relevés de notes et de la carte étudiante.</span>
+        </div>
+      </div>
+      <div class="subcritere hover2">
+        <div class="subcritere-pts pts2">5 pts</div>
+        <div class="subcritere-text">
+          <strong>Pertinence du parcours</strong>
+          <span>Cohérence avec les débouchés : magistrature, carrière académique, secteur public ou privé.</span>
+        </div>
+      </div>
+    </div>
+    <div class="methode">
+      Vérification des justificatifs : carte d'étudiant, relevés de notes. Priorité aux profils à un tournant clé — L3 pour le choix de master, M1/M2 pour les stages ou concours.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- CRITÈRE 3 -->
+  <div class="critere-block">
+    <div class="critere-header">
+      <div class="critere-num-box c3"><div class="num">03</div><div class="pts">20 pts</div></div>
+      <div class="critere-title-group">
+        <div class="critere-name">Disponibilité</div>
+        <div class="critere-objectif">Garantir l'engagement actif dans les rencontres mensuelles et les activités collectives</div>
+      </div>
+    </div>
+    <div class="subcriteres">
+      <div class="subcritere hover3">
+        <div class="subcritere-pts pts3">10 pts</div>
+        <div class="subcritere-text">
+          <strong>Respect du calendrier</strong>
+          <span>Disponibilité pour au moins une réunion mensuelle (1 à 2 heures, présentiel ou virtuel).</span>
+        </div>
+      </div>
+      <div class="subcritere hover3">
+        <div class="subcritere-pts pts3">7 pts</div>
+        <div class="subcritere-text">
+          <strong>Flexibilité pour activités collectives</strong>
+          <span>Participation aux webinaires, conférences et ateliers collectifs organisés par MBP.</span>
+        </div>
+      </div>
+      <div class="subcritere hover3">
+        <div class="subcritere-pts pts3">3 pts</div>
+        <div class="subcritere-text">
+          <strong>Engagement déclaré</strong>
+          <span>Confirmation écrite de disponibilité, tenant compte des emplois du temps chargés.</span>
+        </div>
+      </div>
+    </div>
+    <div class="methode">
+      Déclaration dans le formulaire (créneaux disponibles). Vérification lors de l'atelier de lancement.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- CRITÈRE 4 -->
+  <div class="critere-block">
+    <div class="critere-header">
+      <div class="critere-num-box c4"><div class="num">04</div><div class="pts">25 pts</div></div>
+      <div class="critere-title-group">
+        <div class="critere-name">Engagement Civique et Leadership</div>
+        <div class="critere-objectif">Sélectionner des candidats avec un potentiel d'impact dans leur communauté</div>
+      </div>
+    </div>
+    <div class="subcriteres">
+      <div class="subcritere hover4">
+        <div class="subcritere-pts pts4">10 pts</div>
+        <div class="subcritere-text">
+          <strong>Implication associative ou citoyenne</strong>
+          <span>Associations étudiantes, bénévolat juridique, projets communautaires.</span>
+        </div>
+      </div>
+      <div class="subcritere hover4">
+        <div class="subcritere-pts pts4">10 pts</div>
+        <div class="subcritere-text">
+          <strong>Alignement avec les valeurs MBP</strong>
+          <span>Désir d'impact social via le droit : vulgarisation juridique, plaidoyer pour les droits dans des communautés rurales.</span>
+        </div>
+      </div>
+      <div class="subcritere hover4">
+        <div class="subcritere-pts pts4">5 pts</div>
+        <div class="subcritere-text">
+          <strong>Potentiel de leadership</strong>
+          <span>Capacité à inspirer ou à contribuer au réseau MBP, notamment en fin de cycle universitaire (M2).</span>
+        </div>
+      </div>
+    </div>
+    <div class="methode">
+      Références dans le CV ou réponses à des questions ouvertes. Analyse qualitative par le comité de sélection.
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- PROCESSUS -->
+  <div class="processus-title">Processus de Sélection</div>
+  <div class="processus">
+    <div class="step">
+      <div class="step-bubble">1</div>
+      <div class="step-title">Appel à Candidatures <span class="step-date">A définir</span></div>
+      <p class="step-desc">Diffusion via réseaux sociaux (Facebook, LinkedIn, X, Instagram), affiches dans les universités et courriers ciblés aux doyens. Cible : minimum 50 candidatures de L3/M1/M2.</p>
+    </div>
+    <div class="step">
+      <div class="step-bubble">2</div>
+      <div class="step-title">Réception des Dossiers <span class="step-date">Date limite : A définir</span></div>
+      <p class="step-desc">Formulaire en ligne incluant CV, relevé de notes, lettre de motivation et déclaration d'engagement.</p>
+    </div>
+    <div class="step">
+      <div class="step-bubble">3</div>
+      <div class="step-title">Analyse par le Comité</div>
+      <p class="step-desc">Évaluation par un comité de 3 à 5 membres MBP, scores pondérés sur 100 points. Durée estimée : 1 semaine.</p>
+    </div>
+    <div class="step">
+      <div class="step-bubble">4</div>
+      <div class="step-title">Notification des Résultats</div>
+      <p class="step-desc">Lettres d'acceptation ou de refus envoyées sous 2 semaines. Les candidats acceptés reçoivent une invitation à l'atelier de lancement.</p>
+    </div>
+    <div class="step">
+      <div class="step-bubble">5</div>
+      <div class="step-title">Appel de Réserve</div>
+      <p class="step-desc">Liste d'attente constituée pour pallier tout désistement des mentorés sélectionnés.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- INCLUSION -->
+  <div class="inclusion-title">Mesures d'Inclusion</div>
+  <div class="inclusion-grid">
+    <div class="inclusion-card">
+      <div class="inclusion-icon">👥</div>
+      <div class="inclusion-name">Diversité</div>
+      <div class="inclusion-desc">Minimum 50% de femmes si possible, équilibre géographique Lomé / Kara.</div>
+    </div>
+    <div class="inclusion-card">
+      <div class="inclusion-icon">🔏</div>
+      <div class="inclusion-name">Anonymat</div>
+      <div class="inclusion-desc">Codes d'identification dans la grille pour éviter les biais lors de l'évaluation.</div>
+    </div>
+    <div class="inclusion-card">
+      <div class="inclusion-icon">🤲</div>
+      <div class="inclusion-name">Accessibilité</div>
+      <div class="inclusion-desc">Ateliers de saisie participatifs et points d'appui dans les universités pour faciliter les candidatures.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-title">Des questions sur votre candidature ?</div>
+    <p class="cta-sub">L'équipe Ma Belle Promo est disponible pour vous accompagner dans votre démarche.</p>
+    <div class="cta-links">
+      <a href="mailto:contact@mabellepromo.org" class="cta-btn">📧 contact@mabellepromo.org</a>
+      <a href="tel:+22896090707" class="cta-btn">📞 +228 96 09 07 07</a>
+      <a href="https://passerelles-mbp.vercel.app/" class="contact-link">🌐 Accéder à la plateforme</a>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  <div class="footer-inner">
+    <div class="footer-line"></div>
+    <div class="footer-logo">Passerelles <span>· Ma Belle Promo</span></div>
+    <div class="footer-sub">contact@mabellepromo.org · +228 96 09 07 07 · Lomé, Togo · 12 BP 335 Baguida</div>
+    <div class="footer-line"></div>
+    <div class="footer-sub">© 2026 Ma Belle Promo · Programme PASSERELLES · Tous droits réservés</div>
+  </div>
+</div>
+
+</body>
+</html>
