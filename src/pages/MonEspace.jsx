@@ -7,7 +7,7 @@ import {
   User, Users, BookOpen, ClipboardList, Plus, ArrowRight,
   CheckCircle2, Clock, TrendingUp, Target, Calendar, AlertCircle,
   UserCheck, GraduationCap, Trophy, MessageCircle, Star,
-  Flame, Zap, BarChart3, BookMarked, ChevronRight, LogOut, Trash2, Shield
+  Flame, Zap, BarChart3, BookMarked, ChevronRight, LogOut, Trash2, Shield, Download
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import NavBar from '@/components/NavBar';
@@ -30,6 +30,39 @@ export default function MonEspace() {
   const [deleteInput, setDeleteInput] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExportData = async () => {
+    setIsExporting(true);
+    try {
+      const u = await base44.auth.me();
+      const [binomesRes, sv, journal, messages, bilans] = await Promise.all([
+        base44.functions.invoke('getMyBinomes', {}),
+        base44.entities.SuiviMensuel.list('-meeting_date', 500),
+        base44.entities.JournalDeBord.list('-date_entree', 500),
+        base44.entities.Message.filter({ sender_email: u.email }),
+        base44.entities.BilanFinal.list('-created_date', 100),
+      ]);
+      const payload = {
+        export_date: new Date().toISOString(),
+        profil: { email: u.email, full_name: u.full_name },
+        binomes: binomesRes.data?.binomes || [],
+        suivis_mensuels: sv,
+        journal_de_bord: journal,
+        messages: messages,
+        bilans_finaux: bilans,
+      };
+      const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `mes-donnees-passerelles-${new Date().toISOString().slice(0, 10)}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const handleDeleteAccount = async () => {
     if (deleteInput !== 'SUPPRIMER') return;
@@ -411,6 +444,13 @@ export default function MonEspace() {
                     <Shield className="h-3.5 w-3.5" /> Politique de confidentialité
                   </button>
                 </Link>
+                <button
+                  onClick={handleExportData}
+                  disabled={isExporting}
+                  className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-all hover:bg-blue-50 disabled:opacity-50"
+                  style={{ border: '1.5px solid #bfdbfe', color: '#2563eb' }}>
+                  <Download className="h-3.5 w-3.5" /> {isExporting ? 'Préparation...' : 'Exporter mes données'}
+                </button>
                 <button
                   onClick={() => { setDeleteConfirm(true); setDeleteInput(''); setDeleteError(''); }}
                   className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-all hover:bg-red-50"
