@@ -30,7 +30,7 @@ const documents = [
 
 const roles = [
   {
-    image: 'https://images.unsplash.com/photo-1758525860449-fa3602fceb31?w=600&q=80&fit=crop&auto=format',
+    image: '/Mentor%20mentore%20fille.png',
     tag: 'Espace binôme',
     title: 'Mon Espace Binôme',
     description: 'Consultez votre binôme, suivez votre progression et accédez à tous les outils du programme.',
@@ -166,7 +166,7 @@ export default function Home() {
 
                 <div className="p-5 relative overflow-hidden" style={{ background: 'rgba(10,46,24,0.7)' }}>
                   <div className="absolute inset-0">
-                    <img src="https://images.unsplash.com/photo-1758525860449-fa3602fceb31?w=600&q=80&fit=crop&auto=format" alt=""
+                    <img src="/Mentor%20mentore%20fille.png" alt=""
                       className="w-full h-full object-cover object-top opacity-15" />
                   </div>
                   <div className="relative">
