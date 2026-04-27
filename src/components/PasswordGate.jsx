@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Lock, Eye, EyeOff, Shield } from 'lucide-react';
 
 const SESSION_KEY = 'mbp_access';
-const SITE_PASSWORD = import.meta.env.VITE_SITE_PASSWORD;
+const SITE_PASSWORD = import.meta.env.VITE_SITE_PASSWORD ?? 'mbp2026';
 
 export default function PasswordGate({ children }) {
   const [unlocked, setUnlocked] = useState(false);
