@@ -30,7 +30,7 @@ const documents = [
 
 const roles = [
   {
-    image: 'https://passerelles.vercel.app/images/Mentor%20mentore%20fille.png',
+    image: 'https://images.unsplash.com/photo-1758525860449-fa3602fceb31?w=600&q=80&fit=crop&auto=format',
     tag: 'Espace binôme',
     title: 'Mon Espace Binôme',
     description: 'Consultez votre binôme, suivez votre progression et accédez à tous les outils du programme.',
@@ -39,7 +39,7 @@ const roles = [
     color: '#1a7a45',
   },
   {
-    image: 'https://passerelles.vercel.app/images/Mentor%C3%A9%20homme.png',
+    image: 'https://images.unsplash.com/photo-1583026411217-9d05a70d5230?w=600&q=80&fit=crop&auto=format',
     tag: 'Suivi',
     title: 'Suivi Mensuel',
     description: 'Archive sécurisée de toutes vos rencontres. Créez et consultez vos fiches de suivi.',
@@ -90,7 +90,7 @@ export default function Home() {
       {/* ══════════ HERO ══════════ */}
       <section className="relative overflow-hidden" style={{ background: 'linear-gradient(160deg, #0a2e18 0%, #0f5530 40%, #1a7a45 100%)' }}>
         <div className="absolute inset-0">
-          <img src="https://passerelles.vercel.app/images/hero.png" alt="" className="w-full h-full object-cover object-center" />
+          <img src="https://images.unsplash.com/photo-1655720348590-c739c860beed?w=1400&q=80&fit=crop&auto=format" alt="" className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(10,46,24,0.92) 0%, rgba(15,85,48,0.88) 40%, rgba(26,122,69,0.82) 100%)' }} />
         </div>
         <div className="absolute inset-0 opacity-[0.03]"
@@ -166,7 +166,7 @@ export default function Home() {
 
                 <div className="p-5 relative overflow-hidden" style={{ background: 'rgba(10,46,24,0.7)' }}>
                   <div className="absolute inset-0">
-                    <img src="https://passerelles.vercel.app/images/Mentor%20mentore%20fille.png" alt=""
+                    <img src="https://images.unsplash.com/photo-1758525860449-fa3602fceb31?w=600&q=80&fit=crop&auto=format" alt=""
                       className="w-full h-full object-cover object-top opacity-15" />
                   </div>
                   <div className="relative">
