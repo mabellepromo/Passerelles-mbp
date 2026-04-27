@@ -2,12 +2,11 @@
 // Vercel serverless — Notification admin quand un visiteur envoie un message de contact
 
 const getAllowedOrigin = (origin) => {
-  const allowed = [
-    process.env.SITE_URL || 'https://passerelles-mbp.vercel.app',
-    'http://localhost:5173',
-    'http://127.0.0.1:5173',
-  ];
-  return allowed.includes(origin) ? origin : null;
+  if (!origin) return null;
+  if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
+  if (origin === (process.env.SITE_URL || 'https://passerelles-mbp.vercel.app')) return origin;
+  if (origin.endsWith('.vercel.app')) return origin;
+  return null;
 };
 
 const escapeHtml = (value) => {
