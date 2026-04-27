@@ -31,7 +31,7 @@ const isUserAdmin = (user) => {
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;
   if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
-  if (origin === (process.env.SITE_URL || 'https://passerelles-mbp.vercel.app')) return origin;
+  if (origin === (process.env.SITE_URL || 'https://passerelles.vercel.app')) return origin;
   if (origin.endsWith('.vercel.app')) return origin;
   return null;
 };
@@ -131,7 +131,7 @@ module.exports = async (req, res) => {
   <div style="max-width:600px;margin:0 auto;background:#ffffff;">
     <div style="background:#ffffff;padding:28px 30px 16px;text-align:center;border-bottom:3px solid transparent;border-image:linear-gradient(90deg,transparent,#b8941f,#d4aa35,#b8941f,transparent) 1;">
       <div style="width:64px;height:64px;border-radius:50%;margin:0 auto 12px;overflow:hidden;border:3px solid rgba(212,170,53,0.5);box-shadow:0 0 0 5px rgba(212,170,53,0.1);">
-        <img src="https://passerelles-mbp.vercel.app/logo-mbp.png" alt="Ma Belle Promo" style="width:100%;height:100%;object-fit:cover;" />
+        <img src="https://passerelles.vercel.app/logo-mbp.png" alt="Ma Belle Promo" style="width:100%;height:100%;object-fit:cover;" />
       </div>
       <h1 style="color:#111827;font-size:20px;margin:0 0 4px;font-weight:bold;font-family:Georgia,serif;">Ma Belle Promo</h1>
       <p style="color:#6b7280;font-size:12px;margin:0;font-family:Arial,sans-serif;">Association · Lomé, Togo</p>

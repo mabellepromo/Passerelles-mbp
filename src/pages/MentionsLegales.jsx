@@ -68,7 +68,7 @@ export default function MentionsLegales() {
               contact@mabellepromo.org
             </button>
           </div>
-          <Row label="Site web" value="passerelles-mbp.vercel.app" />
+          <Row label="Site web" value="passerelles.vercel.app" />
         </Section>
 
         {/* Directeur de publication */}

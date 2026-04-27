@@ -55,7 +55,7 @@ const isUserAdmin = (user) => {
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;
   if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
-  if (origin === (process.env.SITE_URL || 'https://passerelles-mbp.vercel.app')) return origin;
+  if (origin === (process.env.SITE_URL || 'https://passerelles.vercel.app')) return origin;
   if (origin.endsWith('.vercel.app')) return origin;
   return null;
 };
@@ -212,7 +212,7 @@ module.exports = async (req, res) => {
       return res.status(400).json({ error: 'Adresse email invalide.' });
     }
 
-    const site_url = process.env.SITE_URL || 'https://passerelles-mbp.vercel.app';
+    const site_url = process.env.SITE_URL || 'https://passerelles.vercel.app';
 
     const mentorNameSafe = escapeHtml(mentor_name.trim());
     const mentorProfessionSafe = escapeHtml((mentor_profession || '').trim());

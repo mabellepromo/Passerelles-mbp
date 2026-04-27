@@ -50,7 +50,7 @@ const isUserAdmin = (user) => {
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;
   if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
-  if (origin === (process.env.SITE_URL || 'https://passerelles-mbp.vercel.app')) return origin;
+  if (origin === (process.env.SITE_URL || 'https://passerelles.vercel.app')) return origin;
   if (origin.endsWith('.vercel.app')) return origin;
   return null;
 };
@@ -61,7 +61,7 @@ const fillTemplate = (template, vars) =>
     .replace(/\{\{nom\}\}/g, vars.nom || '')
     .replace(/\{\{programme\}\}/g, vars.programme || 'PASSERELLES')
     .replace(/\{\{session\}\}/g, vars.session || 'Cohorte 1 \u2013 2026')
-    .replace(/\{\{lien_info\}\}/g, vars.lien_info || (process.env.SITE_URL || 'https://passerelles-mbp.vercel.app'));
+    .replace(/\{\{lien_info\}\}/g, vars.lien_info || (process.env.SITE_URL || 'https://passerelles.vercel.app'));
 
 const textToHtmlBody = (text) =>
   escapeHtml(text)
@@ -128,7 +128,7 @@ module.exports = async (req, res) => {
   if (!subject?.trim() || !body?.trim())
     return res.status(400).json({ error: 'Objet et corps du message requis.' });
 
-  const site_url = lien_info || process.env.SITE_URL || 'https://passerelles-mbp.vercel.app';
+  const site_url = lien_info || process.env.SITE_URL || 'https://passerelles.vercel.app';
   const errors = [];
   let sent = 0;
 

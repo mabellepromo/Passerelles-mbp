@@ -18,7 +18,7 @@ const email = process.argv[2] || 'senayhola@gmail.com';
 const { data, error } = await supabase.auth.admin.generateLink({
   type: 'recovery',
   email,
-  options: { redirectTo: 'https://passerelles-mbp.vercel.app/auth/callback' }
+  options: { redirectTo: 'https://passerelles.vercel.app/auth/callback' }
 });
 
 if (error) {
@@ -26,7 +26,7 @@ if (error) {
   const { data: ml, error: mle } = await supabase.auth.admin.generateLink({
     type: 'magiclink',
     email,
-    options: { redirectTo: 'https://passerelles-mbp.vercel.app/' }
+    options: { redirectTo: 'https://passerelles.vercel.app/' }
   });
   if (mle) {
     console.error('Erreur:', mle.message);

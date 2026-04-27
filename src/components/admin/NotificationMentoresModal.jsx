@@ -14,7 +14,7 @@ import {
 
 const PROGRAMME = 'PASSERELLES';
 const SESSION   = 'Cohorte 1 \u2013 2026';
-const LIEN_INFO = 'https://passerelles-mbp.vercel.app/GuideNavigation';
+const LIEN_INFO = 'https://passerelles.vercel.app/GuideNavigation';
 
 const DEFAULT_WAITLIST_SUBJECT =
   '{{programme}} \u2013 Votre candidature \u2013 Liste d\u2019attente';

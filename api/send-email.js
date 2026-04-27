@@ -9,7 +9,7 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;
   if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
-  if (origin === (process.env.SITE_URL || 'https://passerelles-mbp.vercel.app')) return origin;
+  if (origin === (process.env.SITE_URL || 'https://passerelles.vercel.app')) return origin;
   if (origin.endsWith('.vercel.app')) return origin;
   return null;
 };

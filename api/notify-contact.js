@@ -4,7 +4,7 @@
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;
   if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
-  if (origin === (process.env.SITE_URL || 'https://passerelles-mbp.vercel.app')) return origin;
+  if (origin === (process.env.SITE_URL || 'https://passerelles.vercel.app')) return origin;
   if (origin.endsWith('.vercel.app')) return origin;
   return null;
 };
@@ -67,7 +67,7 @@ module.exports = async (req, res) => {
         <p style="color:#374151;font-size:14px;line-height:1.8;margin:0;white-space:pre-wrap;">${safeMessage}</p>
       </div>
       <div style="text-align:center;margin:24px 0 0;">
-        <a href="https://passerelles-mbp.vercel.app/AdminDashboard" style="background:linear-gradient(135deg,#0f5530,#1a7a45);color:white;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:bold;display:inline-block;font-family:Arial,sans-serif;">Répondre depuis le tableau de bord</a>
+        <a href="https://passerelles.vercel.app/AdminDashboard" style="background:linear-gradient(135deg,#0f5530,#1a7a45);color:white;padding:12px 28px;border-radius:10px;text-decoration:none;font-size:14px;font-weight:bold;display:inline-block;font-family:Arial,sans-serif;">Répondre depuis le tableau de bord</a>
       </div>
     </div>
     <div style="background:#f3f4f6;padding:14px 30px;text-align:center;border-top:1px solid #e5e7eb;">

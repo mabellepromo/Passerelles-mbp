@@ -1,0 +1,222 @@
+# Registre des activités de traitement
+## Association Ma Belle Promo — Programme PASSERELLES
+### Article 30 du Règlement (UE) 2016/679 (RGPD)
+
+---
+
+**Responsable du traitement**
+Association Ma Belle Promo (MBP)
+12 BP 335 Baguida, Lomé, Togo
+contact@mabellepromo.org · +228 96 09 07 07
+
+**Délégué à la protection des données (DPO)**
+Non désigné (association de petite taille — désignation non obligatoire)
+
+**Date de création du registre :** 25 avril 2026
+**Dernière mise à jour :** 25 avril 2026
+
+---
+
+## Traitement n°1 — Gestion des candidatures Mentors
+
+| Champ | Détail |
+|---|---|
+| **Finalité** | Collecter, analyser et sélectionner les candidatures de mentors bénévoles |
+| **Base légale** | Consentement explicite — Art. 6.1.a |
+| **Personnes concernées** | Candidats mentors |
+| **Catégories de données** | Nom complet, email, téléphone, ville, profession, organisation, années d'expérience, domaines de spécialisation, disponibilités, format préféré, lien LinkedIn (optionnel) |
+| **Données sensibles** | Aucune |
+| **Destinataires** | Équipe MBP (administrateurs) · Supabase (hébergeur, sous-traitant) |
+| **Transferts hors UE** | Supabase — infrastructures UE (DPA signé) |
+| **Durée de conservation** | Durée du programme + 3 ans après fin de participation |
+| **Mesures de sécurité** | HTTPS obligatoire · Authentification Supabase Auth · Accès restreint aux administrateurs · Chiffrement au repos (Supabase) |
+
+---
+
+## Traitement n°2 — Gestion des candidatures Mentorées
+
+| Champ | Détail |
+|---|---|
+| **Finalité** | Collecter, évaluer et sélectionner les candidatures de mentorées |
+| **Base légale** | Consentement explicite — Art. 6.1.a |
+| **Personnes concernées** | Candidates mentorées |
+| **Catégories de données** | Nom complet, email, téléphone, ville, université, niveau d'études, spécialisation, moyenne académique, objectifs de carrière, engagement civique, contraintes de disponibilité |
+| **Données sensibles** | Résultats académiques (moyenne, relevés de notes) |
+| **Destinataires** | Équipe MBP (administrateurs) · Supabase (hébergeur, sous-traitant) |
+| **Transferts hors UE** | Supabase — infrastructures UE (DPA signé) |
+| **Durée de conservation** | Durée du programme + 3 ans après fin de participation |
+| **Mesures de sécurité** | HTTPS obligatoire · Authentification Supabase Auth · Accès restreint aux administrateurs · Score d'aide à la sélection avec révision humaine systématique |
+
+---
+
+## Traitement n°3 — Documents justificatifs (Mentorées)
+
+| Champ | Détail |
+|---|---|
+| **Finalité** | Vérification des critères d'éligibilité académique |
+| **Base légale** | Consentement explicite — Art. 6.1.a |
+| **Personnes concernées** | Candidates mentorées |
+| **Catégories de données** | Fichiers numériques : relevés de notes, carte d'étudiant, certificats (formats PDF, JPG, PNG) |
+| **Données sensibles** | Résultats académiques |
+| **Destinataires** | Équipe MBP (administrateurs) · Supabase Storage (hébergeur, sous-traitant) |
+| **Transferts hors UE** | Supabase Storage — infrastructures UE (DPA signé) |
+| **Durée de conservation** | Durée du programme + 1 an, puis suppression définitive |
+| **Mesures de sécurité** | Stockage Supabase Storage · Accès restreint aux administrateurs · HTTPS |
+
+---
+
+## Traitement n°4 — Appariement binômes (matching)
+
+| Champ | Détail |
+|---|---|
+| **Finalité** | Constituer les paires mentor/mentorée selon les profils et disponibilités |
+| **Base légale** | Intérêt légitime de l'association — Art. 6.1.f · Consentement — Art. 6.1.a |
+| **Personnes concernées** | Mentors et mentorées sélectionnés |
+| **Catégories de données** | Données d'inscription, disponibilités, spécialisations, préférences de format |
+| **Données sensibles** | Aucune |
+| **Destinataires** | Équipe MBP (administrateurs uniquement) |
+| **Transferts hors UE** | Supabase — infrastructures UE (DPA signé) |
+| **Durée de conservation** | Durée du programme + 3 ans |
+| **Mesures de sécurité** | Accès exclusivement administrateur · Décision finale humaine |
+
+---
+
+## Traitement n°5 — Suivi mensuel du programme
+
+| Champ | Détail |
+|---|---|
+| **Finalité** | Documenter et suivre l'avancement des séances de mentorat |
+| **Base légale** | Exécution du programme auquel la personne participe — Art. 6.1.b |
+| **Personnes concernées** | Membres des binômes actifs |
+| **Catégories de données** | Notes de séances, objectifs fixés, niveau de progression, évaluation mensuelle, prochaine étape |
+| **Données sensibles** | Aucune |
+| **Destinataires** | Membre du binôme concerné · Équipe MBP (administrateurs) · Supabase (hébergeur) |
+| **Transferts hors UE** | Supabase — infrastructures UE (DPA signé) |
+| **Durée de conservation** | Durée du programme + 3 ans |
+| **Mesures de sécurité** | Accès restreint au binôme concerné et aux administrateurs · HTTPS · Authentification requise |
+
+---
+
+## Traitement n°6 — Journal de bord
+
+| Champ | Détail |
+|---|---|
+| **Finalité** | Permettre aux participants de consigner objectifs, réflexions et progrès personnels |
+| **Base légale** | Exécution du programme — Art. 6.1.b |
+| **Personnes concernées** | Membres des binômes |
+| **Catégories de données** | Entrées de journal (texte libre), type d'entrée, statut et progression des objectifs |
+| **Données sensibles** | Potentiellement des données personnelles sensibles selon le contenu librement saisi |
+| **Destinataires** | Utilisateur lui-même · Équipe MBP (administrateurs) · Supabase (hébergeur) |
+| **Transferts hors UE** | Supabase — infrastructures UE (DPA signé) |
+| **Durée de conservation** | Durée du programme + 3 ans |
+| **Mesures de sécurité** | Accès restreint à l'utilisateur et aux administrateurs · HTTPS · Authentification requise |
+
+---
+
+## Traitement n°7 — Messagerie interne
+
+| Champ | Détail |
+|---|---|
+| **Finalité** | Faciliter la communication entre les membres d'un binôme |
+| **Base légale** | Consentement — Art. 6.1.a · Exécution du programme — Art. 6.1.b |
+| **Personnes concernées** | Membres des binômes |
+| **Catégories de données** | Contenu des messages, date et heure d'envoi, email de l'expéditeur |
+| **Données sensibles** | Potentiellement selon le contenu |
+| **Destinataires** | Membre du binôme destinataire · Équipe MBP (administrateurs) · Supabase (hébergeur) |
+| **Transferts hors UE** | Supabase — infrastructures UE (DPA signé) |
+| **Durée de conservation** | Durée du programme + 1 an |
+| **Mesures de sécurité** | Accès restreint au binôme concerné · HTTPS · Authentification requise |
+
+---
+
+## Traitement n°8 — Bilan final
+
+| Champ | Détail |
+|---|---|
+| **Finalité** | Évaluation de fin de programme et capitalisation des apprentissages |
+| **Base légale** | Exécution du programme — Art. 6.1.b |
+| **Personnes concernées** | Membres des binômes ayant complété le programme |
+| **Catégories de données** | Réponses aux questions d'évaluation, notes qualitatives, recommandations |
+| **Données sensibles** | Aucune |
+| **Destinataires** | Équipe MBP (administrateurs) · Supabase (hébergeur) |
+| **Transferts hors UE** | Supabase — infrastructures UE (DPA signé) |
+| **Durée de conservation** | Durée du programme + 3 ans |
+| **Mesures de sécurité** | Accès administrateur uniquement · HTTPS · Authentification requise |
+
+---
+
+## Traitement n°9 — Authentification et gestion des comptes
+
+| Champ | Détail |
+|---|---|
+| **Finalité** | Sécuriser l'accès à la plateforme et gérer les sessions utilisateurs |
+| **Base légale** | Intérêt légitime — Art. 6.1.f |
+| **Personnes concernées** | Tous les utilisateurs de la plateforme |
+| **Catégories de données** | Adresse email, token d'accès, données de session (localStorage), historique de connexion |
+| **Données sensibles** | Aucune |
+| **Destinataires** | Supabase Auth (sous-traitant — DPA signé) |
+| **Transferts hors UE** | Supabase — infrastructures UE (DPA signé) |
+| **Durée de conservation** | 13 mois maximum (gestion native Supabase Auth) |
+| **Mesures de sécurité** | Magic link par email (pas de mot de passe stocké) · HTTPS · Token JWT · Expiration automatique des sessions |
+
+---
+
+## Traitement n°10 — Envoi d'emails transactionnels
+
+| Champ | Détail |
+|---|---|
+| **Finalité** | Envoi de notifications, confirmations et communications liées au programme |
+| **Base légale** | Consentement — Art. 6.1.a · Exécution du programme — Art. 6.1.b |
+| **Personnes concernées** | Tous les utilisateurs ayant consenti à recevoir des emails |
+| **Catégories de données** | Adresse email, nom du destinataire, contenu du message |
+| **Données sensibles** | Aucune |
+| **Destinataires** | Brevo / Sendinblue (sous-traitant — DPA signé, basé en France) |
+| **Transferts hors UE** | Aucun (Brevo — France) |
+| **Durée de conservation** | Logs de livraison conservés 30 jours chez Brevo |
+| **Mesures de sécurité** | Clé API stockée en variable d'environnement serveur · Authentification utilisateur vérifiée avant envoi · HTTPS |
+
+---
+
+## Traitement n°11 — Publication des résultats de cohorte
+
+| Champ | Détail |
+|---|---|
+| **Finalité** | Valoriser les binômes formés et présenter les résultats du programme au public |
+| **Base légale** | Intérêt légitime — Art. 6.1.f · Consentement des participants |
+| **Personnes concernées** | Membres des binômes de la cohorte publiée |
+| **Catégories de données** | Nom complet, profession/université, ville — Coordonnées (email, téléphone) visibles uniquement aux utilisateurs connectés |
+| **Données sensibles** | Aucune |
+| **Destinataires** | Public (noms et profils) · Membres connectés uniquement (coordonnées) |
+| **Transferts hors UE** | Supabase — infrastructures UE (DPA signé) |
+| **Durée de conservation** | Durée de vie de la plateforme (archivage programmatique) |
+| **Mesures de sécurité** | Coordonnées masquées aux visiteurs non authentifiés · HTTPS |
+
+---
+
+## Sous-traitants (Article 28 RGPD)
+
+| Sous-traitant | Rôle | Localisation | DPA |
+|---|---|---|---|
+| **Supabase Inc.** | Base de données, authentification, stockage fichiers | Infrastructures UE | ✅ Signé |
+| **Brevo (Sendinblue)** | Envoi d'emails transactionnels | France (UE) | ✅ Signé |
+| **Vercel Inc.** | Hébergement de l'application web | Infrastructures UE disponibles | ✅ Signé |
+
+---
+
+## Droits des personnes concernées
+
+Les personnes concernées peuvent exercer leurs droits (accès, rectification, effacement, portabilité, opposition, limitation) :
+- Via le **formulaire de contact** sur la plateforme
+- Via le bouton **"Supprimer mon compte"** dans Mon Espace (droit à l'effacement en self-service)
+- Par email à : contact@mabellepromo.org
+
+Délai de réponse : **30 jours**.
+
+---
+
+## Historique des mises à jour
+
+| Date | Modification |
+|---|---|
+| 25 avril 2026 | Création du registre — version initiale |
+
