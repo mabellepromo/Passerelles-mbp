@@ -227,6 +227,7 @@ function ContactMessagesView({ messages, onMarkRead, onDelete }) {
         to: selected.sender_email, recipientName: selected.sender_name,
         subject: `Re : ${selected.sender_role || 'Votre message à Ma Belle Promo'}`,
         message: vals.message, signature: vals.signature,
+        attachments: vals.attachments || [],
       });
       setReplyDone(true);
       setReplyOpen(false);
@@ -240,6 +241,7 @@ function ContactMessagesView({ messages, onMarkRead, onDelete }) {
       await sendEmail({
         to: vals.to, recipientName: vals.recipientName,
         subject: vals.subject, message: vals.message, signature: vals.signature,
+        attachments: vals.attachments || [],
       });
       setComposeDone(true);
     } catch (err) { alert(`Erreur : ${err.message}`); }
@@ -445,7 +447,20 @@ export default function AdminDashboard() {
   const { data: mentores = [] }       = useQuery({ queryKey: ['mentores'],       queryFn: () => base44.entities.Mentore.list('-created_date'),                         enabled: !isLoading });
   const { data: binomes = [] }        = useQuery({ queryKey: ['binomes'],        queryFn: () => base44.entities.Binome.list('-created_date'),                          enabled: !isLoading });
   const { data: suivis = [] }         = useQuery({ queryKey: ['suivis'],         queryFn: () => base44.entities.SuiviMensuel.list('-created_date'),                    enabled: !isLoading });
-  const { data: contactMsgs = [], refetch: refetchContacts } = useQuery({ queryKey: ['contact_messages'], queryFn: () => base44.entities.Message.filter({ binome_id: 'contact_form' }, '-created_date'), enabled: !isLoading });
+  const { data: contactMsgs = [], refetch: refetchContacts } = useQuery({
+    queryKey: ['contact_messages'],
+    queryFn: async () => {
+      const { supabase } = await import('@/api/base44Client');
+      const { data, error } = await supabase
+        .from('message')
+        .select('*')
+        .in('binome_id', ['contact_form', 'contact_reply'])
+        .order('created_date', { ascending: false });
+      if (error) throw error;
+      return data ?? [];
+    },
+    enabled: !isLoading,
+  });
 
   if (isLoading) {
     return (

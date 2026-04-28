@@ -155,16 +155,26 @@ export default function AlertesBinomes() {
 
   const handleSendOne = async (binome) => {
     setSendingId(binome.id);
-    await sendReminderEmails(binome);
-    setSendingId(null);
+    try {
+      await sendReminderEmails(binome);
+    } catch (err) {
+      alert(`Erreur lors de l'envoi : ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
+    } finally {
+      setSendingId(null);
+    }
   };
 
   const handleSendAll = async () => {
     setSendingAll(true);
-    for (const b of alertBinomes) {
-      if (!sentLog[b.id]) await sendReminderEmails(b);
+    try {
+      for (const b of alertBinomes) {
+        if (!sentLog[b.id]) await sendReminderEmails(b);
+      }
+    } catch (err) {
+      alert(`Erreur lors de l'envoi : ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
+    } finally {
+      setSendingAll(false);
     }
-    setSendingAll(false);
   };
 
   const AlertRow = ({ b }) => {
