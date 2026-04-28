@@ -100,18 +100,21 @@ export default function MentorRegistration() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    await base44.entities.Mentor.create({
-      ...formData,
-      years_experience: Number(formData.years_experience),
-      max_mentees: Number(formData.max_mentees),
-      status: 'pending',
-      available_days: availableDays,
-      time_slots: timeSlots
-    });
-    
-    setIsSuccess(true);
-    setIsSubmitting(false);
+    try {
+      await base44.entities.Mentor.create({
+        ...formData,
+        years_experience: Number(formData.years_experience),
+        max_mentees: Number(formData.max_mentees),
+        status: 'pending',
+        available_days: availableDays,
+        time_slots: timeSlots
+      });
+      setIsSuccess(true);
+    } catch (err) {
+      alert(`Erreur lors de l'envoi : ${err?.message || err?.details || 'Erreur inconnue'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSuccess) {
