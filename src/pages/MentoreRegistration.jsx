@@ -140,7 +140,7 @@ export default function MentoreRegistration() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+    try {
     // Évaluation automatique par IA
     const aiEvaluation = await base44.integrations.Core.InvokeLLM({
       prompt: `Tu es un évaluateur pour le programme de mentorat PASSERELLES de Ma Belle Promo (MBP).
@@ -226,7 +226,11 @@ Fournis une évaluation détaillée avec les scores pour chaque sous-critère et
     });
     
     setIsSuccess(true);
-    setIsSubmitting(false);
+    } catch (err) {
+      alert(`Erreur lors de l'envoi : ${err instanceof Error ? err.message : 'Veuillez réessayer.'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSuccess) {

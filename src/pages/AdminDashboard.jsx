@@ -241,13 +241,6 @@ function ContactMessagesView({ messages, onMarkRead, onDelete }) {
         to: vals.to, recipientName: vals.recipientName,
         subject: vals.subject, message: vals.message, signature: vals.signature,
       });
-      await base44.entities.Message.create({
-        binome_id: 'contact_reply', sender_email: 'contact@mabellepromo.org',
-        sender_name: vals.signature?.trim() || 'Ma Belle Promo',
-        sender_role: `Nouveau message : ${vals.subject}`,
-        recipient_email: vals.to, recipient_name: vals.recipientName,
-        content: vals.message.trim(), read: true,
-      });
       setComposeDone(true);
     } catch (err) { alert(`Erreur : ${err.message}`); }
     finally { setComposeSending(false); }

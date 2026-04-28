@@ -146,6 +146,7 @@ export default function SuiviMensuel() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    try {
 
     if (isEditMode && editSuiviId) {
       // Modifier le suivi existant
@@ -217,7 +218,11 @@ export default function SuiviMensuel() {
     }
 
     setIsSuccess(true);
-    setIsSubmitting(false);
+    } catch (err) {
+      alert(`Erreur lors de l'enregistrement : ${err instanceof Error ? err.message : 'Veuillez réessayer.'}`);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (isSuccess) {
