@@ -12,63 +12,46 @@ export default function AuthCallback() {
   const [callbackError, setCallbackError] = useState('');
 
   useEffect(() => {
-    const handleAuthCallback = async () => {
-      const hash = window.location.hash;
-      const search = window.location.search;
-      const allParams = new URLSearchParams(hash.replace('#', '') + '&' + search.replace('?', ''));
-      const type = allParams.get('type');
-      const errorParam = allParams.get('error');
+    // Vérification immédiate de l'erreur access_denied (lien expiré)
+    const params = new URLSearchParams(
+      window.location.hash.replace('#', '') + '&' + window.location.search.replace('?', '')
+    );
+    if (params.get('error') === 'access_denied') {
+      window.location.href = '/login?error=expired';
+      return;
+    }
 
-      if (errorParam === 'access_denied') {
-        window.location.href = '/login?error=expired';
-        return;
-      }
+    let done = false;
 
-      if (type === 'recovery') {
-        setMode('reset');
-        return;
-      }
-
-      if (!hash && !search) {
-        setCallbackError('Aucun paramètre de session trouvé. Retournez à la page de connexion.');
-        setMode('error');
-        return;
-      }
-
-      const { data, error } = await supabase.auth.getSessionFromUrl({ storeSession: true });
-      if (error) {
-        setCallbackError('Impossible de récupérer la session : ' + error.message);
-        setMode('error');
-        return;
-      }
-
-      if (data?.session) {
-        window.location.href = '/';
-        return;
-      }
-
-      setCallbackError('La session n\'a pas pu être établie à partir du lien.');
-      setMode('error');
-    };
-
-    handleAuthCallback();
-
+    // Supabase JS v2 consomme le hash/code automatiquement à createClient.
+    // On s'appuie donc sur onAuthStateChange qui rejoue l'état courant à la souscription.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (done) return;
       if (event === 'PASSWORD_RECOVERY') {
+        done = true;
         setMode('reset');
       } else if (event === 'SIGNED_IN' && session) {
-        const hash = window.location.hash;
-        const params = new URLSearchParams(hash.replace('#', ''));
-        const type = params.get('type');
-        if (type === 'recovery') {
-          setMode('reset');
-        } else {
-          window.location.href = '/';
-        }
+        done = true;
+        window.location.href = '/';
       }
     });
 
+    // Fallback : si aucun événement ne se produit dans les 3s, on vérifie la session manuellement
+    const timer = setTimeout(async () => {
+      if (done) return;
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) {
+        done = true;
+        window.location.href = '/';
+      } else {
+        setCallbackError('Aucun paramètre de session trouvé. Retournez à la page de connexion.');
+        setMode('error');
+      }
+    }, 3000);
+
     return () => {
+      done = true;
+      clearTimeout(timer);
       subscription.unsubscribe();
     };
   }, []);
