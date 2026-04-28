@@ -168,22 +168,24 @@ module.exports = async (req, res) => {
       attachments,
     });
 
-    // Sauvegarde de la réponse en base (non-bloquant)
+    // Sauvegarde de la réponse en base
     if (supabaseAdmin) {
-      const now = new Date().toISOString();
-      supabaseAdmin.from('message').insert({
-        id:              crypto.randomUUID(),
-        binome_id:       'contact_reply',
-        sender_email:    'contact@mabellepromo.org',
-        sender_name:     (signature && signature.trim()) ? signature.trim() : "L'équipe Ma Belle Promo",
-        sender_role:     `Réponse : ${subject.trim()}`,
-        recipient_email: to.trim(),
-        recipient_name:  (recipient_name || '').trim(),
-        content:         text.trim(),
-        read:            true,
-        created_date:    now,
-        updated_date:    now,
-      }).catch(() => {});
+      try {
+        const now = new Date().toISOString();
+        await supabaseAdmin.from('message').insert({
+          id:              crypto.randomUUID(),
+          binome_id:       'contact_reply',
+          sender_email:    'contact@mabellepromo.org',
+          sender_name:     (signature && signature.trim()) ? signature.trim() : "L'équipe Ma Belle Promo",
+          sender_role:     `Réponse : ${subject.trim()}`,
+          recipient_email: to.trim(),
+          recipient_name:  (recipient_name || '').trim(),
+          content:         text.trim(),
+          read:            true,
+          created_date:    now,
+          updated_date:    now,
+        });
+      } catch (_) { /* non-critique */ }
     }
 
     return res.status(200).json({ success: true });

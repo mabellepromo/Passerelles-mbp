@@ -104,20 +104,22 @@ module.exports = async (req, res) => {
 
     // Sauvegarde en base pour la messagerie du dashboard admin
     if (supabaseAdmin) {
-      const now = new Date().toISOString();
-      await supabaseAdmin.from('message').insert({
-        id:              crypto.randomUUID(),
-        binome_id:       'contact_form',
-        sender_email:    email?.trim() || '',
-        sender_name:     name.trim(),
-        sender_role:     subject.trim(),
-        recipient_email: 'contact@mabellepromo.org',
-        recipient_name:  'Ma Belle Promo',
-        content:         message.trim(),
-        read:            false,
-        created_date:    now,
-        updated_date:    now,
-      });
+      try {
+        const now = new Date().toISOString();
+        await supabaseAdmin.from('message').insert({
+          id:              crypto.randomUUID(),
+          binome_id:       'contact_form',
+          sender_email:    email?.trim() || '',
+          sender_name:     name.trim(),
+          sender_role:     subject.trim(),
+          recipient_email: 'contact@mabellepromo.org',
+          recipient_name:  'Ma Belle Promo',
+          content:         message.trim(),
+          read:            false,
+          created_date:    now,
+          updated_date:    now,
+        });
+      } catch (_) { /* non-critique */ }
     }
 
     return res.status(200).json({ success: true });
