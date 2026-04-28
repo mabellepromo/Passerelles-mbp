@@ -5,7 +5,13 @@ const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
-const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
+const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.SUPABASE_ANON_KEY;
+// La clé anon suffit pour valider un token utilisateur (auth.getUser)
+const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY || SUPABASE_ANON_KEY, { auth: { persistSession: false } });
+// Client admin pour les écritures en base (contourne le RLS)
+const supabaseAdmin = SUPABASE_SERVICE_ROLE_KEY
+  ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } })
+  : null;
 
 const ADMIN_EMAILS = ['contact@mabellepromo.org', 'senayhola@gmail.com'];
 
@@ -161,6 +167,24 @@ module.exports = async (req, res) => {
       text: text.trim(),
       attachments,
     });
+
+    // Sauvegarde de la réponse en base (non-bloquant)
+    if (supabaseAdmin) {
+      const now = new Date().toISOString();
+      supabaseAdmin.from('message').insert({
+        id:              crypto.randomUUID(),
+        binome_id:       'contact_reply',
+        sender_email:    'contact@mabellepromo.org',
+        sender_name:     (signature && signature.trim()) ? signature.trim() : "L'équipe Ma Belle Promo",
+        sender_role:     `Réponse : ${subject.trim()}`,
+        recipient_email: to.trim(),
+        recipient_name:  (recipient_name || '').trim(),
+        content:         text.trim(),
+        read:            true,
+        created_date:    now,
+        updated_date:    now,
+      }).catch(() => {});
+    }
 
     return res.status(200).json({ success: true });
   } catch (error) {

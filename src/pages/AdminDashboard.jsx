@@ -228,13 +228,6 @@ function ContactMessagesView({ messages, onMarkRead, onDelete }) {
         subject: `Re : ${selected.sender_role || 'Votre message à Ma Belle Promo'}`,
         message: vals.message, signature: vals.signature,
       });
-      await base44.entities.Message.create({
-        binome_id: 'contact_reply', sender_email: 'contact@mabellepromo.org',
-        sender_name: vals.signature?.trim() || 'Ma Belle Promo',
-        sender_role: `Réponse à : ${selected.sender_role || 'Contact'}`,
-        recipient_email: selected.sender_email, recipient_name: selected.sender_name,
-        content: vals.message.trim(), read: true,
-      });
       setReplyDone(true);
       setReplyOpen(false);
     } catch (err) { alert(`Erreur : ${err.message}`); }
