@@ -58,6 +58,7 @@ const AuthenticatedApp = () => {
         <Route path="/CriteresSelection" element={<LayoutWrapper currentPageName="CriteresSelection"><CriteresSelection /></LayoutWrapper>} />
         <Route path="/login" element={<Login />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
+        <Route path="/auth/reset" element={<AuthCallback forceReset={true} />} />
         <Route path="/" element={<LayoutWrapper currentPageName={mainPageKey}><MainPage /></LayoutWrapper>} />
         {Object.entries(Pages)
           .filter(([path]) => !['AdminDashboard', 'SuiviMensuel', 'Home'].includes(path))

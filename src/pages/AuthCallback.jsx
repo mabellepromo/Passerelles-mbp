@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { supabase } from '@/api/base44Client';
 import { Scale } from 'lucide-react';
 
-export default function AuthCallback() {
+export default function AuthCallback({ forceReset = false }) {
   const [mode, setMode] = useState('loading');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
@@ -21,10 +21,8 @@ export default function AuthCallback() {
       return;
     }
 
-    // En PKCE (Supabase JS ≥ v2.64), PASSWORD_RECOVERY ne fire pas toujours.
-    // On se base sur ?type=recovery dans l'URL (ajouté au redirectTo par Login.jsx).
-    const isRecoveryFlow = params.get('type') === 'recovery';
-
+    // forceReset=true quand la route est /auth/reset (lien de reset mot de passe).
+    // Permet de détecter le flux recovery même si Supabase PKCE ne fire que SIGNED_IN.
     let done = false;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
@@ -34,21 +32,21 @@ export default function AuthCallback() {
         setMode('reset');
       } else if (event === 'SIGNED_IN' && session) {
         done = true;
-        if (isRecoveryFlow) {
-          setMode('reset'); // flux reset détecté via URL
+        if (forceReset) {
+          setMode('reset');
         } else {
           window.location.href = '/';
         }
       }
     });
 
-    // Fallback : si aucun événement en 3s (lien expiré ou flux inconnu)
+    // Fallback : si aucun événement en 3s (lien expiré ou réseau lent)
     const timer = setTimeout(async () => {
       if (done) return;
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         done = true;
-        if (isRecoveryFlow) {
+        if (forceReset) {
           setMode('reset');
         } else {
           window.location.href = '/';
@@ -64,7 +62,7 @@ export default function AuthCallback() {
       clearTimeout(timer);
       subscription.unsubscribe();
     };
-  }, []);
+  }, [forceReset]);
 
   const handleReset = async (e) => {
     e.preventDefault();
