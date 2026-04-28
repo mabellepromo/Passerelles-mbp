@@ -1,6 +1,14 @@
 // api/notify-contact.js
 // Vercel serverless — Notification admin quand un visiteur envoie un message de contact
 
+const { createClient } = require('@supabase/supabase-js');
+
+const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
+const supabaseAdmin = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
+  ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } })
+  : null;
+
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;
   if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
@@ -93,6 +101,25 @@ module.exports = async (req, res) => {
       const err = await brevoRes.json().catch(() => ({}));
       throw new Error(err.message || `Brevo error ${brevoRes.status}`);
     }
+
+    // Sauvegarde en base pour la messagerie du dashboard admin
+    if (supabaseAdmin) {
+      const now = new Date().toISOString();
+      await supabaseAdmin.from('message').insert({
+        id:              crypto.randomUUID(),
+        binome_id:       'contact_form',
+        sender_email:    email?.trim() || '',
+        sender_name:     name.trim(),
+        sender_role:     subject.trim(),
+        recipient_email: 'contact@mabellepromo.org',
+        recipient_name:  'Ma Belle Promo',
+        content:         message.trim(),
+        read:            false,
+        created_date:    now,
+        updated_date:    now,
+      });
+    }
+
     return res.status(200).json({ success: true });
   } catch (error) {
     console.error('Erreur notify-contact:', error.message);
