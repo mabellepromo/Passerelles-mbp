@@ -10,6 +10,14 @@ const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY || SUP
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
+const ADMIN_EMAILS = ['contact@mabellepromo.org', 'senayhola@gmail.com'];
+const isUserAdmin = (user) => {
+  if (!user?.email) return false;
+  if (ADMIN_EMAILS.includes(user.email)) return true;
+  const role = user.user_metadata?.role || user.app_metadata?.role;
+  return role === 'admin';
+};
+
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;
   if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
@@ -34,6 +42,8 @@ module.exports = async (req, res) => {
 
   const { data: userData, error: authError } = await supabaseAuth.auth.getUser(token);
   if (authError || !userData?.user) return res.status(401).json({ error: 'Non authentifié' });
+
+  if (!isUserAdmin(userData.user)) return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
 
   if (!ANTHROPIC_API_KEY) return res.status(503).json({ error: 'Service IA non configuré (ANTHROPIC_API_KEY manquant)' });
 

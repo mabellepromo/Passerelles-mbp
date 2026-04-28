@@ -30,6 +30,20 @@ const escapeHtml = (value) => {
 const validateEmail = (email) =>
   typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
+// Rate limiting en mémoire — 3 soumissions max par IP sur 15 minutes
+const _rateMap = new Map();
+const checkRateLimit = (ip) => {
+  const now = Date.now();
+  const key = ip || 'unknown';
+  const entry = _rateMap.get(key);
+  if (!entry || now > entry.reset) {
+    _rateMap.set(key, { count: 1, reset: now + 15 * 60 * 1000 });
+    return true;
+  }
+  if (entry.count < 3) { entry.count++; return true; }
+  return false;
+};
+
 module.exports = async (req, res) => {
   const origin = req.headers.origin;
   const allowOrigin = getAllowedOrigin(origin);
@@ -40,6 +54,11 @@ module.exports = async (req, res) => {
   if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Méthode non autorisée' });
   if (!allowOrigin) return res.status(403).json({ error: 'Origine non autorisée' });
+
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress;
+  if (!checkRateLimit(ip)) {
+    return res.status(429).json({ error: 'Trop de messages envoyés. Réessayez dans 15 minutes.' });
+  }
 
   const { name, email, subject, message } = req.body || {};
 
