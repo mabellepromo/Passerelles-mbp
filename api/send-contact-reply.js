@@ -172,6 +172,11 @@ module.exports = async (req, res) => {
     if (supabaseAdmin) {
       try {
         const now = new Date().toISOString();
+        let contentToStore = text.trim();
+        if (attachments.length > 0) {
+          const fileNames = attachments.map(a => a.filename).filter(Boolean).join(', ');
+          if (fileNames) contentToStore += `\n\n📎 Pièces jointes : ${fileNames}`;
+        }
         await supabaseAdmin.from('message').insert({
           id:              crypto.randomUUID(),
           binome_id:       'contact_reply',
@@ -180,7 +185,7 @@ module.exports = async (req, res) => {
           sender_role:     `Réponse : ${subject.trim()}`,
           recipient_email: to.trim(),
           recipient_name:  (recipient_name || '').trim(),
-          content:         text.trim(),
+          content:         contentToStore,
           read:            true,
           created_date:    now,
           updated_date:    now,
