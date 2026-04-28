@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Mail, User, MessageSquare, Send, CheckCircle2, ChevronDown } from 'lucide-react';
+import { X, Mail, User, MessageSquare, Send, CheckCircle2, ChevronDown, AlertCircle } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
-import { useToast } from '@/components/ui/use-toast';
 
 const SUBJECTS = [
   'Question générale',
@@ -14,11 +13,11 @@ const SUBJECTS = [
 ];
 
 export default function ContactModal({ open, onClose }) {
-  const { toast } = useToast();
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
   const [errors, setErrors] = useState({});
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const set = (field) => (e) => setForm(f => ({ ...f, [field]: e.target.value }));
 
@@ -57,11 +56,7 @@ export default function ContactModal({ open, onClose }) {
       }).catch(() => {});
       setSent(true);
     } catch {
-      // Fallback : ouvrir le client mail avec les données pré-remplies
-      const subject = encodeURIComponent(`[Contact] ${form.subject}`);
-      const body    = encodeURIComponent(`Nom : ${form.name}\nEmail : ${form.email}\n\n${form.message}`);
-      window.location.href = `mailto:contact@mabellepromo.org?subject=${subject}&body=${body}`;
-      toast({ title: 'Redirection email', description: 'Votre messagerie s\'ouvre avec le message pré-rempli.', variant: 'default' });
+      setSubmitError('Une erreur est survenue. Veuillez réessayer ou écrire à contact@mabellepromo.org');
     } finally {
       setSending(false);
     }
@@ -69,7 +64,7 @@ export default function ContactModal({ open, onClose }) {
 
   const handleClose = () => {
     onClose();
-    setTimeout(() => { setForm({ name: '', email: '', subject: '', message: '' }); setErrors({}); setSent(false); }, 300);
+    setTimeout(() => { setForm({ name: '', email: '', subject: '', message: '' }); setErrors({}); setSent(false); setSubmitError(''); }, 300);
   };
 
   return (
@@ -228,6 +223,12 @@ export default function ContactModal({ open, onClose }) {
                       </div>
 
                       {/* Footer */}
+                      {submitError && (
+                        <div className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm" style={{ background: '#fef2f2', color: '#ef4444' }}>
+                          <AlertCircle className="h-4 w-4 flex-shrink-0" />
+                          {submitError}
+                        </div>
+                      )}
                       <div className="flex items-center justify-between pt-1 gap-3">
                         <p className="text-xs text-gray-300">
                           Votre message sera reçu directement par l'équipe MBP.
