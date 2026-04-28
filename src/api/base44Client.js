@@ -165,6 +165,20 @@ const integrations = {
       });
       if (!res.ok) throw new Error('Échec envoi email');
     },
+    InvokeLLM: async ({ prompt, response_json_schema }) => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const token = session?.access_token;
+      const res = await fetch('/api/invoke-llm', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+        body: JSON.stringify({ prompt, response_json_schema }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Erreur évaluation IA');
+      }
+      return res.json();
+    },
   },
 };
 

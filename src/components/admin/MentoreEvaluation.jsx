@@ -47,6 +47,7 @@ export default function MentoreEvaluation({ mentore, isOpen, onClose }) {
 
   const runAIEvaluation = async () => {
     setIsEvaluatingAI(true);
+    try {
     const prompt = `Tu es un expert en sélection de candidats pour un programme de mentorat juridique au Togo appelé "PASSERELLES" de l'association Ma Belle Promo (MBP).
 
 Évalue ce candidat mentoré selon les critères suivants et retourne les scores exacts :
@@ -113,10 +114,13 @@ Retourne aussi un commentaire général sur le candidat.`;
     });
 
     queryClient.invalidateQueries({ queryKey: ['mentores'] });
-    // Update local view
     mentore.ai_evaluation = aiEvalData;
     mentore.selection_score = total;
-    setIsEvaluatingAI(false);
+    } catch (err) {
+      alert(`Erreur évaluation IA : ${err instanceof Error ? err.message : 'Veuillez réessayer.'}`);
+    } finally {
+      setIsEvaluatingAI(false);
+    }
   };
 
   const updateMutation = useMutation({

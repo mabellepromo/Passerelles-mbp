@@ -48,7 +48,7 @@ const roles = [
     color: '#2563eb',
   },
   {
-    image: 'https://media.base44.com/images/public/695b0a004cb67df45282b698/8bfe2584f_Gemini_Generated_Image_vd9gv2vd9gv2vd9g1.png',
+    image: 'https://images.unsplash.com/photo-1517842645767-c639042777db?w=600&q=80&fit=crop&auto=format',
     tag: 'Journal',
     title: 'Journal de Bord',
     description: 'Notez vos objectifs et réflexions dans un espace privé partagé avec votre binôme.',

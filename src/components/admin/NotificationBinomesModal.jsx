@@ -23,10 +23,10 @@ Votre score de compatibilité de {{match_score}}% promet des échanges riches et
 Pour bien démarrer et prendre en main vos outils de bord, nous vous invitons à suivre ces deux étapes :
 
 Équipement : Consultez votre guide de navigation pour découvrir votre boîte à outils :
-👉 https://passerelles.base44.app/GuideNavigation
+👉 https://passerelles.vercel.app/GuideNavigation
 
 Rencontre : Connectez-vous dès maintenant à votre espace personnel pour découvrir le profil de votre mentoré(e) et initier le premier contact :
-👉 https://passerelles.base44.app/MonEspace
+👉 https://passerelles.vercel.app/MonEspace
 
 Nous sommes impatients de vous voir évoluer au sein de cette nouvelle aventure humaine et professionnelle.
 
@@ -46,10 +46,10 @@ Votre score de compatibilité de {{match_score}}% promet des échanges riches et
 Pour bien démarrer et prendre en main vos outils de bord, nous vous invitons à suivre ces deux étapes :
 
 Équipement : Consultez votre guide de navigation pour découvrir votre boîte à outils :
-👉 https://passerelles.base44.app/GuideNavigation
+👉 https://passerelles.vercel.app/GuideNavigation
 
 Rencontre : Connectez-vous dès maintenant à votre espace personnel pour découvrir le profil de votre mentor et initier le premier contact :
-👉 https://passerelles.base44.app/MonEspace
+👉 https://passerelles.vercel.app/MonEspace
 
 Nous sommes impatients de vous voir évoluer au sein de cette nouvelle aventure humaine et professionnelle.
 

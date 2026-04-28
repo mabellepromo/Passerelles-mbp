@@ -141,8 +141,10 @@ export default function MentoreRegistration() {
     e.preventDefault();
     setIsSubmitting(true);
     try {
-    // Évaluation automatique par IA
-    const aiEvaluation = await base44.integrations.Core.InvokeLLM({
+    // Évaluation automatique par IA (optionnelle — dégradation gracieuse si indisponible)
+    let aiEvaluation = null;
+    try {
+      aiEvaluation = await base44.integrations.Core.InvokeLLM({
       prompt: `Tu es un évaluateur pour le programme de mentorat PASSERELLES de Ma Belle Promo (MBP).
       
 Évalue cette candidature de mentoré selon la grille suivante (total 100 points) :
@@ -205,14 +207,15 @@ Fournis une évaluation détaillée avec les scores pour chaque sous-critère et
           commentaire_ai: { type: "string" }
         }
       }
-    });
-    
+      });
+    } catch (_) { /* IA indisponible, candidature enregistrée sans score automatique */ }
+
     await base44.entities.Mentore.create({
       ...formData,
       average_grade: formData.average_grade ? Number(formData.average_grade) : null,
       documents_urls: uploadedDocs,
       ai_evaluation: aiEvaluation,
-      selection_score: aiEvaluation.total_ai,
+      selection_score: aiEvaluation?.total_ai ?? null,
       status: 'pending',
       other_career_goal: otherCareerGoal || null,
       other_interest: otherInterest || null,
