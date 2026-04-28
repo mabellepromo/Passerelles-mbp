@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Mail, User, MessageSquare, Send, CheckCircle2, ChevronDown, AlertCircle } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
 
 const SUBJECTS = [
   'Question générale',
@@ -37,23 +36,14 @@ export default function ContactModal({ open, onClose }) {
     e.preventDefault();
     if (!validate()) return;
     setSending(true);
+    setSubmitError('');
     try {
-      await base44.entities.Message.create({
-        binome_id:       'contact_form',
-        sender_email:    form.email,
-        sender_name:     form.name,
-        sender_role:     form.subject,
-        recipient_email: 'contact@mabellepromo.org',
-        recipient_name:  'Ma Belle Promo',
-        content:         form.message,
-        read:            false,
-      });
-      // Notification email à l'admin (sans bloquer le succès si ça échoue)
-      fetch('/api/notify-contact', {
+      const res = await fetch('/api/notify-contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name: form.name, email: form.email, subject: form.subject, message: form.message }),
-      }).catch(() => {});
+      });
+      if (!res.ok) throw new Error();
       setSent(true);
     } catch {
       setSubmitError('Une erreur est survenue. Veuillez réessayer ou écrire à contact@mabellepromo.org');
