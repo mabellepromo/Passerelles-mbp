@@ -28,7 +28,7 @@ Votre dossier a retenu toute l'attention du comit\u00e9 de s\u00e9lection. Les c
 
 Votre candidature a \u00e9t\u00e9 plac\u00e9e sur la liste d'attente.
 
-Cela signifie concr\u00e8tement que votre dossier a \u00e9t\u00e9 jug\u00e9 solide, que vous \u00eates officiellement r\u00e9serviste pour la {{session}}, et qu'en cas de d\u00e9sistement d'un(e) participant(e) retenu(e), vous serez contact\u00e9(e) en priorit\u00e9. Votre candidature sera automatiquement reconsid\u00e9r\u00e9e pour la prochaine session, sans nouvelle d\u00e9marche de votre part.
+Cela signifie concr\u00e8tement que votre dossier a \u00e9t\u00e9 jug\u00e9 solide, que vous \u00eates officiellement r\u00e9serviste pour la {{session}}, et qu'en cas de d\u00e9sistement d'un(e) participant(e) retenu(e), vous serez contact\u00e9(e) en priorit\u00e9.
 
 Nous vous informerons de l'\u00e9volution de votre situation dans les meilleurs d\u00e9lais. En attendant, nous vous encourageons \u00e0 continuer \u00e0 vous investir dans votre parcours \u2014 c'est pr\u00e9cis\u00e9ment ce type d'engagement qui fait la force d'un candidat {{programme}}.
 
