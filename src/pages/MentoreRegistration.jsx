@@ -230,7 +230,7 @@ Fournis une évaluation détaillée avec les scores pour chaque sous-critère et
     
     setIsSuccess(true);
     } catch (err) {
-      alert(`Erreur lors de l'envoi : ${err instanceof Error ? err.message : 'Veuillez réessayer.'}`);
+      alert(`Erreur lors de l'envoi : ${err?.message || err?.details || 'Erreur inconnue'}`);
     } finally {
       setIsSubmitting(false);
     }
