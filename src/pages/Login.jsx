@@ -36,7 +36,7 @@ export default function Login() {
     setLoading(true);
     setError('');
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback`
+      redirectTo: `${window.location.origin}/auth/callback?type=recovery`
     });
     if (error) {
       setError('Erreur lors de l\'envoi. Verifiez votre email.');
@@ -51,7 +51,7 @@ export default function Login() {
     setLoading(true);
     setError('');
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/callback`
+      redirectTo: `${window.location.origin}/auth/callback?type=recovery`
     });
     if (error) {
       setError('Cet email n\'est pas enregistre dans le programme. Contactez contact@mabellepromo.org.');

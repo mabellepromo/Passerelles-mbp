@@ -21,10 +21,12 @@ export default function AuthCallback() {
       return;
     }
 
+    // En PKCE (Supabase JS ≥ v2.64), PASSWORD_RECOVERY ne fire pas toujours.
+    // On se base sur ?type=recovery dans l'URL (ajouté au redirectTo par Login.jsx).
+    const isRecoveryFlow = params.get('type') === 'recovery';
+
     let done = false;
 
-    // Supabase JS v2 consomme le hash/code automatiquement à createClient.
-    // On s'appuie donc sur onAuthStateChange qui rejoue l'état courant à la souscription.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (done) return;
       if (event === 'PASSWORD_RECOVERY') {
@@ -32,17 +34,25 @@ export default function AuthCallback() {
         setMode('reset');
       } else if (event === 'SIGNED_IN' && session) {
         done = true;
-        window.location.href = '/';
+        if (isRecoveryFlow) {
+          setMode('reset'); // flux reset détecté via URL
+        } else {
+          window.location.href = '/';
+        }
       }
     });
 
-    // Fallback : si aucun événement ne se produit dans les 3s, on vérifie la session manuellement
+    // Fallback : si aucun événement en 3s (lien expiré ou flux inconnu)
     const timer = setTimeout(async () => {
       if (done) return;
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
         done = true;
-        window.location.href = '/';
+        if (isRecoveryFlow) {
+          setMode('reset');
+        } else {
+          window.location.href = '/';
+        }
       } else {
         setCallbackError('Aucun paramètre de session trouvé. Retournez à la page de connexion.');
         setMode('error');
