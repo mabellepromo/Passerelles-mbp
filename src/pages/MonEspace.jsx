@@ -381,91 +381,134 @@ export default function MonEspace() {
           </div>
         </div>
 
-        {/* ── TRANSPARENCE & OBJECTIFS SMART ── */}
+        {/* ── OBJECTIFS SMART & SUIVI ── */}
         <div className="space-y-3">
           <div className="flex items-center gap-2">
             <div className="h-5 w-1 rounded-full" style={{ background: 'linear-gradient(180deg,#1a7a45,#0f5530)' }} />
-            <h2 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Transparence &amp; Objectifs SMART</h2>
+            <h2 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Objectifs SMART &amp; Conduite du suivi</h2>
           </div>
           <motion.div {...fade(0.1)}>
             <div className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
-              <div className="grid lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-100">
 
-                {/* ── Critères de sélection (barres) ── */}
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-1">
-                    <BarChart3 className="h-4 w-4 text-emerald-600" />
-                    <h3 className="font-bold text-gray-900 text-base">Transparence de la Sélection</h3>
+              {/* Intro */}
+              <div className="px-6 pt-6 pb-4 border-b border-gray-100">
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+                    style={{ background: 'linear-gradient(135deg,#0f5530,#1a7a45)' }}>
+                    <Target className="h-5 w-5 text-white" />
                   </div>
-                  <p className="text-xs text-gray-500 mb-5 leading-relaxed">
-                    Grille officielle sur <strong>100 points</strong> — sélection anonyme, équitable et objective des mentorés (L3, M1, M2 Droit).
-                  </p>
-                  <div className="space-y-4">
-                    {[
-                      { label: 'Motivation',                        pts: 30, color: '#2563eb', bg: '#eff6ff', bar: 'linear-gradient(90deg,#1e3a8a,#60a5fa)' },
-                      { label: 'Niveau d\'Études',                  pts: 25, color: '#059669', bg: '#ecfdf5', bar: 'linear-gradient(90deg,#065f46,#34d399)' },
-                      { label: 'Engagement Civique & Leadership',   pts: 25, color: '#7c3aed', bg: '#f5f3ff', bar: 'linear-gradient(90deg,#4c1d95,#a78bfa)' },
-                      { label: 'Disponibilité',                     pts: 20, color: '#d97706', bg: '#fffbeb', bar: 'linear-gradient(90deg,#92400e,#fbbf24)' },
-                    ].map(c => (
-                      <div key={c.label}>
-                        <div className="flex justify-between items-center mb-1.5">
-                          <span className="text-xs font-semibold text-gray-700">{c.label}</span>
-                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ background: c.bg, color: c.color }}>{c.pts} pts</span>
-                        </div>
-                        <div className="w-full h-2.5 rounded-full bg-gray-100 overflow-hidden">
-                          <div className="h-full rounded-full" style={{ width: `${c.pts}%`, background: c.bar, transition: 'width 1s ease' }} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                  <p className="text-[10px] text-gray-400 mt-5 italic leading-relaxed">
-                    Évalué par un comité MBP · Min. 50 % de femmes · Équilibre géographique Lomé / Kara
-                  </p>
-                </div>
-
-                {/* ── Objectifs SMART ── */}
-                <div className="p-6">
-                  <div className="flex items-center gap-2 mb-1">
-                    <Target className="h-4 w-4 text-emerald-600" />
-                    <h3 className="font-bold text-gray-900 text-base">Vos Objectifs SMART</h3>
-                  </div>
-                  <p className="text-xs text-gray-500 mb-5 leading-relaxed">
-                    La méthode SMART structure votre épanouissement académique, professionnel et personnel tout au long du mentorat.
-                  </p>
-                  <div className="space-y-2">
-                    {[
-                      { key: 'S', label: 'Spécifique',           desc: 'Que voulez-vous réaliser précisément ? (ex : choisir un Master 2, obtenir un stage en cabinet d\'avocats).' },
-                      { key: 'M', label: 'Mesurable',             desc: 'Comment saurez-vous que l\'objectif est atteint ? (ex : 5 candidatures envoyées, concours passé).' },
-                      { key: 'A', label: 'Atteignable',           desc: 'Est-ce réaliste compte tenu de vos ressources actuelles, de votre niveau et de votre emploi du temps ?' },
-                      { key: 'R', label: 'Réaliste / Pertinent', desc: 'Est-ce pertinent pour votre parcours en droit et vos aspirations professionnelles à long terme ?' },
-                      { key: 'T', label: 'Temporel',              desc: 'Quand cela sera-t-il réalisé ? Définissez une échéance précise avec votre mentor dès la 1ʳᵉ séance.' },
-                    ].map(item => (
-                      <div key={item.key} className="rounded-xl border border-gray-100 overflow-hidden">
-                        <button
-                          onClick={() => setOpenSmart(openSmart === item.key ? null : item.key)}
-                          className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-50 transition-colors"
-                        >
-                          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 font-bold text-sm text-white"
-                            style={{ background: 'linear-gradient(135deg,#0f5530,#1a7a45)' }}>
-                            {item.key}
-                          </div>
-                          <span className="flex-1 font-semibold text-sm text-gray-800">{item.label}</span>
-                          <span className="text-emerald-600 font-bold text-xl leading-none select-none">
-                            {openSmart === item.key ? '−' : '+'}
-                          </span>
-                        </button>
-                        {openSmart === item.key && (
-                          <div className="px-4 pb-3 pt-2 text-xs text-gray-600 leading-relaxed border-t border-gray-100"
-                            style={{ background: 'rgba(240,253,244,0.5)' }}>
-                            {item.desc}
-                          </div>
-                        )}
-                      </div>
-                    ))}
+                  <div>
+                    <h3 className="font-bold text-gray-900 text-base mb-1">Vos Objectifs SMART</h3>
+                    <p className="text-xs text-gray-500 leading-relaxed">
+                      La méthode SMART structure votre progression tout au long du mentorat. Définissez vos objectifs dès la 1ʳᵉ séance avec votre binôme — ils guideront chaque rapport mensuel.
+                    </p>
                   </div>
                 </div>
-
               </div>
+
+              {/* Accordion SMART */}
+              <div className="px-6 py-4 space-y-2">
+                {[
+                  {
+                    key: 'S', label: 'Spécifique',
+                    desc: 'Formulez un objectif précis et concret, pas une intention vague.',
+                    conseil: 'Exemples : intégrer un Master 2 Droit des affaires, décrocher un stage dans un cabinet d\'avocats, réussir le concours de l\'ENM. Dans votre rapport mensuel, réaffirmez l\'objectif en tête pour que chaque séance garde le cap.',
+                    color: '#059669', bg: '#ecfdf5',
+                  },
+                  {
+                    key: 'M', label: 'Mesurable',
+                    desc: 'Définissez des indicateurs concrets qui vous permettront de savoir si vous progressez.',
+                    conseil: 'Exemples d\'indicateurs : nombre de candidatures envoyées, nombre de concours préparés, score à un examen blanc. Renseignez-les dans la section "Objectifs atteints" de votre rapport mensuel pour suivre l\'évolution séance après séance.',
+                    color: '#2563eb', bg: '#eff6ff',
+                  },
+                  {
+                    key: 'A', label: 'Atteignable',
+                    desc: 'L\'objectif doit être ambitieux mais réaliste au regard de votre situation actuelle.',
+                    conseil: 'Évaluez ensemble vos contraintes (emploi du temps, ressources, niveau). Si un objectif s\'avère trop ambitieux en cours de route, reformulez-le — votre rapport mensuel est l\'espace naturel pour documenter ces ajustements sans jugement.',
+                    color: '#d97706', bg: '#fffbeb',
+                  },
+                  {
+                    key: 'R', label: 'Réaliste / Pertinent',
+                    desc: 'L\'objectif doit s\'inscrire dans votre parcours en droit et vos aspirations à long terme.',
+                    conseil: 'Questionnez-vous : cet objectif m\'ouvre-t-il des portes ? Est-il aligné avec ma vision à 3 ou 5 ans ? La rubrique "Réflexions & points d\'attention" du rapport mensuel est faite pour consigner ces questionnements stratégiques avec votre mentor.',
+                    color: '#7c3aed', bg: '#f5f3ff',
+                  },
+                  {
+                    key: 'T', label: 'Temporel',
+                    desc: 'Chaque objectif doit avoir une échéance claire, découpée en jalons mensuels.',
+                    conseil: 'Découpez le chemin en étapes : "d\'ici fin juin, j\'aurai…". Votre rapport mensuel devient ainsi un carnet de bord chronologique — chaque séance documente un jalon franchi ou à revoir, ce qui facilite le bilan final en fin de programme.',
+                    color: '#0891b2', bg: '#ecfeff',
+                  },
+                ].map(item => (
+                  <div key={item.key} className="rounded-xl border border-gray-100 overflow-hidden">
+                    <button
+                      onClick={() => setOpenSmart(openSmart === item.key ? null : item.key)}
+                      className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 font-bold text-sm text-white"
+                        style={{ background: `linear-gradient(135deg,${item.color},${item.color}cc)` }}>
+                        {item.key}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm text-gray-800">{item.label}</p>
+                        <p className="text-xs text-gray-400 truncate">{item.desc}</p>
+                      </div>
+                      <span className="text-gray-400 font-bold text-lg leading-none select-none flex-shrink-0">
+                        {openSmart === item.key ? '−' : '+'}
+                      </span>
+                    </button>
+                    {openSmart === item.key && (
+                      <div className="px-4 pb-4 pt-3 border-t border-gray-100 space-y-2" style={{ background: item.bg + '66' }}>
+                        <p className="text-xs text-gray-700 font-semibold">{item.desc}</p>
+                        <div className="flex gap-2 items-start">
+                          <ClipboardList className="h-3.5 w-3.5 flex-shrink-0 mt-0.5" style={{ color: item.color }} />
+                          <p className="text-xs text-gray-600 leading-relaxed">{item.conseil}</p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Bannière suivi mensuel */}
+              <div className="mx-6 mb-6 rounded-2xl overflow-hidden border border-emerald-100">
+                <div className="px-5 py-4" style={{ background: 'linear-gradient(135deg,#0a2e18,#0f5530)' }}>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Zap className="h-4 w-4 text-amber-400" />
+                    <p className="text-xs font-bold text-amber-300 uppercase tracking-widest">Notre seule exigence</p>
+                  </div>
+                  <p className="text-white font-semibold text-sm leading-relaxed">
+                    Un rapport de suivi mensuel complété sur la plateforme.
+                  </p>
+                  <p className="text-emerald-300/80 text-xs mt-1 leading-relaxed">
+                    Chaque binôme est libre de s'organiser comme il le souhaite — présentiel, visio, téléphone, messages vocaux — à la fréquence et selon le format qui lui convient le mieux. L'essentiel est que cette rencontre soit tracée ici chaque mois.
+                  </p>
+                </div>
+                <div className="px-5 py-4 bg-emerald-50">
+                  <p className="text-xs font-semibold text-emerald-800 mb-3">Formats possibles — à vous de choisir ensemble :</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                    {[
+                      { icon: '📍', label: 'Présentiel', desc: 'Café, bibliothèque, campus' },
+                      { icon: '💻', label: 'Visioconférence', desc: 'Zoom, Meet, Teams…' },
+                      { icon: '📞', label: 'Appel téléphonique', desc: 'Simple et efficace' },
+                      { icon: '💬', label: 'Messagerie', desc: 'WhatsApp, Telegram…' },
+                    ].map(f => (
+                      <div key={f.label} className="bg-white rounded-xl p-3 text-center border border-emerald-100 shadow-sm">
+                        <div className="text-lg mb-1">{f.icon}</div>
+                        <p className="text-xs font-bold text-gray-800">{f.label}</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">{f.desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                  <Link to={createPageUrl('SuiviMensuel')}>
+                    <button className="w-full flex items-center justify-center gap-2 text-xs font-bold py-2.5 rounded-xl text-white transition-all hover:opacity-90"
+                      style={{ background: 'linear-gradient(135deg,#1a7a45,#2ea05c)' }}>
+                      <Plus className="h-3.5 w-3.5" /> Enregistrer le rapport mensuel
+                    </button>
+                  </Link>
+                </div>
+              </div>
+
             </div>
           </motion.div>
         </div>
