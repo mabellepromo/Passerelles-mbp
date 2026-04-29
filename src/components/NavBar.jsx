@@ -59,53 +59,62 @@ export default function NavBar() {
     location.pathname === to || (to !== '/' && location.pathname.startsWith(to));
 
   const bgNav = scrolled
-    ? 'linear-gradient(135deg, #0b3d22 0%, #0f5530 60%, #155f38 100%)'
+    ? 'linear-gradient(135deg, #09321c 0%, #0d4828 60%, #0f5530 100%)'
     : 'linear-gradient(135deg, #0f5530 0%, #1a7a45 60%, #1e6b3e 100%)';
 
   return (
     <>
       <nav
-        className={`sticky top-0 z-40 transition-all duration-300 ${scrolled ? 'shadow-lg' : ''}`}
-        style={{ background: bgNav }}
+        className={`sticky top-0 z-40 transition-all duration-300 ${scrolled ? 'shadow-xl' : ''}`}
+        style={{
+          background: bgNav,
+          backdropFilter: scrolled ? 'blur(12px)' : 'none',
+          WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
+        }}
       >
         {/* Ligne or */}
-        <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, transparent, #b8941f, #d4aa35, #b8941f, transparent)' }} />
+        <div
+          className="h-[3px] w-full"
+          style={{ background: 'linear-gradient(90deg, transparent 0%, #a07818 10%, #d4aa35 35%, #f0cc55 50%, #d4aa35 65%, #a07818 90%, transparent 100%)' }}
+        />
 
-        <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-2 py-2.5 px-4 sm:px-5">
+        <div className="w-full max-w-7xl mx-auto flex items-center justify-between gap-2 py-3 px-4 sm:px-5">
 
           {/* ── LOGO ── */}
-          <Link to="/" className="flex items-center gap-2 group flex-shrink-0">
-            <img
-              src="/logo-mbp.png"
-              alt="Ma Belle Promo"
-              className="w-8 h-8 rounded-full flex-shrink-0 transition-all group-hover:scale-105"
-              style={{ boxShadow: '0 0 0 1.5px rgba(184,148,31,0.45)' }}
-            />
-            <div className="flex flex-col leading-none">
-              <span className="font-playfair font-bold text-[13px] tracking-wide" style={{ color: '#f97316' }}>Passerelles</span>
-              <span className="text-[8px] text-emerald-400 tracking-widest uppercase">Ma Belle Promo</span>
+          <Link to="/" className="flex items-center gap-2.5 group flex-shrink-0">
+            <div className="relative">
+              <img
+                src="/logo-mbp.png"
+                alt="Ma Belle Promo"
+                className="w-10 h-10 rounded-full flex-shrink-0 transition-all duration-300 group-hover:scale-105"
+                style={{ boxShadow: '0 0 0 2px rgba(184,148,31,0.55), 0 0 12px rgba(212,170,53,0.25)' }}
+              />
+            </div>
+            <div className="flex flex-col leading-none gap-0.5">
+              <span className="font-playfair font-bold text-[14px] tracking-wide" style={{ color: '#f97316' }}>Passerelles</span>
+              <span className="text-[8px] text-emerald-400 tracking-widest uppercase font-semibold">Ma Belle Promo</span>
             </div>
           </Link>
 
           {/* ── NAV CENTRE (desktop) ── */}
-          <div className="hidden md:flex items-center gap-1">
+          <div className="hidden md:flex items-center gap-0.5">
             {navLinks.map(({ to, label, icon: Icon }) => {
               const active = isActive(to);
               return (
                 <Link
                   key={to}
                   to={to}
-                  className={`relative flex items-center gap-1.5 whitespace-nowrap px-3.5 py-2 rounded-lg transition-all duration-200 text-[11px] font-semibold tracking-wide
+                  className={`relative flex items-center gap-1.5 whitespace-nowrap px-4 py-2 rounded-lg transition-all duration-200 text-[12px] font-semibold tracking-wide
                     ${active
-                      ? 'text-white bg-white/12'
-                      : 'text-white/65 hover:text-white hover:bg-white/8'}`}
+                      ? 'text-white bg-white/15'
+                      : 'text-white/70 hover:text-white hover:bg-white/10'}`}
                 >
-                  {Icon && <Icon className="h-3.5 w-3.5 flex-shrink-0 opacity-75" />}
+                  {Icon && <Icon className="h-3.5 w-3.5 flex-shrink-0 opacity-80" />}
                   <span>{label}</span>
                   {active && (
                     <span
-                      className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full"
-                      style={{ background: '#d4aa35' }}
+                      className="absolute bottom-0 left-3 right-3 h-[2px] rounded-full"
+                      style={{ background: 'linear-gradient(90deg, transparent, #d4aa35, transparent)' }}
                     />
                   )}
                 </Link>
@@ -120,10 +129,10 @@ export default function NavBar() {
             <Link
               to={createPageUrl('Messagerie')}
               title="Messagerie"
-              className={`w-8 h-8 flex items-center justify-center rounded-lg transition-all
-                ${isActive('/Messagerie') ? 'bg-white/15 text-white' : 'text-white/55 hover:text-white hover:bg-white/10'}`}
+              className={`w-9 h-9 flex items-center justify-center rounded-lg transition-all
+                ${isActive('/Messagerie') ? 'bg-white/15 text-white' : 'text-white/60 hover:text-white hover:bg-white/10'}`}
             >
-              <MessageCircle className="h-4 w-4" />
+              <MessageCircle className="h-[18px] w-[18px]" />
             </Link>
 
             {/* Cloche notifications */}
@@ -216,6 +225,12 @@ export default function NavBar() {
             </button>
           </div>
         </div>
+
+        {/* Ligne de séparation bas */}
+        <div
+          className="h-px w-full"
+          style={{ background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.08) 20%, rgba(255,255,255,0.15) 50%, rgba(255,255,255,0.08) 80%, transparent 100%)' }}
+        />
       </nav>
 
       {/* ── MENU MOBILE ── */}
