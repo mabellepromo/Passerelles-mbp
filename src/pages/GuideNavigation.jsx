@@ -106,10 +106,10 @@ const SECTIONS = [
     title: 'Résultats Cohorte 1',
     subtitle: 'Consulter les 11 binômes officiels',
     steps: [
-      { label: '"Cohorte 1" dans la navbar', desc: 'Page publique — accessible sans connexion.' },
-      { label: 'Parcourez les 11 binômes', desc: 'Mentor, mentoré, domaine et score de compatibilité.' },
+      { label: '"Cohorte 1" dans la navbar', desc: "Page publique — accessible sans connexion. Cependant chaque binôme n'accède qu'aux détails les concernant" },
+      { label: 'Parcourez votre binôme', desc: 'Mentor, mentoré, domaine et score de compatibilité.' },
       { label: 'Cliquez pour la fiche complète', desc: 'Contact, disponibilités, spécialisations, justificatif d\'appariement.' },
-      { label: 'Sections complémentaires', desc: 'Réservistes, Méthodologie (100 pts, 5 IA), "Et Ensuite ?".' },
+      { label: 'Sections complémentaires', desc: 'Réservistes, Méthodologie (100 pts, 4 IA + pondération Comité ), "Et Ensuite ?".' },
     ],
     tip: 'La fiche détaillée n\'est accessible qu\'aux membres du binôme et à l\'admin.',
   },

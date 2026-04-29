@@ -90,7 +90,7 @@ export default function Home() {
       {/* ══════════ HERO ══════════ */}
       <section className="relative overflow-hidden" style={{ background: 'linear-gradient(160deg, #0a2e18 0%, #0f5530 40%, #1a7a45 100%)' }}>
         <div className="absolute inset-0">
-          <img src="https://images.unsplash.com/photo-1655720348590-c739c860beed?w=1400&q=80&fit=crop&auto=format" alt="" className="w-full h-full object-cover object-center" />
+          <img src="https://images.unsplash.com/photo-1653565685060-e15e492a7fda?w=1400&q=80&fit=crop&auto=format" alt="" className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(10,46,24,0.92) 0%, rgba(15,85,48,0.88) 40%, rgba(26,122,69,0.82) 100%)' }} />
         </div>
         <div className="absolute inset-0 opacity-[0.03]"
