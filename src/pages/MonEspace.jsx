@@ -412,7 +412,7 @@ export default function MonEspace() {
                   {
                     key: 'S', label: 'Spécifique',
                     desc: 'Formulez un objectif précis et concret, pas une intention vague.',
-                    conseil: 'Exemples : intégrer un Master 2 Droit des affaires, décrocher un stage dans un cabinet d\'avocats, réussir le concours de l\'ENM. Dans votre rapport mensuel, réaffirmez l\'objectif en tête pour que chaque séance garde le cap.',
+                    conseil: 'Exemples : intégrer un Master 2 Droit des affaires, décrocher un stage dans un cabinet d\'avocats, réussir le concours de l\'ENA. Dans votre rapport mensuel, réaffirmez l\'objectif en tête pour que chaque séance garde le cap.',
                     color: '#059669', bg: '#ecfdf5',
                   },
                   {
