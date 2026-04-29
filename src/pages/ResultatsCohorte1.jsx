@@ -768,7 +768,7 @@ export default function ResultatsCohorte1() {
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 mb-6">
             <div>
               <h2 className="text-xl font-bold text-white font-playfair">📋 Prochaines étapes pour les mentorés</h2>
-              <p className="text-emerald-300 text-xs mt-1">Démarrage officiel — Mi/Fin Avril 2026</p>
+              <p className="text-emerald-300 text-xs mt-1">Démarrage officiel — Mai 2026</p>
             </div>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
@@ -776,7 +776,7 @@ export default function ResultatsCohorte1() {
             { step: "1", title: "Confirmation", desc: "Confirmer votre participation par email avant le 13 Avril 2026" },
             { step: "2", title: "Introduction", desc: "Séance de présentation avec votre mentor organisée par MBP" },
             { step: "3", title: "Objectifs SMART", desc: "Co-définir vos objectifs avec votre mentor lors de la 1ère séance" },
-            { step: "4", title: "Démarrage", desc: "Lancement entre mi et fin-Avril 2026 · Minimum 2h/mois d'échange" }].
+            { step: "4", title: "Démarrage", desc: "Lancement Mai 2026 · Minimum 2h/mois d'échange" }].
             map((s) =>
             <div key={s.step} className="bg-white/10 backdrop-blur-sm border border-white/15 rounded-xl p-4 flex gap-3">
                 <div className="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-white font-bold text-xs flex-shrink-0 mt-0.5">{s.step}</div>
@@ -947,7 +947,7 @@ export default function ResultatsCohorte1() {
             <div className="rounded-2xl p-6 shadow-sm border border-white/60 hover:shadow-md transition-all flex flex-col" style={{ background: 'rgba(255,255,255,0.75)' }}>
               <Trophy className="h-8 w-8 text-emerald-600 mb-3" />
               <h3 className="font-bold text-gray-900 font-playfair mb-1 text-base">Mon Espace</h3>
-              <p className="text-sm text-gray-500 mb-4 flex-1">Démarrage Mi/Fin Avril 2026. Minimum 2h/mois. Durée : 1 année universitaire.</p>
+              <p className="text-sm text-gray-500 mb-4 flex-1">Démarrage Mai 2026. Minimum 2h/mois. Durée : 1 année universitaire.</p>
               <Link to="/MonEspace">
                 <Button className="w-full bg-[#1e5631] hover:bg-[#2d7a47] text-white text-sm">Accéder à Mon Espace</Button>
               </Link>

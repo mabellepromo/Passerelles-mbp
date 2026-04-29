@@ -172,7 +172,7 @@ export default function Home() {
                   <div className="relative">
                     <div className="flex items-center gap-2 mb-4">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      <span className="text-xs text-emerald-300 font-medium">Démarrage officiel — Mi/Fin Avril 2026</span>
+                      <span className="text-xs text-emerald-300 font-medium">Démarrage officiel — Mai 2026</span>
                     </div>
                     <div className="space-y-2 mb-5">
                       {[
