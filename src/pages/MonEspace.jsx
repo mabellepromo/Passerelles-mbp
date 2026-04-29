@@ -26,6 +26,7 @@ export default function MonEspace() {
   const [suivis, setSuivis] = useState([]);
   const [journalEntries, setJournalEntries] = useState([]);
   const [pageLoading, setPageLoading] = useState(true);
+  const [openSmart, setOpenSmart] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [deleteInput, setDeleteInput] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
@@ -378,6 +379,95 @@ export default function MonEspace() {
               </motion.div>
             ))}
           </div>
+        </div>
+
+        {/* ── TRANSPARENCE & OBJECTIFS SMART ── */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-5 w-1 rounded-full" style={{ background: 'linear-gradient(180deg,#1a7a45,#0f5530)' }} />
+            <h2 className="text-sm font-bold text-gray-700 uppercase tracking-widest">Transparence &amp; Objectifs SMART</h2>
+          </div>
+          <motion.div {...fade(0.1)}>
+            <div className="rounded-2xl bg-white shadow-sm border border-gray-100 overflow-hidden">
+              <div className="grid lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-gray-100">
+
+                {/* ── Critères de sélection (barres) ── */}
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-1">
+                    <BarChart3 className="h-4 w-4 text-emerald-600" />
+                    <h3 className="font-bold text-gray-900 text-base">Transparence de la Sélection</h3>
+                  </div>
+                  <p className="text-xs text-gray-500 mb-5 leading-relaxed">
+                    Grille officielle sur <strong>100 points</strong> — sélection anonyme, équitable et objective des mentorés (L3, M1, M2 Droit).
+                  </p>
+                  <div className="space-y-4">
+                    {[
+                      { label: 'Motivation',                        pts: 30, color: '#2563eb', bg: '#eff6ff', bar: 'linear-gradient(90deg,#1e3a8a,#60a5fa)' },
+                      { label: 'Niveau d\'Études',                  pts: 25, color: '#059669', bg: '#ecfdf5', bar: 'linear-gradient(90deg,#065f46,#34d399)' },
+                      { label: 'Engagement Civique & Leadership',   pts: 25, color: '#7c3aed', bg: '#f5f3ff', bar: 'linear-gradient(90deg,#4c1d95,#a78bfa)' },
+                      { label: 'Disponibilité',                     pts: 20, color: '#d97706', bg: '#fffbeb', bar: 'linear-gradient(90deg,#92400e,#fbbf24)' },
+                    ].map(c => (
+                      <div key={c.label}>
+                        <div className="flex justify-between items-center mb-1.5">
+                          <span className="text-xs font-semibold text-gray-700">{c.label}</span>
+                          <span className="text-[11px] font-bold px-2 py-0.5 rounded-full" style={{ background: c.bg, color: c.color }}>{c.pts} pts</span>
+                        </div>
+                        <div className="w-full h-2.5 rounded-full bg-gray-100 overflow-hidden">
+                          <div className="h-full rounded-full" style={{ width: `${c.pts}%`, background: c.bar, transition: 'width 1s ease' }} />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-[10px] text-gray-400 mt-5 italic leading-relaxed">
+                    Évalué par un comité MBP · Min. 50 % de femmes · Équilibre géographique Lomé / Kara
+                  </p>
+                </div>
+
+                {/* ── Objectifs SMART ── */}
+                <div className="p-6">
+                  <div className="flex items-center gap-2 mb-1">
+                    <Target className="h-4 w-4 text-emerald-600" />
+                    <h3 className="font-bold text-gray-900 text-base">Vos Objectifs SMART</h3>
+                  </div>
+                  <p className="text-xs text-gray-500 mb-5 leading-relaxed">
+                    La méthode SMART structure votre épanouissement académique, professionnel et personnel tout au long du mentorat.
+                  </p>
+                  <div className="space-y-2">
+                    {[
+                      { key: 'S', label: 'Spécifique',           desc: 'Que voulez-vous réaliser précisément ? (ex : choisir un Master 2, obtenir un stage en cabinet d\'avocats).' },
+                      { key: 'M', label: 'Mesurable',             desc: 'Comment saurez-vous que l\'objectif est atteint ? (ex : 5 candidatures envoyées, concours passé).' },
+                      { key: 'A', label: 'Atteignable',           desc: 'Est-ce réaliste compte tenu de vos ressources actuelles, de votre niveau et de votre emploi du temps ?' },
+                      { key: 'R', label: 'Réaliste / Pertinent', desc: 'Est-ce pertinent pour votre parcours en droit et vos aspirations professionnelles à long terme ?' },
+                      { key: 'T', label: 'Temporel',              desc: 'Quand cela sera-t-il réalisé ? Définissez une échéance précise avec votre mentor dès la 1ʳᵉ séance.' },
+                    ].map(item => (
+                      <div key={item.key} className="rounded-xl border border-gray-100 overflow-hidden">
+                        <button
+                          onClick={() => setOpenSmart(openSmart === item.key ? null : item.key)}
+                          className="w-full px-4 py-3 text-left flex items-center gap-3 hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 font-bold text-sm text-white"
+                            style={{ background: 'linear-gradient(135deg,#0f5530,#1a7a45)' }}>
+                            {item.key}
+                          </div>
+                          <span className="flex-1 font-semibold text-sm text-gray-800">{item.label}</span>
+                          <span className="text-emerald-600 font-bold text-xl leading-none select-none">
+                            {openSmart === item.key ? '−' : '+'}
+                          </span>
+                        </button>
+                        {openSmart === item.key && (
+                          <div className="px-4 pb-3 pt-2 text-xs text-gray-600 leading-relaxed border-t border-gray-100"
+                            style={{ background: 'rgba(240,253,244,0.5)' }}>
+                            {item.desc}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </motion.div>
         </div>
 
         {/* ── DERNIÈRES SÉANCES ── */}
