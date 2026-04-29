@@ -773,7 +773,7 @@ export default function ResultatsCohorte1() {
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {[
-            { step: "1", title: "Confirmation", desc: "Confirmer votre participation par email avant le 13 Avril 2026" },
+            { step: "1", title: "Confirmation", desc: "Confirmer votre participation par email avant le 07 Mai 2026" },
             { step: "2", title: "Introduction", desc: "Séance de présentation avec votre mentor organisée par MBP" },
             { step: "3", title: "Objectifs SMART", desc: "Co-définir vos objectifs avec votre mentor lors de la 1ère séance" },
             { step: "4", title: "Démarrage", desc: "Lancement Mai 2026 · Minimum 2h/mois d'échange" }].
