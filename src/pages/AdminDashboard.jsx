@@ -7,7 +7,7 @@ import {
   Users, GraduationCap, UserCheck, Link2, ClipboardList,
   TrendingUp, AlertTriangle, BarChart3, Upload, FileSpreadsheet,
   Download, Activity, FileText, Send, Home, Star, CheckCircle2,
-  Clock, ChevronRight, Menu, X, BookOpen, Mail, Eye, Inbox, PenSquare, User, Paperclip, FileIcon
+  Clock, ChevronRight, Menu, X, BookOpen, Mail, Eye, Inbox, PenSquare, User, Paperclip, FileIcon, Trash2
 } from 'lucide-react';
 
 import AdminStats from '@/components/admin/AdminStats.jsx';
@@ -283,25 +283,32 @@ function ContactMessagesView({ messages, onMarkRead, onDelete }) {
             <p className="text-xs text-gray-400">Aucun message reçu</p>
           </div>
         ) : messages.map(msg => (
-          <button key={msg.id} onClick={() => handleOpen(msg)}
-            className="w-full text-left rounded-xl p-4 transition-all border"
+          <div key={msg.id} className="relative group rounded-xl border transition-all"
             style={{
               background: selected?.id === msg.id ? 'rgba(26,122,69,0.06)' : '#fff',
               borderColor: selected?.id === msg.id ? 'rgba(26,122,69,0.3)' : '#f0f0f0',
               boxShadow: selected?.id === msg.id ? '0 0 0 1px rgba(26,122,69,0.15)' : 'none',
             }}>
-            <div className="flex items-start justify-between gap-2 mb-1">
-              <div className="flex items-center gap-2 min-w-0">
-                {!msg.read && <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: '#1a7a45' }} />}
-                <p className={`text-sm truncate ${!msg.read ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
-                  {msg.sender_name || msg.sender_email}
-                </p>
+            <button onClick={() => handleOpen(msg)} className="w-full text-left p-4 pr-10">
+              <div className="flex items-start justify-between gap-2 mb-1">
+                <div className="flex items-center gap-2 min-w-0">
+                  {!msg.read && <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: '#1a7a45' }} />}
+                  <p className={`text-sm truncate ${!msg.read ? 'font-bold text-gray-900' : 'font-medium text-gray-600'}`}>
+                    {msg.sender_name || msg.sender_email}
+                  </p>
+                </div>
+                <span className="text-[10px] text-gray-400 flex-shrink-0">{fmt(msg.created_date)}</span>
               </div>
-              <span className="text-[10px] text-gray-400 flex-shrink-0">{fmt(msg.created_date)}</span>
-            </div>
-            <p className="text-xs font-semibold truncate" style={{ color: '#1a7a45' }}>{msg.sender_role || '—'}</p>
-            <p className="text-xs text-gray-400 mt-1 line-clamp-2">{msg.content}</p>
-          </button>
+              <p className="text-xs font-semibold truncate" style={{ color: '#1a7a45' }}>{msg.sender_role || '—'}</p>
+              <p className="text-xs text-gray-400 mt-1 line-clamp-2">{msg.content}</p>
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onDelete(msg); if (selected?.id === msg.id) setSelected(null); }}
+              className="absolute top-3 right-3 p-1.5 rounded-lg text-gray-300 hover:text-red-500 hover:bg-red-50 transition-all opacity-0 group-hover:opacity-100"
+              title="Supprimer">
+              <Trash2 className="h-3.5 w-3.5" />
+            </button>
+          </div>
         ))}
       </div>
 
