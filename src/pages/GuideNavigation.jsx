@@ -45,7 +45,7 @@ const SECTIONS = [
     title: 'Mon Espace',
     subtitle: 'Votre hub central',
     steps: [
-      { label: 'Accédez via la navbar → "Mon Espace"', desc: 'Ou cliquez "Accéder à Mon Espace" depuis la page d\'accueil.' },
+      { label: 'Accédez via la barre de navigation → "Mon Espace"', desc: 'Ou cliquez "Accéder à Mon Espace" depuis la page d\'accueil.' },
       { label: 'Consultez votre binôme', desc: 'Nom, spécialité et informations de contact de votre mentor/mentoré.' },
       { label: 'Utilisez les boutons d\'action rapide', desc: '"Nouvelle séance", "Journal", "Messagerie", "Bilan" — tout en 1 clic.' },
       { label: 'Suivez le compteur de séances', desc: 'Progression annuelle et prochain rendez-vous planifié.' },
@@ -59,7 +59,7 @@ const SECTIONS = [
     title: 'Suivi Mensuel',
     subtitle: 'Obligatoire chaque mois après chaque séance',
     steps: [
-      { label: '"Mon Espace" → "Nouvelle séance"', desc: 'Ou via la navbar → "Mon Suivi" pour l\'historique.' },
+      { label: '"Mon Espace" → "Nouvelle séance"', desc: 'Ou via la barre de navigation → "Mon Suivi" pour l\'historique.' },
       { label: 'Remplissez les champs essentiels', desc: '📅 Date · ⏱ Durée · 📍 Format (présentiel/virtuel) · 📌 Objectifs abordés.' },
       { label: 'Notez succès et défis', desc: '"Succès récents du mentoré" + "Défis rencontrés" — soyez précis.' },
       { label: 'Actions à suivre', desc: '"Pour le mentoré" + "Pour le mentor" — deux colonnes d\'engagement.' },
@@ -92,10 +92,10 @@ const SECTIONS = [
     title: 'Messagerie',
     subtitle: 'Communiquer avec votre binôme',
     steps: [
-      { label: 'Navbar → "Messagerie"', desc: 'Ou depuis "Mon Espace" → bouton "Messages". Connexion obligatoire.' },
+      { label: 'Barre de navigation → "Messagerie"', desc: 'Ou depuis "Mon Espace" → bouton "Messages". Connexion obligatoire.' },
       { label: 'Sélectionnez votre binôme', desc: 'La conversation apparaît automatiquement dans la liste.' },
       { label: 'Écrivez et envoyez', desc: 'Entrée pour envoyer · Shift+Entrée pour saut de ligne.' },
-      { label: 'Notifications 🔔', desc: 'La cloche en navbar indique les messages non lus en temps réel.' },
+      { label: 'Notifications 🔔', desc: 'La cloche dans la barre de navigation indique les messages non lus en temps réel.' },
     ],
     tip: 'Utilisez la messagerie pour planifier les séances, partager des ressources, confirmer les disponibilités.',
   },
@@ -106,10 +106,10 @@ const SECTIONS = [
     title: 'Résultats Cohorte 1',
     subtitle: 'Consulter les 11 binômes officiels',
     steps: [
-      { label: '"Cohorte 1" dans la navbar', desc: "Page publique — accessible sans connexion. Cependant chaque binôme n'accède qu'aux détails les concernant" },
+      { label: '"Cohorte 1" dans la barre de navigation', desc: "Page publique — accessible sans connexion. Cependant chaque binôme n'accède qu'aux détails les concernant" },
       { label: 'Parcourez votre binôme', desc: 'Mentor, mentoré, domaine et score de compatibilité.' },
       { label: 'Cliquez pour la fiche complète', desc: 'Contact, disponibilités, spécialisations, justificatif d\'appariement.' },
-      { label: 'Sections complémentaires', desc: 'Réservistes, Méthodologie (100 pts, 4 IA + pondération Comité ), "Et Ensuite ?".' },
+      { label: 'Sections complémentaires', desc: 'Réservistes, Méthodologie (100 pts, 4 IA + pondération Comité MBP), "Et Ensuite ?".' },
     ],
     tip: 'La fiche détaillée n\'est accessible qu\'aux membres du binôme et à l\'admin.',
   },
@@ -139,7 +139,7 @@ const QUICKLINKS = [
 ];
 
 const PARCOURS = [
-  { icon: '🔐', label: 'Connexion',      sub: 'Navbar → Connexion' },
+  { icon: '🔐', label: 'Connexion',      sub: 'Barre de navigation → Connexion' },
   { icon: '🏠', label: 'Mon Espace',     sub: 'Vue globale' },
   { icon: '📅', label: 'Séance',         sub: 'Rencontre binôme' },
   { icon: '📝', label: 'Suivi Mensuel',  sub: 'Remplir la fiche' },
