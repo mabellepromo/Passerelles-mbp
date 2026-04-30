@@ -400,7 +400,7 @@ export default function MonEspace() {
                   <div>
                     <h3 className="font-bold text-gray-900 text-base mb-1">Vos Objectifs SMART</h3>
                     <p className="text-xs text-gray-500 leading-relaxed">
-                      La méthode SMART structure votre progression tout au long du mentorat. Définissez vos objectifs dès la 1ʳᵉ séance avec votre binôme — ils guideront chaque rapport mensuel.
+                      La méthode SMART est fortement conseillée pour structurer votre progression : elle offre un cadre éprouvé pour définir des objectifs clairs et mesurables. Chaque binôme demeure néanmoins libre d'adopter l'approche qui lui convient le mieux. Quel que soit le cadre retenu, définissez vos objectifs dès la 1ʳᵉ séance — ils guideront chaque rapport mensuel.
                     </p>
                   </div>
                 </div>
