@@ -774,7 +774,7 @@ export default function ResultatsCohorte1() {
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
             {[
             { step: "1", title: "Confirmation", desc: "Confirmer votre participation par email avant le 07 Mai 2026" },
-            { step: "2", title: "Prise de contact", desc: "Prenez l'initiative de contacter votre mentor — ses coordonnées vous ont été transmises. Présentez-vous brièvement : parcours, motivations et attentes." },
+            { step: "2", title: "Prise de contact", desc: "Prenez l'initiative de contacter votre mentor — ses coordonnées vous ont été transmises. Présentez-vous brièvement." },
             { step: "3", title: "Objectifs SMART", desc: "Co-définir vos objectifs avec votre mentor lors de la 1ère séance" },
             { step: "4", title: "Démarrage", desc: "Lancement Mai 2026 · Minimum 2h/mois d'échange" }].
             map((s) =>
