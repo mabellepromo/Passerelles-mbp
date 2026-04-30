@@ -39,7 +39,7 @@ const roles = [
     color: '#1a7a45',
   },
   {
-    image: 'https://images.unsplash.com/photo-1583026411217-9d05a70d5230?w=600&q=80&fit=crop&auto=format',
+    image: '/suivi-mensuel.jpg',
     tag: 'Suivi',
     title: 'Suivi Mensuel',
     description: 'Archive sécurisée de toutes vos rencontres. Créez et consultez vos fiches de suivi.',
@@ -48,7 +48,7 @@ const roles = [
     color: '#2563eb',
   },
   {
-    image: 'https://images.unsplash.com/photo-1517842645767-c639042777db?w=600&q=80&fit=crop&auto=format',
+    image: '/journal-de-bord.jpg',
     tag: 'Journal',
     title: 'Journal de Bord',
     description: 'Notez vos objectifs et réflexions dans un espace privé partagé avec votre binôme.',
