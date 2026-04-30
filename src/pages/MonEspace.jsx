@@ -478,10 +478,10 @@ export default function MonEspace() {
                     <p className="text-xs font-bold text-amber-300 uppercase tracking-widest">Notre seule exigence</p>
                   </div>
                   <p className="text-white font-semibold text-sm leading-relaxed">
-                    Un rapport de suivi mensuel complété sur la plateforme.
+                    Au moins 2 heures d'échange par mois entre le mentor et le mentoré, et un rapport de suivi complété sur la plateforme.
                   </p>
                   <p className="text-emerald-300/80 text-xs mt-1 leading-relaxed">
-                    Chaque binôme est libre de s'organiser comme il le souhaite — présentiel, visio, téléphone, messages vocaux — à la fréquence et selon le format qui lui convient le mieux. L'essentiel est que cette rencontre soit tracée ici chaque mois.
+                    Chaque binôme reste libre de s'organiser comme il le souhaite — présentiel, visio, téléphone, messages vocaux — selon le format et le créneau qui lui conviennent. L'essentiel est que ces échanges atteignent le seuil mensuel et soient tracés ici chaque mois.
                   </p>
                 </div>
                 <div className="px-5 py-4 bg-emerald-50">
