@@ -501,7 +501,7 @@ export default function ResultatsCohorte1() {
 
       {/* HERO */}
       <section ref={setRef("accueil")} className="relative w-full bg-[#1e5631] text-white flex flex-col justify-center text-center px-4 py-6">
-        <div className="my-48 opacity-10 absolute inset-0" style={{ backgroundImage: 'url(https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&fit=crop)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
+        <div className="my-48 opacity-10 absolute inset-0" style={{ backgroundImage: 'url(/images/bg-resultats.jpg)', backgroundSize: 'cover', backgroundPosition: 'center' }} />
         <div className="relative z-10 w-full max-w-4xl mx-auto">
           <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
             <h1 className="mb-1 text-sm font-playfair leading-tight sm:text-2xl">

@@ -37,8 +37,8 @@ export default function AProposMBP() {
           style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '40px 40px' }} />
         {/* Photo fond */}
         <div className="absolute inset-0 opacity-15">
-          <img src="https://static.wixstatic.com/media/287af0_e6fbe7015aa84b02bb15ea2567f63398~mv2.png/v1/fill/w_1920,h_661,al_c,q_90,enc_avif,quality_auto/287af0_e6fbe7015aa84b02bb15ea2567f63398~mv2.png"
-            alt="" className="w-full h-full object-cover object-center" />
+          <img src="/images/hero-apropos.png"
+            alt="" className="w-full h-full object-cover object-center" loading="lazy" />
         </div>
         {/* Glow or */}
         <div className="absolute -top-32 right-0 w-[500px] h-[500px] rounded-full blur-3xl opacity-10"
@@ -91,10 +91,11 @@ export default function AProposMBP() {
               <div className="relative">
                 <div className="absolute -inset-3 rounded-3xl opacity-10" style={{ background: 'linear-gradient(135deg,#0f5530,#d4aa35)' }} />
                 <img
-                  src="https://static.wixstatic.com/media/287af0_e59f560466a6428dabb88a45981aaf82~mv2.jpg/v1/fill/w_980,h_583,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/287af0_e59f560466a6428dabb88a45981aaf82~mv2.jpg"
+                  src="/images/mission-mbp.jpg"
                   alt="Mission MBP"
                   className="relative rounded-2xl w-full object-cover shadow-xl"
-                  style={{ maxHeight: 340 }} />
+                  style={{ maxHeight: 340 }}
+                  loading="lazy" />
                 {/* Overlay badge */}
                 <div className="absolute -bottom-4 -right-4 px-4 py-2 rounded-xl text-white text-xs font-bold shadow-lg"
                   style={{ background: 'linear-gradient(135deg,#0f5530,#1a7a45)', border: '2px solid rgba(212,170,53,0.4)' }}>
@@ -175,10 +176,11 @@ export default function AProposMBP() {
               <div className="relative">
                 <div className="absolute -inset-3 rounded-3xl opacity-10" style={{ background: 'linear-gradient(135deg,#d4aa35,#0f5530)' }} />
                 <img
-                  src="https://static.wixstatic.com/media/287af0_09c89a32f6ed445cb6e48e92e2d6cc62~mv2.jpg/v1/fill/w_489,h_519,al_c,q_80,usm_0.66_1.00_0.01,enc_avif,quality_auto/287af0_09c89a32f6ed445cb6e48e92e2d6cc62~mv2.jpg"
+                  src="/images/vision-mbp.jpg"
                   alt="Vision MBP"
                   className="relative rounded-2xl w-full object-cover shadow-xl"
-                  style={{ maxHeight: 360 }} />
+                  style={{ maxHeight: 360 }}
+                  loading="lazy" />
               </div>
             </motion.div>
           </div>
@@ -232,13 +234,13 @@ export default function AProposMBP() {
             {[
               {
                 icon: Users, title: 'Bénévolat',
-                img: 'https://static.wixstatic.com/media/287af0_c193a16d8efe4d9c912f622618b98d28~mv2.jpg/v1/fill/w_399,h_279,al_c,q_80,enc_avif,quality_auto/Benevolat_edited.jpg',
+                img: '/images/benevolat.jpg',
                 text: 'Partagez vos connaissances, votre expertise et vos expériences d\'une manière qui profite à la fois à l\'Université et à la génération actuelle d\'étudiants.',
                 color: '#1a7a45'
               },
               {
                 icon: Heart, title: 'Dons',
-                img: 'https://static.wixstatic.com/media/287af0_14228c5d3cd644dab06cefe17b868c24~mv2.jpg/v1/fill/w_399,h_276,al_c,q_80,enc_avif,quality_auto/Appel%20de%20don.jpg',
+                img: '/images/appel-de-don.jpg',
                 text: 'Quel que soit le montant de votre don, votre contribution aura un impact sur la vie d\'autrui à travers les programmes que Ma Belle Promo met en place.',
                 color: '#d4aa35'
               }

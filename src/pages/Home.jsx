@@ -30,7 +30,7 @@ const documents = [
 
 const roles = [
   {
-    image: '/Mentor%20mentore%20fille.png',
+    image: '/images/mentor-mentore-fille.png',
     tag: 'Espace binôme',
     title: 'Mon Espace Binôme',
     description: 'Consultez votre binôme, suivez votre progression et accédez à tous les outils du programme.',
@@ -39,7 +39,7 @@ const roles = [
     color: '#1a7a45',
   },
   {
-    image: '/suivi-mensuel.jpg',
+    image: '/images/suivi-mensuel.jpg',
     tag: 'Suivi',
     title: 'Suivi Mensuel',
     description: 'Archive sécurisée de toutes vos rencontres. Créez et consultez vos fiches de suivi.',
@@ -48,7 +48,7 @@ const roles = [
     color: '#2563eb',
   },
   {
-    image: '/journal-de-bord.jpg',
+    image: '/images/journal-de-bord.jpg',
     tag: 'Journal',
     title: 'Journal de Bord',
     description: 'Notez vos objectifs et réflexions dans un espace privé partagé avec votre binôme.',
@@ -90,7 +90,7 @@ export default function Home() {
       {/* ══════════ HERO ══════════ */}
       <section className="relative overflow-hidden" style={{ background: 'linear-gradient(160deg, #0a2e18 0%, #0f5530 40%, #1a7a45 100%)' }}>
         <div className="absolute inset-0">
-          <img src="https://images.unsplash.com/photo-1653566031587-74f7d86a2e71?w=1400&q=80&fit=crop&auto=format" alt="" className="w-full h-full object-cover object-center" />
+          <img src="/images/hero-home.jpg" alt="" className="w-full h-full object-cover object-center" />
           <div className="absolute inset-0" style={{ background: 'linear-gradient(160deg, rgba(10,46,24,0.92) 0%, rgba(15,85,48,0.88) 40%, rgba(26,122,69,0.82) 100%)' }} />
         </div>
         <div className="absolute inset-0 opacity-[0.03]"
@@ -166,8 +166,8 @@ export default function Home() {
 
                 <div className="p-5 relative overflow-hidden" style={{ background: 'rgba(10,46,24,0.7)' }}>
                   <div className="absolute inset-0">
-                    <img src="/Mentor%20mentore%20fille.png" alt=""
-                      className="w-full h-full object-cover object-top opacity-15" />
+                    <img src="/images/mentor-mentore-fille.png" alt=""
+                      className="w-full h-full object-cover object-top opacity-15" loading="lazy" />
                   </div>
                   <div className="relative">
                     <div className="flex items-center gap-2 mb-4">

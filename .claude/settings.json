@@ -1,7 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "PowerShell(New-Item -ItemType Directory -Path \"C:\\\\Users\\\\maman\\\\Downloads\\\\passerelles_clone\\\\public\\\\images\" -Force)"
     ]
   }
 }
