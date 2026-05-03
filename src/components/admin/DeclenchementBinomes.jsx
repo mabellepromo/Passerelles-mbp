@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Mail, CheckCircle2, Clock, AlertTriangle, Send, Users, Loader2, RefreshCw } from 'lucide-react';
+import { Mail, CheckCircle2, Clock, AlertTriangle, Send, Users, Loader2, RefreshCw, UserCheck, UserX } from 'lucide-react';
 
 export default function DeclenchementBinomes() {
   const [selected, setSelected] = useState([]);
@@ -39,7 +39,33 @@ export default function DeclenchementBinomes() {
   });
 
   const binomesNonDeclenches = binomes.filter(b => !b.declenche);
-  const binomesDeclenches = binomes.filter(b => b.declenche);
+  const binomesDeclenches    = binomes.filter(b => b.declenche);
+
+  const allEmails = binomesDeclenches.flatMap(b => [b.mentor_email, b.mentore_email]);
+
+  const { data: activations = {}, isLoading: loadingActivations } = useQuery({
+    queryKey: ['activations', binomesDeclenches.map(b => b.id).join(',')],
+    queryFn: async () => {
+      if (!allEmails.length) return {};
+      const token = await base44.auth.getAccessToken();
+      const res = await fetch('/api/check-activations', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ emails: allEmails }),
+      });
+      if (!res.ok) return {};
+      const data = await res.json();
+      return data.activations || {};
+    },
+    enabled: binomesDeclenches.length > 0,
+    staleTime: 60000,
+  });
+
+  const isActivated = (email) => activations[email?.toLowerCase()]?.activated === true;
+  const lastLogin   = (email) => {
+    const d = activations[email?.toLowerCase()]?.last_sign_in_at;
+    return d ? new Date(d).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : null;
+  };
 
   const toggleSelect = (id) => {
     setSelected(prev =>
@@ -341,19 +367,41 @@ export default function DeclenchementBinomes() {
             <CardTitle className="text-base flex items-center gap-2">
               <CheckCircle2 className="h-5 w-5 text-emerald-600" />
               Binômes déjà déclenchés
+              {loadingActivations && <Loader2 className="h-4 w-4 animate-spin text-gray-400 ml-1" />}
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
             {binomesDeclenches.map(binome => (
               <div key={binome.id}
-                className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-100">
-                <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0" />
-                <div className="flex-1">
-                  <p className="font-medium text-sm text-gray-900">
+                className="flex items-start gap-3 p-3 rounded-xl bg-emerald-50 border border-emerald-100">
+                <CheckCircle2 className="h-5 w-5 text-emerald-600 flex-shrink-0 mt-0.5" />
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm text-gray-900 mb-2">
                     {binome.mentor_name} ↔ {binome.mentore_name}
                   </p>
-                  <p className="text-xs text-gray-400">
-                    Déclenché le {binome.declenche_date
+                  <div className="flex flex-wrap gap-2">
+                    {[
+                      { label: binome.mentor_name,  email: binome.mentor_email,  role: 'Mentor' },
+                      { label: binome.mentore_name, email: binome.mentore_email, role: 'Mentoré(e)' },
+                    ].map(({ label, email, role }) => (
+                      <div key={email} className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-medium ${
+                        isActivated(email)
+                          ? 'bg-emerald-100 text-emerald-700'
+                          : 'bg-red-50 text-red-600 border border-red-100'
+                      }`}>
+                        {isActivated(email)
+                          ? <UserCheck className="h-3 w-3 flex-shrink-0" />
+                          : <UserX    className="h-3 w-3 flex-shrink-0" />}
+                        <span>{role} : {label}</span>
+                        {isActivated(email) && lastLogin(email) && (
+                          <span className="opacity-60">· {lastLogin(email)}</span>
+                        )}
+                        {!isActivated(email) && <span className="opacity-60">· Non activé</span>}
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-1.5">
+                    Email envoyé le {binome.declenche_date
                       ? new Date(binome.declenche_date).toLocaleDateString('fr-FR')
                       : '—'}
                   </p>
