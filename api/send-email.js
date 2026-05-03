@@ -49,24 +49,60 @@ module.exports = async (req, res) => {
     .join('');
 
   const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
-  const emailBody = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f9fafb;font-family:Georgia,serif;">
-  <div style="max-width:600px;margin:0 auto;background:#ffffff;">
-    <div style="background:linear-gradient(135deg,#0f5530,#1a7a45);padding:32px 30px 24px;text-align:center;">
-      <img src="${siteUrl}/logo-mbp.png" alt="Ma Belle Promo" width="72" height="72"
-        style="width:72px;height:72px;border-radius:50%;object-fit:cover;margin-bottom:14px;border:3px solid rgba(212,170,53,0.6);box-shadow:0 0 0 6px rgba(212,170,53,0.15);" />
-      <h1 style="color:white;font-size:22px;margin:0 0 6px;font-weight:bold;font-family:Arial,sans-serif;">Association Ma Belle Promo (MBP)</h1>
-      <p style="color:#a7f3d0;font-size:13px;margin:0 0 10px;">Programme PASSERELLES · Cohorte 1 – 2026</p>
-    </div>
-    <div style="height:3px;background:linear-gradient(90deg,transparent,#b8941f,#d4aa35,#b8941f,transparent);"></div>
-    <div style="padding:30px;">${htmlContent}</div>
-    <div style="background:#f3f4f6;padding:16px 30px;text-align:center;border-top:1px solid #e5e7eb;">
-      <p style="color:#6b7280;font-size:12px;margin:0 0 4px;">Association Ma Belle Promo – Lomé, Togo</p>
-      <p style="color:#6b7280;font-size:12px;margin:0;"><a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a> – +228 96 09 07 07</p>
-      <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;">© 2026 Ma Belle Promo – Programme PASSERELLES</p>
-    </div>
-  </div>
-</body></html>`;
+  const emailBody = `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+</head>
+<body style="margin:0;padding:0;background-color:#f9fafb;font-family:Georgia,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f9fafb;">
+    <tr><td align="center" style="padding:20px 10px;">
+      <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:8px;overflow:hidden;">
+
+        <!-- EN-TÊTE VERT -->
+        <tr>
+          <td bgcolor="#0f5530" align="center" style="background-color:#0f5530;padding:32px 30px 24px;">
+            <img src="${siteUrl}/logo-mbp.png" alt="Ma Belle Promo" width="72" height="72"
+              style="display:block;width:72px;height:72px;border-radius:50%;margin:0 auto 14px;border:3px solid #d4aa35;" />
+            <h1 style="color:#ffffff;font-size:22px;margin:0 0 6px;font-weight:bold;font-family:Arial,sans-serif;line-height:1.3;">
+              Association Ma Belle Promo (MBP)
+            </h1>
+            <p style="color:#a7f3d0;font-size:13px;margin:0;font-family:Arial,sans-serif;">
+              Programme PASSERELLES &middot; Cohorte 1 &ndash; 2026
+            </p>
+          </td>
+        </tr>
+
+        <!-- BANDE DORÉE -->
+        <tr>
+          <td bgcolor="#d4aa35" style="background-color:#d4aa35;height:3px;font-size:1px;line-height:1px;">&nbsp;</td>
+        </tr>
+
+        <!-- CORPS -->
+        <tr>
+          <td style="padding:30px 30px 24px;color:#374151;font-size:15px;line-height:1.8;">
+            ${htmlContent}
+          </td>
+        </tr>
+
+        <!-- PIED DE PAGE -->
+        <tr>
+          <td bgcolor="#f3f4f6" align="center" style="background-color:#f3f4f6;padding:16px 30px;border-top:1px solid #e5e7eb;">
+            <p style="color:#6b7280;font-size:12px;margin:0 0 4px;font-family:Arial,sans-serif;">Association Ma Belle Promo &ndash; Lomé, Togo</p>
+            <p style="color:#6b7280;font-size:12px;margin:0;font-family:Arial,sans-serif;">
+              <a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;text-decoration:none;">contact@mabellepromo.org</a>
+              &nbsp;&ndash;&nbsp;+228 96 09 07 07
+            </p>
+            <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;font-family:Arial,sans-serif;">© 2026 Ma Belle Promo – Programme PASSERELLES</p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
 
   const brevoBody = {
     sender: { name: 'Ma Belle Promo – PASSERELLES', email: 'contact@mabellepromo.org' },
