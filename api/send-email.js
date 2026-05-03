@@ -48,17 +48,20 @@ module.exports = async (req, res) => {
     .map(p => `<p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">${p.replace(/\n/g, '<br>')}</p>`)
     .join('');
 
-  const emailBody = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"></head>
+  const emailBody = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Georgia,serif;">
-  <div style="max-width:600px;margin:0 auto;background:#fff;">
-    <div style="background:linear-gradient(135deg,#0f5530,#1a7a45);padding:24px 30px;text-align:center;">
-      <p style="color:#d4aa35;font-size:11px;letter-spacing:3px;margin:0 0 6px;text-transform:uppercase;font-family:Arial,sans-serif;">Association Ma Belle Promo</p>
-      <h1 style="color:white;font-size:22px;margin:0;font-weight:bold;">Programme PASSERELLES</h1>
+  <div style="max-width:600px;margin:0 auto;background:#ffffff;">
+    <div style="background:linear-gradient(135deg,#0f5530,#1a7a45);padding:30px 30px 20px;text-align:center;">
+      <p style="color:#d4aa35;font-size:11px;letter-spacing:3px;margin:0 0 8px;text-transform:uppercase;font-family:Arial,sans-serif;">Association Ma Belle Promo</p>
+      <h1 style="color:white;font-size:26px;margin:0 0 6px;font-weight:bold;">Programme PASSERELLES</h1>
+      <p style="color:#a7f3d0;font-size:13px;margin:0;">Cohorte 1 – 2026</p>
     </div>
     <div style="height:3px;background:linear-gradient(90deg,transparent,#b8941f,#d4aa35,#b8941f,transparent);"></div>
-    <div style="padding:28px 30px;">${htmlContent}</div>
-    <div style="background:#f3f4f6;padding:14px 30px;text-align:center;border-top:1px solid #e5e7eb;">
-      <p style="color:#6b7280;font-size:12px;margin:0;">Association Ma Belle Promo · Lomé, Togo · contact@mabellepromo.org</p>
+    <div style="padding:30px;">${htmlContent}</div>
+    <div style="background:#f3f4f6;padding:16px 30px;text-align:center;border-top:1px solid #e5e7eb;">
+      <p style="color:#6b7280;font-size:12px;margin:0 0 4px;">Association Ma Belle Promo à Lomé, Togo – 12 BP 335 Baguida</p>
+      <p style="color:#6b7280;font-size:12px;margin:0;"><a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a> – +228 96 09 07 07</p>
+      <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;">© 2026 Ma Belle Promo – Programme PASSERELLES</p>
     </div>
   </div>
 </body></html>`;
