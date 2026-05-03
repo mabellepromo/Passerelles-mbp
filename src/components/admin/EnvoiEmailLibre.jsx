@@ -47,6 +47,7 @@ export default function EnvoiEmailLibre() {
   const [attachments, setAttachments] = useState([]);
   const [sizeWarn,    setSizeWarn]    = useState('');
   const [sending,     setSending]     = useState(false);
+  const [progress,    setProgress]    = useState(0);
   const [results,     setResults]     = useState(null);
   const fileRef = useRef();
 
@@ -101,10 +102,12 @@ export default function EnvoiEmailLibre() {
 
   const handleSend = async () => {
     setSending(true);
+    setProgress(0);
     const token = await base44.auth.getAccessToken();
     const sent = [], errors = [];
     const brevoAttachments = attachments.map(a => ({ name: a.name, content: a.content }));
-    for (const person of selectedPeople) {
+    for (let i = 0; i < selectedPeople.length; i++) {
+      const person = selectedPeople[i];
       try {
         const res = await fetch('/api/send-email', {
           method: 'POST',
@@ -121,6 +124,7 @@ export default function EnvoiEmailLibre() {
       } catch (e) {
         errors.push({ email: person.email, reason: e.message });
       }
+      setProgress(i + 1);
     }
     setResults({ sent, errors });
     setSending(false);
@@ -351,6 +355,21 @@ export default function EnvoiEmailLibre() {
         </div>
       </div>
 
+      {sending && (
+        <div className="space-y-1">
+          <div className="flex justify-between text-xs text-gray-400">
+            <span>Envoi en cours...</span>
+            <span className="font-semibold text-emerald-600">{progress} / {selectedPeople.length}</span>
+          </div>
+          <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className="h-full rounded-full transition-all duration-300"
+              style={{ width: `${(progress / selectedPeople.length) * 100}%`, background: 'linear-gradient(90deg,#1a7a45,#2ea05c)' }}
+            />
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-between pt-2 border-t">
         <Button variant="outline" onClick={() => setStep(1)} disabled={sending} className="gap-1.5">
           <ChevronLeft className="h-4 w-4" /> Retour
@@ -361,7 +380,10 @@ export default function EnvoiEmailLibre() {
           className="gap-2"
           style={{ background: 'var(--brand-green)', color: 'white' }}>
           {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
-          {sending ? 'Envoi en cours...' : `Envoyer ${selectedPeople.length} email${selectedPeople.length > 1 ? 's' : ''}`}
+          {sending
+            ? `Envoi ${progress}/${selectedPeople.length}...`
+            : `Envoyer ${selectedPeople.length} email${selectedPeople.length > 1 ? 's' : ''}`
+          }
         </Button>
       </div>
     </div>
