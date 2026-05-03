@@ -5,12 +5,14 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Mail, CheckCircle2, Clock, AlertTriangle, Send, Users, Loader2 } from 'lucide-react';
+import { Mail, CheckCircle2, Clock, AlertTriangle, Send, Users, Loader2, RefreshCw } from 'lucide-react';
 
 export default function DeclenchementBinomes() {
   const [selected, setSelected] = useState([]);
   const [sending, setSending] = useState(false);
   const [results, setResults] = useState([]);
+  const [resending, setResending] = useState(null);
+  const [resendResult, setResendResult] = useState({});
   const queryClient = useQueryClient();
 
   const { data: binomes = [], isLoading } = useQuery({
@@ -66,6 +68,50 @@ export default function DeclenchementBinomes() {
     } catch {
       return null;
     }
+  };
+
+  const renvoyerEmail = async (binome) => {
+    setResending(binome.id);
+    setResendResult(prev => ({ ...prev, [binome.id]: null }));
+    try {
+      const mentor = getMentorInfo(binome.mentor_email);
+      const mentore = getMentoreInfo(binome.mentore_email);
+      let pdf_base64 = null;
+      let pdf_filename = null;
+      if (binome.pdf_url) {
+        pdf_base64 = await fetchPdfBase64(binome.pdf_url);
+        pdf_filename = binome.pdf_url.split('/').pop();
+      }
+      const token = await base44.auth.getAccessToken();
+      const response = await fetch('/api/send-binome-email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          mentor_name: binome.mentor_name,
+          mentor_email: binome.mentor_email,
+          mentor_profession: mentor.profession || 'Juriste',
+          mentor_organisation: mentor.organisation || '',
+          mentore_name: binome.mentore_name,
+          mentore_email: binome.mentore_email,
+          mentore_specialisation: mentore.specialisation || mentore.domaine_interet || 'Droit',
+          mentore_universite: mentore.universite || '',
+          notes: binome.notes || `Binôme ${binome.mentor_name} ↔ ${binome.mentore_name}`,
+          pdf_base64,
+          pdf_filename,
+        }),
+      });
+      const data = await response.json();
+      setResendResult(prev => ({ ...prev, [binome.id]: data.success ? 'success' : 'error' }));
+      if (data.success) {
+        await supabase.from('binome').update({ declenche_date: new Date().toISOString() }).eq('id', binome.id);
+      }
+    } catch {
+      setResendResult(prev => ({ ...prev, [binome.id]: 'error' }));
+    }
+    setResending(null);
   };
 
   const declencherBinomes = async (binomesADeclencher) => {
@@ -310,7 +356,26 @@ export default function DeclenchementBinomes() {
                       : '—'}
                   </p>
                 </div>
-                <Badge className="bg-emerald-100 text-emerald-700 text-xs">Déclenché ✓</Badge>
+                <div className="flex items-center gap-2">
+                  {resendResult[binome.id] === 'success' && (
+                    <span className="text-xs text-emerald-600 font-medium">✓ Renvoyé</span>
+                  )}
+                  {resendResult[binome.id] === 'error' && (
+                    <span className="text-xs text-red-500 font-medium">✗ Erreur</span>
+                  )}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    disabled={resending === binome.id}
+                    onClick={() => renvoyerEmail(binome)}
+                    className="text-xs gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-100">
+                    {resending === binome.id
+                      ? <Loader2 className="h-3 w-3 animate-spin" />
+                      : <RefreshCw className="h-3 w-3" />}
+                    Renvoyer
+                  </Button>
+                  <Badge className="bg-emerald-100 text-emerald-700 text-xs">Déclenché ✓</Badge>
+                </div>
               </div>
             ))}
           </CardContent>
