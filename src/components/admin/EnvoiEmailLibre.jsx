@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44, supabase } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,17 @@ import { Button } from '@/components/ui/button';
 import {
   Send, Loader2, CheckCircle2, XCircle, Search,
   UserCheck, GraduationCap, Users, ChevronRight, ChevronLeft, Info,
+  Paperclip, Trash2, FileIcon,
 } from 'lucide-react';
+
+const MAX_MB   = 4;
+const toBase64 = (file) => new Promise((resolve, reject) => {
+  const r = new FileReader();
+  r.onload  = () => resolve(r.result.split(',')[1]);
+  r.onerror = reject;
+  r.readAsDataURL(file);
+});
+const fmtSize = (b) => b < 1024 * 1024 ? `${(b / 1024).toFixed(0)} Ko` : `${(b / 1024 / 1024).toFixed(1)} Mo`;
 
 const VARIABLES = ['{{prenom}}', '{{nom}}', '{{email}}'];
 
@@ -30,12 +40,15 @@ function textToHtml(text) {
 export default function EnvoiEmailLibre() {
   const [step,        setStep]        = useState(1);
   const [search,      setSearch]      = useState('');
-  const [filter,      setFilter]      = useState('tous'); // 'tous' | 'mentor' | 'mentore'
+  const [filter,      setFilter]      = useState('tous');
   const [selected,    setSelected]    = useState(new Set());
   const [subject,     setSubject]     = useState('');
   const [body,        setBody]        = useState('');
+  const [attachments, setAttachments] = useState([]);
+  const [sizeWarn,    setSizeWarn]    = useState('');
   const [sending,     setSending]     = useState(false);
   const [results,     setResults]     = useState(null);
+  const fileRef = useRef();
 
   const { data: mentors  = [] } = useQuery({ queryKey: ['mentors-email'],  queryFn: () => base44.entities.Mentor.list()  });
   const { data: mentores = [] } = useQuery({ queryKey: ['mentores-email'], queryFn: () => base44.entities.Mentore.list() });
@@ -65,19 +78,42 @@ export default function EnvoiEmailLibre() {
   const selectedPeople = allParticipants.filter(p => selected.has(p.id));
   const preview        = selectedPeople[0];
 
+  const handleFiles = async (e) => {
+    const files = Array.from(e.target.files);
+    const list  = [...attachments];
+    let warn = '';
+    for (const file of files) {
+      const totalBytes = [...list, file].reduce((s, a) => s + (a.size || 0), 0);
+      if (totalBytes > MAX_MB * 1024 * 1024) { warn = `Taille totale limitée à ${MAX_MB} Mo`; break; }
+      const content = await toBase64(file);
+      list.push({ name: file.name, content, size: file.size });
+    }
+    setSizeWarn(warn);
+    setAttachments(list);
+    e.target.value = '';
+  };
+
+  const removeAttachment = (i) => {
+    const next = attachments.filter((_, idx) => idx !== i);
+    setAttachments(next);
+    if (next.reduce((s, a) => s + a.size, 0) <= MAX_MB * 1024 * 1024) setSizeWarn('');
+  };
+
   const handleSend = async () => {
     setSending(true);
     const token = await base44.auth.getAccessToken();
     const sent = [], errors = [];
+    const brevoAttachments = attachments.map(a => ({ name: a.name, content: a.content }));
     for (const person of selectedPeople) {
       try {
         const res = await fetch('/api/send-email', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({
-            to:      person.email,
-            subject: fillTemplate(subject, person),
-            html:    textToHtml(fillTemplate(body, person)),
+            to:          person.email,
+            subject:     fillTemplate(subject, person),
+            html:        textToHtml(fillTemplate(body, person)),
+            attachments: brevoAttachments,
           }),
         });
         if (!res.ok) throw new Error((await res.json().catch(() => ({}))).error || 'Erreur');
@@ -93,7 +129,7 @@ export default function EnvoiEmailLibre() {
 
   const reset = () => {
     setStep(1); setSearch(''); setFilter('tous'); setSelected(new Set());
-    setSubject(''); setBody(''); setResults(null);
+    setSubject(''); setBody(''); setAttachments([]); setSizeWarn(''); setResults(null);
   };
 
   const ROLE_COLORS = {
@@ -287,12 +323,40 @@ export default function EnvoiEmailLibre() {
         </details>
       )}
 
+      {/* Pièces jointes */}
+      <div>
+        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+          Pièces jointes <span className="text-gray-300 font-normal normal-case">(max {MAX_MB} Mo total)</span>
+        </label>
+        <div className="space-y-2">
+          {attachments.map((a, i) => (
+            <div key={i} className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+              <FileIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
+              <span className="flex-1 text-sm text-gray-700 truncate">{a.name}</span>
+              <span className="text-xs text-gray-400 flex-shrink-0">{fmtSize(a.size)}</span>
+              <button onClick={() => removeAttachment(i)} className="text-gray-300 hover:text-red-400 transition-colors flex-shrink-0">
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ))}
+          {sizeWarn && <p className="text-xs text-red-500">{sizeWarn}</p>}
+          <button
+            type="button"
+            onClick={() => fileRef.current?.click()}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-gray-300 text-sm text-gray-500 hover:border-emerald-400 hover:text-emerald-600 transition-colors w-full">
+            <Paperclip className="h-4 w-4" />
+            Joindre un fichier
+          </button>
+          <input ref={fileRef} type="file" multiple className="hidden" onChange={handleFiles} />
+        </div>
+      </div>
+
       <div className="flex justify-between pt-2 border-t">
         <Button variant="outline" onClick={() => setStep(1)} disabled={sending} className="gap-1.5">
           <ChevronLeft className="h-4 w-4" /> Retour
         </Button>
         <Button
-          disabled={sending || !subject.trim() || !body.trim()}
+          disabled={sending || !subject.trim() || !body.trim() || !!sizeWarn}
           onClick={handleSend}
           className="gap-2"
           style={{ background: 'var(--brand-green)', color: 'white' }}>

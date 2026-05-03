@@ -36,7 +36,7 @@ module.exports = async (req, res) => {
     if (error || !data?.user) return res.status(401).json({ error: 'Session invalide' });
   }
 
-  const { to, subject, text, html } = req.body || {};
+  const { to, subject, text, html, attachments = [] } = req.body || {};
   if (!to || !subject || (!text && !html)) {
     return res.status(400).json({ error: 'Champs to, subject et text/html requis' });
   }
@@ -63,17 +63,23 @@ module.exports = async (req, res) => {
   </div>
 </body></html>`;
 
+  const brevoBody = {
+    sender: { name: 'Ma Belle Promo – PASSERELLES', email: 'contact@mabellepromo.org' },
+    to: [{ email: to }],
+    replyTo: { email: 'contact@mabellepromo.org' },
+    subject,
+    htmlContent: emailBody,
+  };
+
+  if (Array.isArray(attachments) && attachments.length > 0) {
+    brevoBody.attachment = attachments.map(a => ({ name: a.name, content: a.content }));
+  }
+
   try {
     const brevoRes = await fetch('https://api.brevo.com/v3/smtp/email', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'api-key': process.env.BREVO_API_KEY },
-      body: JSON.stringify({
-        sender: { name: 'Ma Belle Promo – PASSERELLES', email: 'contact@mabellepromo.org' },
-        to: [{ email: to }],
-        replyTo: { email: 'contact@mabellepromo.org' },
-        subject,
-        htmlContent: emailBody,
-      }),
+      body: JSON.stringify(brevoBody),
     });
 
     if (!brevoRes.ok) {
