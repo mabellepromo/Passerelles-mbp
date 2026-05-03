@@ -72,7 +72,7 @@ const AuthenticatedApp = () => {
         <Route path="/MonEspace" element={<RequireAuth><LayoutWrapper currentPageName="MonEspace"><MonEspace /></LayoutWrapper></RequireAuth>} />
         <Route path="/BilanFinal" element={<RequireAuth><LayoutWrapper currentPageName="BilanFinal"><BilanFinal /></LayoutWrapper></RequireAuth>} />
         <Route path="/Messagerie" element={<RequireAuth><LayoutWrapper currentPageName="Messagerie"><Messagerie /></LayoutWrapper></RequireAuth>} />
-        <Route path="/ResultatsCohorte1" element={<LayoutWrapper currentPageName="ResultatsCohorte1"><ResultatsCohorte1 /></LayoutWrapper>} />
+        <Route path="/ResultatsCohorte1" element={<RequireAuth><LayoutWrapper currentPageName="ResultatsCohorte1"><ResultatsCohorte1 /></LayoutWrapper></RequireAuth>} />
         <Route path="/AProposMBP" element={<LayoutWrapper currentPageName="AProposMBP"><AProposMBP /></LayoutWrapper>} />
         <Route path="/GuideNavigation" element={<LayoutWrapper currentPageName="GuideNavigation"><GuideNavigation /></LayoutWrapper>} />
         <Route path="/ProgrammeComplet" element={<LayoutWrapper currentPageName="ProgrammeComplet"><ProgrammeComplet /></LayoutWrapper>} />
