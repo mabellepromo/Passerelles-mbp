@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mémo Binôme – Programme PASSERELLES</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: Georgia, serif;
+      font-size: 13.5px;
+      line-height: 1.75;
+      color: #1f2937;
+      background: #fff;
+      padding: 0;
+    }
+
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 48px 52px;
+    }
+
+    /* En-tête */
+    .header {
+      background: linear-gradient(135deg, #0f5530, #1a7a45);
+      color: white;
+      padding: 32px 36px 24px;
+      text-align: center;
+      margin: -48px -52px 36px;
+    }
+    .header .label {
+      font-family: Arial, sans-serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: #d4aa35;
+      margin-bottom: 8px;
+    }
+    .header h1 {
+      font-size: 24px;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .header .sub {
+      font-size: 13px;
+      color: #a7f3d0;
+    }
+    .gold-line {
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #b8941f, #d4aa35, #b8941f, transparent);
+      margin: 0 -52px 36px;
+    }
+
+    /* Titre du mémo */
+    .memo-title {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+    .memo-title h2 {
+      font-size: 18px;
+      color: #0f5530;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+    .memo-title p {
+      font-size: 13px;
+      color: #6b7280;
+    }
+
+    /* Alerte intro */
+    .intro-box {
+      background: #f0fdf4;
+      border: 1px solid #6ee7b7;
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin-bottom: 32px;
+    }
+    .intro-box p {
+      color: #065f46;
+      font-size: 13.5px;
+      line-height: 1.8;
+    }
+
+    /* Sections */
+    .section {
+      margin-bottom: 30px;
+    }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #d4aa35;
+    }
+    .section-number {
+      background: #0f5530;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+      font-weight: bold;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-title h3 {
+      font-size: 15px;
+      color: #0f5530;
+      font-weight: bold;
+    }
+
+    /* Étapes numérotées */
+    .steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .steps li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+    .step-num {
+      background: #d4aa35;
+      color: white;
+      font-family: Arial, sans-serif;
+      font-size: 11px;
+      font-weight: bold;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .steps li p {
+      font-size: 13px;
+      line-height: 1.7;
+      color: #374151;
+    }
+    .steps li p strong {
+      color: #0f5530;
+    }
+
+    /* Encadré warning */
+    .warning-box {
+      background: #fffbeb;
+      border: 1px solid #fcd34d;
+      border-left: 4px solid #d4aa35;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-top: 14px;
+    }
+    .warning-box p {
+      font-size: 13px;
+      color: #78350f;
+      line-height: 1.7;
+    }
+
+    /* Encadré info */
+    .info-box {
+      background: #f0fdf4;
+      border: 1px solid #a7f3d0;
+      border-left: 4px solid #1a7a45;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-top: 14px;
+    }
+    .info-box p {
+      font-size: 13px;
+      color: #065f46;
+      line-height: 1.7;
+    }
+
+    /* Grille 2 colonnes */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .col-card {
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+    .col-card h4 {
+      font-size: 12px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #0f5530;
+      margin-bottom: 10px;
+      font-family: Arial, sans-serif;
+    }
+    .col-card ul {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .col-card ul li {
+      font-size: 12.5px;
+      color: #374151;
+      padding-left: 14px;
+      position: relative;
+      line-height: 1.5;
+    }
+    .col-card ul li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #d4aa35;
+      font-weight: bold;
+    }
+
+    /* Tableau formats */
+    .formats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .format-tag {
+      background: #f0fdf4;
+      border: 1px solid #6ee7b7;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      color: #065f46;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Plateforme guide */
+    .platform-steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .platform-steps li {
+      font-size: 13px;
+      color: #374151;
+      padding: 8px 12px;
+      background: #f9fafb;
+      border-radius: 6px;
+      border-left: 3px solid #1a7a45;
+      line-height: 1.6;
+    }
+    .platform-steps li strong {
+      color: #0f5530;
+    }
+
+    /* Alert rouge */
+    .danger-box {
+      background: #fef2f2;
+      border: 1px solid #fca5a5;
+      border-left: 4px solid #dc2626;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin-top: 14px;
+    }
+    .danger-box p {
+      font-size: 13px;
+      color: #7f1d1d;
+      line-height: 1.7;
+    }
+
+    /* Contact */
+    .contact-box {
+      background: linear-gradient(135deg, #0f5530, #1a7a45);
+      border-radius: 10px;
+      padding: 20px 24px;
+      text-align: center;
+      margin-top: 14px;
+    }
+    .contact-box p {
+      color: #a7f3d0;
+      font-size: 13px;
+      margin-bottom: 6px;
+    }
+    .contact-box a {
+      color: #d4aa35;
+      font-weight: bold;
+      text-decoration: none;
+    }
+    .contact-box .phone {
+      color: white;
+      font-size: 15px;
+      font-weight: bold;
+      margin-top: 6px;
+    }
+
+    /* Pied de page */
+    .footer {
+      text-align: center;
+      padding-top: 28px;
+      margin-top: 36px;
+      border-top: 1px solid #e5e7eb;
+      color: #9ca3af;
+      font-size: 11px;
+      font-family: Arial, sans-serif;
+      line-height: 1.7;
+    }
+
+    /* Séparateur décoratif */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #d4aa35, transparent);
+      margin: 28px 0;
+    }
+
+    @media print {
+      body { font-size: 12px; }
+      .page { padding: 32px 40px; }
+      .header { margin: -32px -40px 32px; }
+      .gold-line { margin: 0 -40px 32px; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- En-tête -->
+  <div class="header">
+    <p class="label">Association Ma Belle Promo</p>
+    <h1>Programme PASSERELLES</h1>
+    <p class="sub">Cohorte 1 – 2026</p>
+  </div>
+  <div class="gold-line"></div>
+
+  <!-- Titre -->
+  <div class="memo-title">
+    <h2>Mémo de démarrage — Votre binôme PASSERELLES</h2>
+    <p>Ce document vous accompagne pas à pas dès réception de votre email d'activation.</p>
+  </div>
+
+  <!-- Intro -->
+  <div class="intro-box">
+    <p>
+      Vous avez été sélectionné(e) pour participer au <strong>Programme PASSERELLES – Cohorte 1</strong>.
+      Ce mémo vous explique en détail comment activer votre espace personnel, ce que vous y trouverez,
+      vos engagements, et quoi faire si vous rencontrez un problème. Lisez-le entièrement avant de cliquer
+      sur le lien d'activation.
+    </p>
+  </div>
+
+  <!-- Section 1 : L'email d'activation -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-number">1</div>
+      <h3>L'email d'activation — ce qu'il faut savoir avant de cliquer</h3>
+    </div>
+    <p style="color:#374151; font-size:13px; margin-bottom:14px;">
+      Dès que votre binôme est officiellement enclenché par l'équipe PASSERELLES, vous recevez
+      un email de <strong style="color:#0f5530;">contact@mabellepromo.org</strong> avec le sujet :
+    </p>
+    <div class="info-box">
+      <p>
+        <strong>Pour le(la) mentor(e) :</strong> « PASSERELLES – Votre binôme : [Prénom Nom du/de la mentoré(e)] »<br />
+        <strong>Pour le(la) mentoré(e) :</strong> « PASSERELLES – Votre mentor(e) : [Prénom Nom du/de la mentor(e)] »
+      </p>
+    </div>
+    <div style="height:12px;"></div>
+    <p style="color:#374151; font-size:13px; margin-bottom:12px;">Cet email contient :</p>
+    <ul class="steps">
+      <li>
+        <div class="step-num">A</div>
+        <p>Le <strong>nom et le profil</strong> de votre binôme (spécialisation, établissement ou profession)</p>
+      </li>
+      <li>
+        <div class="step-num">B</div>
+        <p>Une <strong>fiche PDF complète</strong> de votre binôme en pièce jointe</p>
+      </li>
+      <li>
+        <div class="step-num">C</div>
+        <p>Un <strong>bouton « Activer mon compte »</strong> — c'est votre lien d'accès personnel à la plateforme</p>
+      </li>
+    </ul>
+    <div class="warning-box" style="margin-top:16px;">
+      <p>
+        ⚠️ <strong>Ce lien est strictement personnel.</strong> Il a été généré pour vous et pour vous seul(e).
+        Ne le partagez avec personne. Il est <strong>valable 24 heures</strong> à compter de la réception
+        de l'email — passé ce délai, il ne fonctionnera plus.
+      </p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 2 : Activer son compte -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-number">2</div>
+      <h3>Comment activer votre compte — étape par étape</h3>
+    </div>
+    <ul class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <p>Ouvrez l'email et cliquez sur le bouton vert <strong>« Activer mon compte »</strong>. Votre navigateur internet s'ouvre automatiquement.</p>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <p>Vous arrivez sur une page qui vous demande de <strong>créer votre mot de passe</strong>. Choisissez un mot de passe que vous serez en mesure de retenir (minimum 8 caractères).</p>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <p>Confirmez votre mot de passe, puis cliquez sur <strong>« Valider »</strong>. Votre compte est maintenant créé.</p>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <p>Vous êtes redirigé(e) directement vers <strong>votre espace personnel</strong> — « Mon Espace ». Aucune autre démarche n'est nécessaire.</p>
+      </li>
+    </ul>
+    <div class="info-box" style="margin-top:16px;">
+      <p>
+        Pour vous reconnecter ultérieurement, rendez-vous sur le site PASSERELLES et cliquez sur
+        <strong>« Se connecter »</strong>. Utilisez l'adresse email avec laquelle vous avez reçu cet email
+        et le mot de passe que vous venez de créer.
+      </p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 3 : Protection des données -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-number">3</div>
+      <h3>Protection de vos données — ce que vous pouvez voir, et ce que vous ne pouvez pas</h3>
+    </div>
+    <p style="color:#374151; font-size:13px; margin-bottom:14px;">
+      La plateforme PASSERELLES est conçue pour protéger la confidentialité de chaque participant.
+      Voici ce que cela signifie concrètement :
+    </p>
+    <div class="two-col">
+      <div class="col-card">
+        <h4>✅ Ce que vous voyez</h4>
+        <ul>
+          <li>Votre propre profil</li>
+          <li>Le profil de <strong>votre binôme uniquement</strong></li>
+          <li>Vos échanges, vos suivis et votre journal</li>
+          <li>Vos objectifs et vos bilans</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <h4>🔒 Ce que vous ne voyez pas</h4>
+        <ul>
+          <li>Les autres binômes du programme</li>
+          <li>Les données des autres participants</li>
+          <li>Les informations de l'administration hors programme</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box" style="margin-top:14px;">
+      <p>
+        Cette isolation est automatique et permanente. Même si vous cherchez, vous ne pourrez pas
+        accéder aux données d'un autre binôme. C'est une protection technique, pas une règle qu'il
+        faut respecter — elle s'applique d'elle-même.
+      </p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 4 : Vos obligations -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-number">4</div>
+      <h3>Vos engagements — ce qu'on attend de vous</h3>
+    </div>
+    <p style="color:#374151; font-size:13px; margin-bottom:14px;">
+      En activant votre compte, vous confirmez votre adhésion à la <strong>Charte d'Engagement Mutuel</strong>
+      du Programme PASSERELLES. Voici les points essentiels à retenir.
+    </p>
+
+    <div class="two-col">
+      <div class="col-card">
+        <h4>Pour le(la) Mentor(e)</h4>
+        <ul>
+          <li>Minimum <strong>2h d'échange par mois</strong> avec votre mentoré(e)</li>
+          <li>Préparer chaque séance avec des objectifs clairs</li>
+          <li>Écouter activement, sans juger</li>
+          <li>Partager votre expérience de façon sincère</li>
+          <li>Renseigner le suivi mensuel sur la plateforme</li>
+          <li>Signaler toute difficulté à l'équipe</li>
+        </ul>
+      </div>
+      <div class="col-card">
+        <h4>Pour le(la) Mentoré(e)</h4>
+        <ul>
+          <li>Minimum <strong>2h d'échange par mois</strong> avec votre mentor(e)</li>
+          <li>Être ponctuel(le) et prévenir en cas d'absence</li>
+          <li>Définir vos objectifs dès la 1ʳᵉ séance</li>
+          <li>Préparer chaque rendez-vous à l'avance</li>
+          <li>Renseigner le suivi mensuel sur la plateforme</li>
+          <li>Communiquer vos difficultés honnêtement</li>
+        </ul>
+      </div>
+    </div>
+
+    <p style="color:#374151; font-size:13px; margin-top:16px; margin-bottom:10px;">
+      <strong>Pour les deux parties, sans exception :</strong>
+    </p>
+    <ul class="platform-steps">
+      <li>🔐 <strong>Confidentialité absolue</strong> — tout ce qui est partagé dans le cadre du binôme reste strictement entre vous, sauf obligation légale.</li>
+      <li>🚫 <strong>Zéro contrepartie</strong> — aucun avantage, service ou faveur ne peut être demandé en échange de l'accompagnement. Tout manquement entraîne une exclusion immédiate du programme.</li>
+      <li>📋 <strong>Un compte-rendu par séance</strong> — à saisir sur la plateforme le jour même ou dans les 48h suivant la séance.</li>
+      <li>📅 <strong>Préavis de 2 semaines</strong> si vous souhaitez mettre fin à la relation de mentorat.</li>
+    </ul>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 5 : La méthode SMART -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-number">5</div>
+      <h3>Définir vos objectifs — la méthode SMART en 5 minutes</h3>
+    </div>
+    <p style="color:#374151; font-size:13px; margin-bottom:14px;">
+      Dès la première séance, définissez ensemble vos objectifs de l'année. La méthode SMART est
+      <strong>fortement recommandée</strong> — voici ce que chaque lettre signifie, simplement :
+    </p>
+    <ul class="platform-steps">
+      <li><strong>S — Spécifique :</strong> Un objectif précis, pas une intention vague. Exemple : « Obtenir un stage dans un cabinet d'avocats d'affaires avant juillet. »</li>
+      <li><strong>M — Mesurable :</strong> On sait qu'on a avancé grâce à un indicateur concret. Exemple : « Envoyer 10 candidatures par mois. »</li>
+      <li><strong>A — Atteignable :</strong> Ambitieux mais réaliste compte tenu de votre situation actuelle.</li>
+      <li><strong>R — Réaliste / Pertinent :</strong> L'objectif ouvre des portes dans votre parcours juridique à 3-5 ans.</li>
+      <li><strong>T — Temporel :</strong> Il a une date butoir claire. Exemple : « D'ici fin juin, j'aurai... »</li>
+    </ul>
+    <div class="info-box" style="margin-top:14px;">
+      <p>
+        Chaque mois, votre compte-rendu sur la plateforme vous permet de mesurer vos progrès par rapport
+        à ces objectifs et de les ajuster si besoin — sans jugement.
+      </p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 6 : Utiliser la plateforme -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-number">6</div>
+      <h3>Comment utiliser la plateforme — les gestes essentiels</h3>
+    </div>
+    <p style="color:#374151; font-size:13px; margin-bottom:14px;">
+      La plateforme est simple. Voici votre routine mensuelle recommandée :
+    </p>
+    <ul class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <p>Connectez-vous et allez dans <strong>« Mon Espace »</strong> — c'est votre tableau de bord. Vous y voyez votre binôme, vos séances passées et vos objectifs en cours.</p>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <p>Après chaque séance, cliquez sur <strong>« Nouveau suivi »</strong>. Renseignez : date, durée, format, objectifs abordés, succès et points d'attention. <strong>Validez dans les 48h.</strong></p>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <p>Utilisez le <strong>Journal de bord</strong> pour noter vos réflexions personnelles et suivre l'avancement de vos objectifs SMART.</p>
+      </li>
+      <li>
+        <div class="step-num">4</div>
+        <p>Utilisez la <strong>Messagerie</strong> de la plateforme pour planifier vos prochaines séances et partager des ressources avec votre binôme.</p>
+      </li>
+    </ul>
+    <p style="color:#374151; font-size:13px; margin-top:16px; margin-bottom:10px;">
+      <strong>Formats de séance possibles — c'est vous qui choisissez ensemble :</strong>
+    </p>
+    <div class="formats">
+      <span class="format-tag">📍 Présentiel (café, campus, bibliothèque)</span>
+      <span class="format-tag">💻 Visioconférence (Zoom, Meet, Teams)</span>
+      <span class="format-tag">📞 Appel téléphonique</span>
+      <span class="format-tag">💬 Messagerie (WhatsApp, Telegram)</span>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 7 : Lien expiré / non-action -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-number">7</div>
+      <h3>Vous n'avez pas cliqué dans les 24h — que faire ?</h3>
+    </div>
+    <p style="color:#374151; font-size:13px; margin-bottom:12px;">
+      Si votre lien a expiré ou que vous n'avez pas reçu l'email, pas de panique. Voici la marche à suivre :
+    </p>
+    <ul class="steps">
+      <li>
+        <div class="step-num">1</div>
+        <p>Vérifiez d'abord vos <strong>courriers indésirables</strong> (dossier spam ou promotions). L'email vient de <strong>contact@mabellepromo.org</strong>.</p>
+      </li>
+      <li>
+        <div class="step-num">2</div>
+        <p>Si le lien est expiré, rendez-vous sur le site PASSERELLES et cliquez sur <strong>« Mot de passe oublié »</strong> ou <strong>« Demander un nouveau lien »</strong>. Entrez votre adresse email — un nouveau lien vous sera envoyé immédiatement.</p>
+      </li>
+      <li>
+        <div class="step-num">3</div>
+        <p>Si vous avez toujours un problème, contactez-nous directement (voir ci-dessous). <strong>Ne tardez pas</strong> — votre binôme vous attend.</p>
+      </li>
+    </ul>
+    <div class="danger-box">
+      <p>
+        🔴 <strong>Important :</strong> L'absence de réponse dans les <strong>24 heures</strong> suivant la réception
+        de l'email peut retarder le démarrage de votre binôme. Sans réaction de votre part dans les <strong>72 heures</strong>,
+        l'équipe PASSERELLES vous contactera directement pour vous accompagner — ou procédera à une
+        réaffectation si nécessaire.
+      </p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Section 8 : Contact -->
+  <div class="section">
+    <div class="section-title">
+      <div class="section-number">8</div>
+      <h3>Une question ? Un problème ? Contactez-nous</h3>
+    </div>
+    <p style="color:#374151; font-size:13px; margin-bottom:14px;">
+      L'équipe PASSERELLES est disponible pour vous accompagner à chaque étape.
+      N'hésitez pas à nous écrire pour la moindre difficulté technique ou relationnelle.
+    </p>
+    <div class="contact-box">
+      <p>Email</p>
+      <a href="mailto:contact@mabellepromo.org">contact@mabellepromo.org</a>
+      <div class="phone">+228 96 09 07 07</div>
+      <p style="margin-top:8px; font-size:12px;">Association Ma Belle Promo – Lomé, Togo</p>
+    </div>
+  </div>
+
+  <!-- Pied de page -->
+  <div class="footer">
+    <p>© 2026 Association Ma Belle Promo – Programme PASSERELLES – Cohorte 1</p>
+    <p style="margin-top:4px;">12 BP 335 Baguida, Lomé, Togo &nbsp;|&nbsp; contact@mabellepromo.org &nbsp;|&nbsp; +228 96 09 07 07</p>
+    <p style="margin-top:8px; color:#d4aa35; letter-spacing:1px; font-size:10px; text-transform:uppercase;">Créer des passerelles durables entre les talents et les opportunités</p>
+  </div>
+
+</div>
+</body>
+</html>

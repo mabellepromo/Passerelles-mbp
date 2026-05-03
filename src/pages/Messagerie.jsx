@@ -135,13 +135,6 @@ export default function Messagerie() {
       read: false
     });
     queryClient.invalidateQueries({ queryKey: ['messages', selectedBinomeId] });
-    if (partner.email) {
-      base44.integrations.Core.SendEmail({
-        to: partner.email,
-        subject: `💬 Nouveau message de ${user.full_name || user.email} — PASSERELLES`,
-        body: `Bonjour ${partner.name},\n\n${user.full_name || user.email} vous a envoyé un message :\n\n"${content}"\n\nConnectez-vous pour répondre.\n\nCordialement,\nL'équipe Ma Belle Promo`
-      }).catch(() => {});
-    }
   };
 
   const handleKeyDown = (e) => {
