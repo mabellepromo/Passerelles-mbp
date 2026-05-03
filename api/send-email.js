@@ -59,7 +59,7 @@ module.exports = async (req, res) => {
     <div style="height:3px;background:linear-gradient(90deg,transparent,#b8941f,#d4aa35,#b8941f,transparent);"></div>
     <div style="padding:30px;">${htmlContent}</div>
     <div style="background:#f3f4f6;padding:16px 30px;text-align:center;border-top:1px solid #e5e7eb;">
-      <p style="color:#6b7280;font-size:12px;margin:0 0 4px;">Association Ma Belle Promo à Lomé, Togo – 12 BP 335 Baguida</p>
+      <p style="color:#6b7280;font-size:12px;margin:0 0 4px;">Association Ma Belle Promo – Lomé, Togo</p>
       <p style="color:#6b7280;font-size:12px;margin:0;"><a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a> – +228 96 09 07 07</p>
       <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;">© 2026 Ma Belle Promo – Programme PASSERELLES</p>
     </div>
