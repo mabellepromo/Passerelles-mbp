@@ -48,13 +48,15 @@ module.exports = async (req, res) => {
     .map(p => `<p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">${p.replace(/\n/g, '<br>')}</p>`)
     .join('');
 
+  const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
   const emailBody = `<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"></head>
 <body style="margin:0;padding:0;background:#f9fafb;font-family:Georgia,serif;">
   <div style="max-width:600px;margin:0 auto;background:#ffffff;">
-    <div style="background:linear-gradient(135deg,#0f5530,#1a7a45);padding:30px 30px 20px;text-align:center;">
-      <p style="color:#d4aa35;font-size:11px;letter-spacing:3px;margin:0 0 8px;text-transform:uppercase;font-family:Arial,sans-serif;">Association Ma Belle Promo</p>
-      <h1 style="color:white;font-size:26px;margin:0 0 6px;font-weight:bold;">Programme PASSERELLES</h1>
-      <p style="color:#a7f3d0;font-size:13px;margin:0;">Cohorte 1 – 2026</p>
+    <div style="background:linear-gradient(135deg,#0f5530,#1a7a45);padding:32px 30px 24px;text-align:center;">
+      <img src="${siteUrl}/logo-mbp.png" alt="Ma Belle Promo" width="72" height="72"
+        style="width:72px;height:72px;border-radius:50%;object-fit:cover;margin-bottom:14px;border:3px solid rgba(212,170,53,0.6);box-shadow:0 0 0 6px rgba(212,170,53,0.15);" />
+      <h1 style="color:white;font-size:22px;margin:0 0 6px;font-weight:bold;font-family:Arial,sans-serif;">Association Ma Belle Promo (MBP)</h1>
+      <p style="color:#a7f3d0;font-size:13px;margin:0 0 10px;">Programme PASSERELLES · Cohorte 1 – 2026</p>
     </div>
     <div style="height:3px;background:linear-gradient(90deg,transparent,#b8941f,#d4aa35,#b8941f,transparent);"></div>
     <div style="padding:30px;">${htmlContent}</div>
