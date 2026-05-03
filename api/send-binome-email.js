@@ -203,6 +203,7 @@ module.exports = async (req, res) => {
       notes,
       pdf_base64,
       pdf_filename,
+      send_to = 'both', // 'both' | 'mentor' | 'mentore'
     } = req.body;
 
     if (!mentor_name || !mentor_email || !mentore_name || !mentore_email) {
@@ -224,18 +225,21 @@ module.exports = async (req, res) => {
     const safeMentorEmail = mentor_email.trim();
     const safeMentoreEmail = mentore_email.trim();
 
+    const sendToMentor  = send_to === 'both' || send_to === 'mentor';
+    const sendToMentore = send_to === 'both' || send_to === 'mentore';
+
     // Générer les liens d'activation personnalisés (nécessite SUPABASE_SERVICE_ROLE_KEY)
     const redirectTo = `${site_url}/auth/callback`;
     let mentorActivationLink = site_url;
     let mentoreActivationLink = site_url;
     if (supabaseAuth) {
       try {
-        const [mentorLinkRes, mentoreLinkRes] = await Promise.all([
-          supabaseAuth.auth.admin.generateLink({ type: 'recovery', email: safeMentorEmail, options: { redirectTo } }),
-          supabaseAuth.auth.admin.generateLink({ type: 'recovery', email: safeMentoreEmail, options: { redirectTo } }),
-        ]);
-        mentorActivationLink = mentorLinkRes.data?.properties?.action_link || site_url;
-        mentoreActivationLink = mentoreLinkRes.data?.properties?.action_link || site_url;
+        const linkRequests = [];
+        if (sendToMentor)  linkRequests.push(supabaseAuth.auth.admin.generateLink({ type: 'recovery', email: safeMentorEmail,  options: { redirectTo } }));
+        if (sendToMentore) linkRequests.push(supabaseAuth.auth.admin.generateLink({ type: 'recovery', email: safeMentoreEmail, options: { redirectTo } }));
+        const [r1, r2] = await Promise.all(linkRequests);
+        if (sendToMentor)  mentorActivationLink  = r1?.data?.properties?.action_link || site_url;
+        if (sendToMentore) mentoreActivationLink = (sendToMentor ? r2 : r1)?.data?.properties?.action_link || site_url;
       } catch (e) {
         console.error('generateLink error:', e.message);
       }
@@ -248,23 +252,28 @@ module.exports = async (req, res) => {
       contentType: 'application/pdf',
     }] : [];
 
-    await sendBrevoEmail({
-      to: safeMentorEmail,
-      toName: mentorNameSafe,
-      subject: `PASSERELLES – Votre binôme : ${mentoreNameSafe}`,
-      html: emailMentor(mentorNameSafe, mentoreNameSafe, mentoreSpecialisationSafe, mentoreUniversiteSafe, notesSafe, mentorActivationLink),
-      attachments,
-    });
+    if (sendToMentor) {
+      await sendBrevoEmail({
+        to: safeMentorEmail,
+        toName: mentorNameSafe,
+        subject: `PASSERELLES – Votre binôme : ${mentoreNameSafe}`,
+        html: emailMentor(mentorNameSafe, mentoreNameSafe, mentoreSpecialisationSafe, mentoreUniversiteSafe, notesSafe, mentorActivationLink),
+        attachments,
+      });
+    }
 
-    await sendBrevoEmail({
-      to: safeMentoreEmail,
-      toName: mentoreNameSafe,
-      subject: `PASSERELLES – Votre mentor(e) : ${mentorNameSafe}`,
-      html: emailMentore(mentoreNameSafe, mentorNameSafe, mentorProfessionSafe, mentorOrganisationSafe, notesSafe, mentoreActivationLink),
-      attachments,
-    });
+    if (sendToMentore) {
+      await sendBrevoEmail({
+        to: safeMentoreEmail,
+        toName: mentoreNameSafe,
+        subject: `PASSERELLES – Votre mentor(e) : ${mentorNameSafe}`,
+        html: emailMentore(mentoreNameSafe, mentorNameSafe, mentorProfessionSafe, mentorOrganisationSafe, notesSafe, mentoreActivationLink),
+        attachments,
+      });
+    }
 
-    return res.status(200).json({ success: true, message: `Emails envoyés à ${safeMentorEmail} et ${safeMentoreEmail}` });
+    const sent = [sendToMentor && safeMentorEmail, sendToMentore && safeMentoreEmail].filter(Boolean).join(' et ');
+    return res.status(200).json({ success: true, message: `Email(s) envoyé(s) à ${sent}` });
   } catch (error) {
     console.error('Erreur envoi email:', error);
     return res.status(500).json({ success: false, error: error.message || 'Erreur interne' });

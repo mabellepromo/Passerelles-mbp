@@ -70,9 +70,10 @@ export default function DeclenchementBinomes() {
     }
   };
 
-  const renvoyerEmail = async (binome) => {
-    setResending(binome.id);
-    setResendResult(prev => ({ ...prev, [binome.id]: null }));
+  const renvoyerEmail = async (binome, send_to) => {
+    const key = `${binome.id}_${send_to}`;
+    setResending(key);
+    setResendResult(prev => ({ ...prev, [key]: null }));
     try {
       const mentor = getMentorInfo(binome.mentor_email);
       const mentore = getMentoreInfo(binome.mentore_email);
@@ -101,15 +102,16 @@ export default function DeclenchementBinomes() {
           notes: binome.notes || `Binôme ${binome.mentor_name} ↔ ${binome.mentore_name}`,
           pdf_base64,
           pdf_filename,
+          send_to,
         }),
       });
       const data = await response.json();
-      setResendResult(prev => ({ ...prev, [binome.id]: data.success ? 'success' : 'error' }));
+      setResendResult(prev => ({ ...prev, [key]: data.success ? 'success' : 'error' }));
       if (data.success) {
         await supabase.from('binome').update({ declenche_date: new Date().toISOString() }).eq('id', binome.id);
       }
     } catch {
-      setResendResult(prev => ({ ...prev, [binome.id]: 'error' }));
+      setResendResult(prev => ({ ...prev, [key]: 'error' }));
     }
     setResending(null);
   };
@@ -356,24 +358,28 @@ export default function DeclenchementBinomes() {
                       : '—'}
                   </p>
                 </div>
-                <div className="flex items-center gap-2">
-                  {resendResult[binome.id] === 'success' && (
-                    <span className="text-xs text-emerald-600 font-medium">✓ Renvoyé</span>
-                  )}
-                  {resendResult[binome.id] === 'error' && (
-                    <span className="text-xs text-red-500 font-medium">✗ Erreur</span>
-                  )}
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    disabled={resending === binome.id}
-                    onClick={() => renvoyerEmail(binome)}
-                    className="text-xs gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-100">
-                    {resending === binome.id
-                      ? <Loader2 className="h-3 w-3 animate-spin" />
-                      : <RefreshCw className="h-3 w-3" />}
-                    Renvoyer
-                  </Button>
+                <div className="flex items-center gap-2 flex-wrap justify-end">
+                  {['mentor', 'mentore'].map(role => {
+                    const key = `${binome.id}_${role}`;
+                    const label = role === 'mentor' ? binome.mentor_name : binome.mentore_name;
+                    return (
+                      <div key={role} className="flex items-center gap-1">
+                        {resendResult[key] === 'success' && <span className="text-xs text-emerald-600">✓</span>}
+                        {resendResult[key] === 'error'   && <span className="text-xs text-red-500">✗</span>}
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          disabled={!!resending}
+                          onClick={() => renvoyerEmail(binome, role)}
+                          className="text-xs gap-1.5 border-emerald-200 text-emerald-700 hover:bg-emerald-100 max-w-[140px]">
+                          {resending === key
+                            ? <Loader2 className="h-3 w-3 animate-spin flex-shrink-0" />
+                            : <RefreshCw className="h-3 w-3 flex-shrink-0" />}
+                          <span className="truncate">{label}</span>
+                        </Button>
+                      </div>
+                    );
+                  })}
                   <Badge className="bg-emerald-100 text-emerald-700 text-xs">Déclenché ✓</Badge>
                 </div>
               </div>
