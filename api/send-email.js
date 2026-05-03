@@ -58,12 +58,12 @@ module.exports = async (req, res) => {
 <body style="margin:0;padding:0;background-color:#f9fafb;font-family:Georgia,serif;">
   <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f9fafb;">
     <tr><td align="center" style="padding:20px 10px;">
-      <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:8px;overflow:hidden;">
+      <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;">
 
         <!-- EN-TÊTE VERT -->
         <tr>
-          <td bgcolor="#0f5530" align="center" style="background-color:#0f5530;padding:32px 30px 24px;">
-            <img src="${siteUrl}/logo-mbp.png" alt="Ma Belle Promo" width="72" height="72"
+          <td bgcolor="#0f5530" align="center" valign="middle" style="background-color:#0f5530;padding:32px 30px 24px;">
+            <img src="${siteUrl}/logo-mbp.png" alt="MBP" width="72" height="72"
               style="display:block;width:72px;height:72px;border-radius:50%;margin:0 auto 14px;border:3px solid #d4aa35;" />
             <h1 style="color:#ffffff;font-size:22px;margin:0 0 6px;font-weight:bold;font-family:Arial,sans-serif;line-height:1.3;">
               Association Ma Belle Promo (MBP)

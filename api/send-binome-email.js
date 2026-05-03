@@ -97,40 +97,78 @@ const emailMentor = (mentor_name, mentore_name, mentore_specialisation, mentore_
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f9fafb;font-family:Georgia,serif;">
-  <div style="max-width:600px;margin:0 auto;background:#ffffff;">
-    <div style="background:linear-gradient(135deg,#0f5530,#1a7a45);padding:30px 30px 20px;text-align:center;">
-      <p style="color:#d4aa35;font-size:11px;letter-spacing:3px;margin:0 0 8px;text-transform:uppercase;font-family:Arial,sans-serif;">Association Ma Belle Promo</p>
-      <h1 style="color:white;font-size:26px;margin:0 0 6px;font-weight:bold;">Programme PASSERELLES</h1>
-      <p style="color:#a7f3d0;font-size:13px;margin:0;">Cohorte 1 – 2026</p>
-    </div>
-    <div style="height:3px;background:linear-gradient(90deg,transparent,#b8941f,#d4aa35,#b8941f,transparent);"></div>
-    <div style="padding:30px;">
-      <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 20px;">Cher(e) <strong>${mentor_name}</strong>,</p>
-      <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 16px;">Nous avons le plaisir de vous annoncer officiellement le démarrage du <strong>Programme PASSERELLES – Cohorte 1</strong> et de vous présenter votre binôme.</p>
-      <div style="background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:20px;margin:20px 0;">
-        <p style="color:#0f5530;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">Votre Mentoré(e)</p>
-        <h2 style="color:#1a7a45;font-size:20px;margin:0 0 8px;">${mentore_name}</h2>
-        <p style="color:#374151;font-size:13px;margin:0 0 4px;">📌 ${mentore_specialisation}</p>
-        <p style="color:#374151;font-size:13px;margin:0 0 12px;">📌 ${mentore_universite}</p>
-        <div style="background:#ffffff;border-left:3px solid #1a7a45;padding:10px 14px;border-radius:0 6px 6px 0;">
-          <p style="color:#374151;font-size:13px;font-style:italic;margin:0;line-height:1.6;">${notes}</p>
-        </div>
-      </div>
-      <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 16px;">Vous trouverez en pièce jointe la fiche complète de votre binôme avec toutes les informations nécessaires pour votre premier contact.</p>
-      <div style="background:#f0fdf4;border:2px solid #1a7a45;border-radius:10px;padding:20px;margin:20px 0;text-align:center;">
-        <p style="color:#0f5530;font-size:14px;font-weight:bold;margin:0 0 8px;">🔐 Accédez à votre espace personnel</p>
-        <p style="color:#374151;font-size:13px;margin:0 0 16px;line-height:1.6;">Cliquez sur le bouton ci-dessous pour créer votre mot de passe et accéder directement à votre espace binôme. Ce lien est personnel et valable 24h.</p>
-        <a href="${activation_link}" style="background:linear-gradient(135deg,#0f5530,#1a7a45);color:white;padding:16px 40px;border-radius:10px;text-decoration:none;font-size:16px;font-weight:bold;display:inline-block;font-family:Arial,sans-serif;">Activer mon compte</a>
-      </div>
-      <p style="color:#6b7280;font-size:13px;line-height:1.6;margin:0 0 8px;">Pour toute question, n'hésitez pas à nous contacter à <a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a></p>
-    </div>
-    <div style="background:#f3f4f6;padding:16px 30px;text-align:center;border-top:1px solid #e5e7eb;">
-      <p style="color:#6b7280;font-size:12px;margin:0 0 4px;">Association Ma Belle Promo à Lomé, Togo – 12 BP 335 Baguida</p>
-      <p style="color:#6b7280;font-size:12px;margin:0;"><a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a> – +228 96 09 07 07</p>
-      <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;">© 2026 Ma Belle Promo – Programme PASSERELLES</p>
-    </div>
-  </div>
+<body style="margin:0;padding:0;background-color:#f9fafb;font-family:Georgia,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f9fafb;">
+    <tr><td align="center" style="padding:20px 10px;">
+      <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;">
+
+        <tr>
+          <td bgcolor="#0f5530" align="center" valign="middle" style="background-color:#0f5530;padding:30px 30px 20px;">
+            <p style="color:#d4aa35;font-size:11px;letter-spacing:3px;margin:0 0 8px;text-transform:uppercase;font-family:Arial,sans-serif;">Association Ma Belle Promo</p>
+            <h1 style="color:#ffffff;font-size:26px;margin:0 0 6px;font-weight:bold;font-family:Arial,sans-serif;">Programme PASSERELLES</h1>
+            <p style="color:#a7f3d0;font-size:13px;margin:0;font-family:Arial,sans-serif;">Cohorte 1 &ndash; 2026</p>
+          </td>
+        </tr>
+        <tr>
+          <td bgcolor="#d4aa35" style="background-color:#d4aa35;height:3px;font-size:1px;line-height:1px;">&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td style="padding:30px;">
+            <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 20px;font-family:Georgia,serif;">Cher(e) <strong>${mentor_name}</strong>,</p>
+            <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 16px;font-family:Georgia,serif;">Nous avons le plaisir de vous annoncer officiellement le démarrage du <strong>Programme PASSERELLES – Cohorte 1</strong> et de vous présenter votre binôme.</p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0fdf4;border:1px solid #a7f3d0;margin:20px 0;">
+              <tr>
+                <td style="padding:20px;">
+                  <p style="color:#0f5530;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;font-family:Arial,sans-serif;">Votre Mentoré(e)</p>
+                  <h2 style="color:#1a7a45;font-size:20px;margin:0 0 8px;font-family:Arial,sans-serif;">${mentore_name}</h2>
+                  <p style="color:#374151;font-size:13px;margin:0 0 4px;font-family:Arial,sans-serif;">📌 ${mentore_specialisation}</p>
+                  <p style="color:#374151;font-size:13px;margin:0 0 12px;font-family:Arial,sans-serif;">📌 ${mentore_universite}</p>
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="border-left:3px solid #1a7a45;padding:10px 14px;background-color:#ffffff;">
+                        <p style="color:#374151;font-size:13px;font-style:italic;margin:0;line-height:1.6;font-family:Georgia,serif;">${notes}</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 16px;font-family:Georgia,serif;">Vous trouverez en pièce jointe la fiche complète de votre binôme avec toutes les informations nécessaires pour votre premier contact.</p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:2px solid #1a7a45;margin:20px 0;">
+              <tr>
+                <td align="center" style="padding:20px;">
+                  <p style="color:#0f5530;font-size:14px;font-weight:bold;margin:0 0 8px;font-family:Arial,sans-serif;">🔐 Accédez à votre espace personnel</p>
+                  <p style="color:#374151;font-size:13px;margin:0 0 16px;line-height:1.6;font-family:Arial,sans-serif;">Cliquez sur le bouton ci-dessous pour créer votre mot de passe et accéder directement à votre espace binôme. Ce lien est personnel et valable 24h.</p>
+                  <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td bgcolor="#0f5530" align="center" style="background-color:#0f5530;">
+                        <a href="${activation_link}" style="color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;font-family:Arial,sans-serif;display:inline-block;padding:16px 40px;">Activer mon compte</a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <p style="color:#6b7280;font-size:13px;line-height:1.6;margin:0 0 8px;font-family:Arial,sans-serif;">Pour toute question, n'hésitez pas à nous contacter à <a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a></p>
+          </td>
+        </tr>
+
+        <tr>
+          <td bgcolor="#f3f4f6" align="center" style="background-color:#f3f4f6;padding:16px 30px;border-top:1px solid #e5e7eb;">
+            <p style="color:#6b7280;font-size:12px;margin:0 0 4px;font-family:Arial,sans-serif;">Association Ma Belle Promo &ndash; Lomé, Togo</p>
+            <p style="color:#6b7280;font-size:12px;margin:0;font-family:Arial,sans-serif;"><a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a> &ndash; +228 96 09 07 07</p>
+            <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;font-family:Arial,sans-serif;">© 2026 Ma Belle Promo – Programme PASSERELLES</p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
 </body>
 </html>
 `;
@@ -139,40 +177,78 @@ const emailMentore = (mentore_name, mentor_name, mentor_profession, mentor_organ
 <!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"></head>
-<body style="margin:0;padding:0;background:#f9fafb;font-family:Georgia,serif;">
-  <div style="max-width:600px;margin:0 auto;background:#ffffff;">
-    <div style="background:linear-gradient(135deg,#0f5530,#1a7a45);padding:30px 30px 20px;text-align:center;">
-      <p style="color:#d4aa35;font-size:11px;letter-spacing:3px;margin:0 0 8px;text-transform:uppercase;font-family:Arial,sans-serif;">Association Ma Belle Promo</p>
-      <h1 style="color:white;font-size:26px;margin:0 0 6px;font-weight:bold;">Programme PASSERELLES</h1>
-      <p style="color:#a7f3d0;font-size:13px;margin:0;">Cohorte 1 – 2026</p>
-    </div>
-    <div style="height:3px;background:linear-gradient(90deg,transparent,#b8941f,#d4aa35,#b8941f,transparent);"></div>
-    <div style="padding:30px;">
-      <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 20px;">Cher(e) <strong>${mentore_name}</strong>,</p>
-      <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 16px;">Félicitations ! Votre candidature au <strong>Programme PASSERELLES – Cohorte 1</strong> a été retenue. Nous avons le plaisir de vous présenter votre mentor(e).</p>
-      <div style="background:#f0fdf4;border:1px solid #a7f3d0;border-radius:12px;padding:20px;margin:20px 0;">
-        <p style="color:#0f5530;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;">Votre Mentor(e)</p>
-        <h2 style="color:#1a7a45;font-size:20px;margin:0 0 8px;">${mentor_name}</h2>
-        <p style="color:#374151;font-size:13px;margin:0 0 4px;">📌 ${mentor_profession}</p>
-        <p style="color:#374151;font-size:13px;margin:0 0 12px;">📌 ${mentor_organisation}</p>
-        <div style="background:#ffffff;border-left:3px solid #1a7a45;padding:10px 14px;border-radius:0 6px 6px 0;">
-          <p style="color:#374151;font-size:13px;font-style:italic;margin:0;line-height:1.6;">${notes}</p>
-        </div>
-      </div>
-      <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 16px;">Vous trouverez en pièce jointe la fiche complète de votre binôme. Nous vous encourageons à prendre contact avec votre mentor(e) dans les meilleurs délais pour planifier votre première rencontre.</p>
-      <div style="background:#f0fdf4;border:2px solid #1a7a45;border-radius:10px;padding:20px;margin:20px 0;text-align:center;">
-        <p style="color:#0f5530;font-size:14px;font-weight:bold;margin:0 0 8px;">🔐 Accédez à votre espace personnel</p>
-        <p style="color:#374151;font-size:13px;margin:0 0 16px;line-height:1.6;">Cliquez sur le bouton ci-dessous pour créer votre mot de passe et accéder directement à votre espace binôme. Ce lien est personnel et valable 24h.</p>
-        <a href="${activation_link}" style="background:linear-gradient(135deg,#0f5530,#1a7a45);color:white;padding:16px 40px;border-radius:10px;text-decoration:none;font-size:16px;font-weight:bold;display:inline-block;font-family:Arial,sans-serif;">Activer mon compte</a>
-      </div>
-      <p style="color:#6b7280;font-size:13px;line-height:1.6;">Pour toute question : <a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a></p>
-    </div>
-    <div style="background:#f3f4f6;padding:16px 30px;text-align:center;border-top:1px solid #e5e7eb;">
-      <p style="color:#6b7280;font-size:12px;margin:0 0 4px;">Association Ma Belle Promo à Lomé, Togo – 12 BP 335 Baguida</p>
-      <p style="color:#6b7280;font-size:12px;margin:0;"><a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a> – +228 96 09 07 07</p>
-      <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;">© 2026 Ma Belle Promo – Programme PASSERELLES</p>
-    </div>
-  </div>
+<body style="margin:0;padding:0;background-color:#f9fafb;font-family:Georgia,serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f9fafb;">
+    <tr><td align="center" style="padding:20px 10px;">
+      <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;">
+
+        <tr>
+          <td bgcolor="#0f5530" align="center" valign="middle" style="background-color:#0f5530;padding:30px 30px 20px;">
+            <p style="color:#d4aa35;font-size:11px;letter-spacing:3px;margin:0 0 8px;text-transform:uppercase;font-family:Arial,sans-serif;">Association Ma Belle Promo</p>
+            <h1 style="color:#ffffff;font-size:26px;margin:0 0 6px;font-weight:bold;font-family:Arial,sans-serif;">Programme PASSERELLES</h1>
+            <p style="color:#a7f3d0;font-size:13px;margin:0;font-family:Arial,sans-serif;">Cohorte 1 &ndash; 2026</p>
+          </td>
+        </tr>
+        <tr>
+          <td bgcolor="#d4aa35" style="background-color:#d4aa35;height:3px;font-size:1px;line-height:1px;">&nbsp;</td>
+        </tr>
+
+        <tr>
+          <td style="padding:30px;">
+            <p style="color:#374151;font-size:16px;line-height:1.6;margin:0 0 20px;font-family:Georgia,serif;">Cher(e) <strong>${mentore_name}</strong>,</p>
+            <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 16px;font-family:Georgia,serif;">Félicitations ! Votre candidature au <strong>Programme PASSERELLES – Cohorte 1</strong> a été retenue. Nous avons le plaisir de vous présenter votre mentor(e).</p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0fdf4;border:1px solid #a7f3d0;margin:20px 0;">
+              <tr>
+                <td style="padding:20px;">
+                  <p style="color:#0f5530;font-size:12px;font-weight:bold;letter-spacing:2px;text-transform:uppercase;margin:0 0 12px;font-family:Arial,sans-serif;">Votre Mentor(e)</p>
+                  <h2 style="color:#1a7a45;font-size:20px;margin:0 0 8px;font-family:Arial,sans-serif;">${mentor_name}</h2>
+                  <p style="color:#374151;font-size:13px;margin:0 0 4px;font-family:Arial,sans-serif;">📌 ${mentor_profession}</p>
+                  <p style="color:#374151;font-size:13px;margin:0 0 12px;font-family:Arial,sans-serif;">📌 ${mentor_organisation}</p>
+                  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td style="border-left:3px solid #1a7a45;padding:10px 14px;background-color:#ffffff;">
+                        <p style="color:#374151;font-size:13px;font-style:italic;margin:0;line-height:1.6;font-family:Georgia,serif;">${notes}</p>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 16px;font-family:Georgia,serif;">Vous trouverez en pièce jointe la fiche complète de votre binôme. Nous vous encourageons à prendre contact avec votre mentor(e) dans les meilleurs délais pour planifier votre première rencontre.</p>
+
+            <table width="100%" cellpadding="0" cellspacing="0" border="0" style="border:2px solid #1a7a45;margin:20px 0;">
+              <tr>
+                <td align="center" style="padding:20px;">
+                  <p style="color:#0f5530;font-size:14px;font-weight:bold;margin:0 0 8px;font-family:Arial,sans-serif;">🔐 Accédez à votre espace personnel</p>
+                  <p style="color:#374151;font-size:13px;margin:0 0 16px;line-height:1.6;font-family:Arial,sans-serif;">Cliquez sur le bouton ci-dessous pour créer votre mot de passe et accéder directement à votre espace binôme. Ce lien est personnel et valable 24h.</p>
+                  <table cellpadding="0" cellspacing="0" border="0">
+                    <tr>
+                      <td bgcolor="#0f5530" align="center" style="background-color:#0f5530;">
+                        <a href="${activation_link}" style="color:#ffffff;font-size:16px;font-weight:bold;text-decoration:none;font-family:Arial,sans-serif;display:inline-block;padding:16px 40px;">Activer mon compte</a>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <p style="color:#6b7280;font-size:13px;line-height:1.6;font-family:Arial,sans-serif;">Pour toute question : <a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a></p>
+          </td>
+        </tr>
+
+        <tr>
+          <td bgcolor="#f3f4f6" align="center" style="background-color:#f3f4f6;padding:16px 30px;border-top:1px solid #e5e7eb;">
+            <p style="color:#6b7280;font-size:12px;margin:0 0 4px;font-family:Arial,sans-serif;">Association Ma Belle Promo &ndash; Lomé, Togo</p>
+            <p style="color:#6b7280;font-size:12px;margin:0;font-family:Arial,sans-serif;"><a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a> &ndash; +228 96 09 07 07</p>
+            <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;font-family:Arial,sans-serif;">© 2026 Ma Belle Promo – Programme PASSERELLES</p>
+          </td>
+        </tr>
+
+      </table>
+    </td></tr>
+  </table>
 </body>
 </html>
 `;
