@@ -139,6 +139,7 @@ export default function MentoreRegistration() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.rgpd_accepted || !formData.charter_accepted) return;
     setIsSubmitting(true);
     try {
     // Évaluation automatique par IA (optionnelle — dégradation gracieuse si indisponible)

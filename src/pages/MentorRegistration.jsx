@@ -99,6 +99,7 @@ export default function MentorRegistration() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!formData.rgpd_accepted || !formData.charter_accepted) return;
     setIsSubmitting(true);
     try {
       await base44.entities.Mentor.create({

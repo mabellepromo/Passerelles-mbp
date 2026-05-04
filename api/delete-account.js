@@ -41,8 +41,45 @@ module.exports = async (req, res) => {
     process.env.SUPABASE_SERVICE_ROLE_KEY
   );
 
-  // Anonymiser les données liées dans les tables métier
   const email = user.email;
+
+  // Trouver les binômes liés pour nettoyer les données associées
+  const { data: binomes } = await supabaseAdmin
+    .from('binome')
+    .select('id')
+    .or(`mentor_email.eq.${email},mentore_email.eq.${email}`);
+  const binomeIds = (binomes || []).map(b => b.id);
+
+  if (binomeIds.length > 0) {
+    // Récupérer les fichiers storage avant suppression
+    const { data: fichiers } = await supabaseAdmin
+      .from('binome_fichier')
+      .select('file_url')
+      .in('binome_id', binomeIds);
+
+    const storagePaths = (fichiers || [])
+      .map(f => {
+        try {
+          const match = f.file_url?.match(/\/passerelles-files\/(.+)/);
+          return match ? decodeURIComponent(match[1]) : null;
+        } catch { return null; }
+      })
+      .filter(Boolean);
+
+    if (storagePaths.length > 0) {
+      await supabaseAdmin.storage.from('passerelles-files').remove(storagePaths);
+    }
+
+    // Supprimer toutes les données liées aux binômes
+    await Promise.all([
+      supabaseAdmin.from('suivi_mensuel').delete().in('binome_id', binomeIds),
+      supabaseAdmin.from('journal_de_bord').delete().in('binome_id', binomeIds),
+      supabaseAdmin.from('bilan_final').delete().in('binome_id', binomeIds),
+      supabaseAdmin.from('binome_fichier').delete().in('binome_id', binomeIds),
+    ]);
+  }
+
+  // Anonymiser les données dans les tables mentor/mentore
   const tables = ['mentor', 'mentore'];
   for (const table of tables) {
     await supabaseAdmin.from(table).update({

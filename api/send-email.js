@@ -26,14 +26,18 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Méthode non autorisée' });
   if (!allowOrigin) return res.status(403).json({ error: 'Origine non autorisée' });
 
-  // Vérification authentification (tout utilisateur connecté)
+  // Vérification authentification — réservé aux admins
   const token = (req.headers.authorization || '').replace('Bearer ', '').trim();
   if (!token) return res.status(401).json({ error: 'Token manquant' });
 
-  if (SUPABASE_SERVICE_ROLE_KEY) {
-    const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
-    const { data, error } = await supabase.auth.getUser(token);
-    if (error || !data?.user) return res.status(401).json({ error: 'Session invalide' });
+  const { ADMIN_EMAILS } = require('./_admin');
+  if (!SUPABASE_SERVICE_ROLE_KEY) return res.status(500).json({ error: 'Configuration serveur manquante' });
+  const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
+  const { data, error } = await supabase.auth.getUser(token);
+  if (error || !data?.user) return res.status(401).json({ error: 'Session invalide' });
+  const userRole = data.user.user_metadata?.role || data.user.app_metadata?.role;
+  if (!ADMIN_EMAILS.includes(data.user.email) && userRole !== 'admin') {
+    return res.status(403).json({ error: 'Accès réservé aux administrateurs' });
   }
 
   const { to, subject, text, html, attachments = [] } = req.body || {};
