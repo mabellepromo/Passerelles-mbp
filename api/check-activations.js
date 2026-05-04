@@ -52,28 +52,19 @@ module.exports = async (req, res) => {
   }
 
   try {
-    // Récupérer tous les utilisateurs (programme de petite taille)
-    const { data, error } = await supabase.auth.admin.listUsers();
-    if (error) throw error;
-    const users = data?.users ?? [];
+    const emailsLower = emails.map(e => e.toLowerCase().trim());
 
-    const emailSet = new Set(emails.map(e => e.toLowerCase().trim()));
-    const result = {};
+    const { data: rpcData, error: rpcError } = await supabase.rpc('get_users_activation_status', {
+      email_list: emailsLower,
+    });
+    if (rpcError) throw rpcError;
 
-    users
-      .filter(u => emailSet.has(u.email?.toLowerCase()))
-      .forEach(u => {
-        result[u.email.toLowerCase()] = {
-          activated: !!(u.last_sign_in_at || u.email_confirmed_at),
-          last_sign_in_at: u.last_sign_in_at || null,
-          confirmed_at: u.email_confirmed_at || null,
-        };
-      });
+    const found = rpcData || {};
 
-    // Les emails non trouvés dans Auth = jamais activés
-    emails.forEach(email => {
-      const key = email.toLowerCase().trim();
-      if (!result[key]) result[key] = { activated: false, last_sign_in_at: null, confirmed_at: null };
+    // Compléter avec les emails absents de auth.users (jamais invités)
+    const result = { ...found };
+    emailsLower.forEach(email => {
+      if (!result[email]) result[email] = { activated: false, last_sign_in_at: null, confirmed_at: null };
     });
 
     return res.status(200).json({ activations: result });
