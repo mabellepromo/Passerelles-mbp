@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   Send, Loader2, CheckCircle2, XCircle, Search,
   UserCheck, GraduationCap, Users, ChevronRight, ChevronLeft, Info,
-  Paperclip, Trash2, FileIcon,
+  Paperclip, Trash2, FileIcon, Mail, PenSquare,
 } from 'lucide-react';
 
 const MAX_MB   = 4;
@@ -37,7 +37,185 @@ function textToHtml(text) {
     .join('');
 }
 
+function EmailLibreForm() {
+  const [toEmail,     setToEmail]     = useState('');
+  const [toName,      setToName]      = useState('');
+  const [subject,     setSubject]     = useState('');
+  const [body,        setBody]        = useState('');
+  const [attachments, setAttachments] = useState([]);
+  const [sizeWarn,    setSizeWarn]    = useState('');
+  const [sending,     setSending]     = useState(false);
+  const [done,        setDone]        = useState(false);
+  const [error,       setError]       = useState('');
+  const fileRef = useRef();
+
+  const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(toEmail.trim());
+  const canSend    = emailValid && subject.trim() && body.trim() && !sizeWarn && !sending;
+
+  const handleFiles = async (e) => {
+    const files = Array.from(e.target.files);
+    const list  = [...attachments];
+    let warn = '';
+    for (const file of files) {
+      const totalBytes = [...list, file].reduce((s, a) => s + (a.size || 0), 0);
+      if (totalBytes > MAX_MB * 1024 * 1024) { warn = `Taille totale limitée à ${MAX_MB} Mo`; break; }
+      const content = await toBase64(file);
+      list.push({ name: file.name, content, size: file.size });
+    }
+    setSizeWarn(warn);
+    setAttachments(list);
+    e.target.value = '';
+  };
+
+  const removeAttachment = (i) => {
+    const next = attachments.filter((_, idx) => idx !== i);
+    setAttachments(next);
+    if (next.reduce((s, a) => s + a.size, 0) <= MAX_MB * 1024 * 1024) setSizeWarn('');
+  };
+
+  const htmlBody = body
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .split('\n\n')
+    .map(p => `<p style="margin:0 0 14px;line-height:1.7;">${p.replace(/\n/g, '<br/>')}</p>`)
+    .join('');
+
+  const handleSend = async () => {
+    setSending(true);
+    setError('');
+    try {
+      const token = await base44.auth.getAccessToken();
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          to: toEmail.trim(),
+          subject: subject.trim(),
+          html: toName.trim()
+            ? `<p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">Bonjour <strong>${toName.trim()}</strong>,</p>${htmlBody}`
+            : htmlBody,
+          attachments: attachments.map(a => ({ name: a.name, content: a.content })),
+        }),
+      });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || `Erreur ${res.status}`);
+      }
+      setDone(true);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setSending(false);
+    }
+  };
+
+  if (done) return (
+    <div className="flex flex-col items-center justify-center py-12 gap-4">
+      <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: '#f0fdf4' }}>
+        <CheckCircle2 className="h-8 w-8 text-emerald-600" />
+      </div>
+      <p className="text-lg font-bold text-gray-800">Email envoyé</p>
+      <p className="text-sm text-gray-400">à {toEmail}</p>
+      <Button onClick={() => { setDone(false); setToEmail(''); setToName(''); setSubject(''); setBody(''); setAttachments([]); }}
+        style={{ background: 'var(--brand-green)', color: 'white' }}>
+        Nouvel email
+      </Button>
+    </div>
+  );
+
+  return (
+    <div className="space-y-4">
+      {/* Destinataire */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+            Email destinataire <span className="text-red-400">*</span>
+          </label>
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-gray-300" />
+            <Input
+              type="email"
+              value={toEmail} onChange={e => setToEmail(e.target.value)}
+              placeholder="exemple@email.com"
+              className="pl-8"
+            />
+          </div>
+        </div>
+        <div>
+          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+            Nom (optionnel)
+          </label>
+          <Input
+            value={toName} onChange={e => setToName(e.target.value)}
+            placeholder="Prénom Nom — pour « Bonjour X »"
+          />
+        </div>
+      </div>
+
+      {/* Objet */}
+      <div>
+        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+          Objet <span className="text-red-400">*</span>
+        </label>
+        <Input value={subject} onChange={e => setSubject(e.target.value)} placeholder="Objet du message" />
+      </div>
+
+      {/* Message */}
+      <div>
+        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+          Message <span className="text-red-400">*</span>
+        </label>
+        <Textarea
+          value={body} onChange={e => setBody(e.target.value)}
+          rows={10}
+          placeholder={`Bonjour,\n\n...`}
+          className="text-sm resize-y"
+        />
+      </div>
+
+      {/* Pièces jointes */}
+      <div>
+        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5">
+          Pièces jointes <span className="text-gray-300 font-normal normal-case">(max {MAX_MB} Mo total)</span>
+        </label>
+        <div className="space-y-2">
+          {attachments.map((a, i) => (
+            <div key={i} className="flex items-center gap-2 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg">
+              <FileIcon className="h-4 w-4 text-gray-400 flex-shrink-0" />
+              <span className="flex-1 text-sm text-gray-700 truncate">{a.name}</span>
+              <span className="text-xs text-gray-400 flex-shrink-0">{fmtSize(a.size)}</span>
+              <button onClick={() => removeAttachment(i)} className="text-gray-300 hover:text-red-400 transition-colors flex-shrink-0">
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          ))}
+          {sizeWarn && <p className="text-xs text-red-500">{sizeWarn}</p>}
+          <button
+            type="button" onClick={() => fileRef.current?.click()}
+            className="flex items-center gap-2 px-3 py-2 rounded-lg border border-dashed border-gray-300 text-sm text-gray-500 hover:border-emerald-400 hover:text-emerald-600 transition-colors w-full">
+            <Paperclip className="h-4 w-4" /> Joindre un fichier
+          </button>
+          <input ref={fileRef} type="file" multiple className="hidden" onChange={handleFiles} />
+        </div>
+      </div>
+
+      {error && <p className="text-sm text-red-500 bg-red-50 border border-red-100 rounded-lg px-3 py-2">{error}</p>}
+
+      <div className="flex justify-end pt-2 border-t">
+        <Button
+          disabled={!canSend}
+          onClick={handleSend}
+          className="gap-2"
+          style={{ background: 'var(--brand-green)', color: 'white' }}>
+          {sending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+          {sending ? 'Envoi en cours...' : 'Envoyer'}
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 export default function EnvoiEmailLibre() {
+  const [mode,        setMode]        = useState('participants');
   const [step,        setStep]        = useState(1);
   const [search,      setSearch]      = useState('');
   const [filter,      setFilter]      = useState('tous');
@@ -141,9 +319,33 @@ export default function EnvoiEmailLibre() {
     mentore: { bg: 'bg-purple-50',  text: 'text-purple-700',  border: 'border-purple-200',  label: 'Mentoré(e)' },
   };
 
+  const ModeTabs = () => (
+    <div className="flex gap-1 p-1 bg-gray-100 rounded-xl w-fit mb-4">
+      {[
+        { key: 'participants', label: 'Participants du programme', icon: Users },
+        { key: 'libre',        label: 'Email libre',               icon: PenSquare },
+      ].map(({ key, label, icon: Icon }) => (
+        <button key={key} onClick={() => { setMode(key); setStep(1); setSelected(new Set()); setResults(null); }}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+            mode === key ? 'bg-white shadow text-emerald-700' : 'text-gray-500 hover:text-gray-700'
+          }`}>
+          <Icon className="h-3 w-3" /> {label}
+        </button>
+      ))}
+    </div>
+  );
+
+  if (mode === 'libre') return (
+    <div className="space-y-4">
+      <ModeTabs />
+      <EmailLibreForm />
+    </div>
+  );
+
   /* ── Étape 1 : Sélection ── */
   if (step === 1) return (
     <div className="space-y-4">
+      <ModeTabs />
       <div className="flex items-center justify-between">
         <p className="text-sm text-gray-500">
           <span className="font-bold text-gray-800">{selected.size}</span> destinataire{selected.size > 1 ? 's' : ''} sélectionné{selected.size > 1 ? 's' : ''}

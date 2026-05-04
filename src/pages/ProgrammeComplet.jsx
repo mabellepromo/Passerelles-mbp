@@ -379,7 +379,7 @@ export default function ProgrammeComplet() {
             {[
               { num: '1', titre: 'Appel à Candidatures', desc: 'Diffusion via réseaux sociaux, affiches dans les universités et courriers ciblés aux doyens. Cible : minimum 50 candidatures de L3/M1/M2.', date: 'À communiquer' },
               { num: '2', titre: 'Réception des Dossiers', desc: 'Formulaire en ligne incluant CV, relevé de notes, lettre de motivation et déclaration d\'engagement.', date: 'Date limite : À communiquer' },
-              { num: '3', titre: 'Analyse par le Comité', desc: 'Évaluation par un comité de 3 à 5 membres MBP, scores pondérés sur 100. Durée : 1 semaine.' },
+              { num: '3', titre: 'Analyse par le Comité', desc: 'Chaque candidature est instruite au moyen de 3 ou 4 outils d\'aide à la décision indépendants, produisant un score agrégé sur 100 points, dont la pondération finale est arrêtée souverainement par le comité de sélection MBP.' },
               { num: '4', titre: 'Notification des Résultats', desc: 'Lettres d\'acceptation envoyées sous 2 semaines. Les candidats acceptés reçoivent une invitation à l\'atelier de lancement.' },
               { num: '5', titre: 'Appel de Réserve', desc: 'Liste d\'attente constituée pour pallier tout désistement des mentorés sélectionnés.' },
             ].map(({ num, titre, desc, date }) => (
