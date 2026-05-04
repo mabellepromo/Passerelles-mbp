@@ -87,6 +87,7 @@ const htmlEmail = (bodyText, site_url) => `
       <p style="color:#6b7280;font-size:12px;margin:0 0 4px;">Association Ma Belle Promo \u00b7 Lom\u00e9, Togo</p>
       <p style="color:#6b7280;font-size:12px;margin:0;"><a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a></p>
       <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;">\u00a9 2026 Ma Belle Promo \u2013 Programme PASSERELLES</p>
+      <p style="color:#9ca3af;font-size:11px;margin:4px 0 0;"><a href="${site_url}/PolitiqueConfidentialite" style="color:#9ca3af;text-decoration:underline;">Politique de confidentialit\u00e9</a></p>
     </div>
   </div>
 </body>

@@ -147,6 +147,7 @@ module.exports = async (req, res) => {
       <p style="color:#6b7280;font-size:12px;margin:0 0 4px;">Association Ma Belle Promo · Lomé, Togo</p>
       <p style="color:#6b7280;font-size:12px;margin:0;"><a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a> · +228 96 09 07 07</p>
       <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;">© 2026 Association Ma Belle Promo</p>
+      <p style="color:#9ca3af;font-size:11px;margin:4px 0 0;"><a href="https://passerelles.vercel.app/PolitiqueConfidentialite" style="color:#9ca3af;text-decoration:underline;">Politique de confidentialité</a></p>
     </div>
   </div>
 </body>

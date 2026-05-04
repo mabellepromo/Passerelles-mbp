@@ -76,7 +76,8 @@ export default function PolitiqueConfidentialite() {
           <div className="space-y-2 mt-2">
             <div className="rounded-xl bg-blue-50 border border-blue-100 px-4 py-3">
               <p className="font-semibold text-blue-800 text-xs uppercase tracking-wide mb-2">Données d'identité et de contact</p>
-              <p>Nom complet, adresse email, numéro de téléphone, ville de résidence, profil LinkedIn (optionnel).</p>
+              <p>Nom complet, adresse email, numéro de téléphone, ville de résidence, profil LinkedIn (optionnel), genre.</p>
+              <p className="text-xs text-blue-600 mt-1">Le genre est collecté dans le seul but d'appliquer une politique de parité lors de la sélection et de l'appariement des participants. Il ne fait l'objet d'aucune autre utilisation.</p>
             </div>
             <div className="rounded-xl bg-purple-50 border border-purple-100 px-4 py-3">
               <p className="font-semibold text-purple-800 text-xs uppercase tracking-wide mb-2">Données académiques et professionnelles</p>
@@ -107,6 +108,7 @@ export default function PolitiqueConfidentialite() {
               { fin: "Communication entre binômes", base: "Consentement + exécution du programme" },
               { fin: "Envoi d'emails transactionnels", base: "Consentement explicite" },
               { fin: "Statistiques anonymisées", base: "Intérêt légitime (amélioration du programme)" },
+              { fin: "Équilibre de genre (parité)", base: "Intérêt légitime — objectif de parité mentor/mentoré inscrit dans la mission de l'association" },
             ].map(({ fin, base }) => (
               <div key={fin} className="flex gap-3 py-2 border-b border-gray-50 last:border-0">
                 <span className="font-medium text-gray-800 flex-1">{fin}</span>
