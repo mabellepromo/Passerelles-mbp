@@ -12,11 +12,16 @@ const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
 const { ADMIN_EMAILS, isUserAdmin } = require('./_admin');
 
+const ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://passerelles.vercel.app',
+];
+
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;
-  if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
-  if (origin === (process.env.SITE_URL || 'https://passerelles.vercel.app')) return origin;
-  if (origin.endsWith('.vercel.app') && origin.includes('passerelles')) return origin;
+  const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
+  if (ALLOWED_ORIGINS.includes(origin) || origin === siteUrl) return origin;
   return null;
 };
 

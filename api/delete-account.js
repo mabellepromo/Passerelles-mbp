@@ -3,11 +3,16 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
+const ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://passerelles.vercel.app',
+];
+
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;
-  if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
-  if (origin === (process.env.SITE_URL || 'https://passerelles.vercel.app')) return origin;
-  if (origin.endsWith('.vercel.app') && origin.includes('passerelles')) return origin;
+  const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
+  if (ALLOWED_ORIGINS.includes(origin) || origin === siteUrl) return origin;
   return null;
 };
 
@@ -22,7 +27,7 @@ module.exports = async (req, res) => {
   if (!allowOrigin) return res.status(403).json({ error: 'Origine non autorisée' });
 
   const authHeader = req.headers.authorization || '';
-  const accessToken = authHeader.replace('Bearer ', '');
+  const accessToken = authHeader.replace('Bearer ', '').trim();
   if (!accessToken) return res.status(401).json({ error: 'Token manquant' });
 
   // Client avec le token utilisateur pour vérifier l'identité

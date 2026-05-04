@@ -3,12 +3,16 @@ const { createClient } = require('@supabase/supabase-js');
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.SUPABASE_URL || '';
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
+const ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://passerelles.vercel.app',
+];
+
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;
-  if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
   const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
-  if (origin === siteUrl) return origin;
-  if (origin.endsWith('.vercel.app') && origin.includes('passerelles')) return origin;
+  if (ALLOWED_ORIGINS.includes(origin) || origin === siteUrl) return origin;
   return null;
 };
 

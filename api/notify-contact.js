@@ -9,11 +9,16 @@ const supabaseAdmin = SUPABASE_URL && SUPABASE_SERVICE_ROLE_KEY
   ? createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } })
   : null;
 
+const ALLOWED_ORIGINS = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'https://passerelles.vercel.app',
+];
+
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;
-  if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
-  if (origin === (process.env.SITE_URL || 'https://passerelles.vercel.app')) return origin;
-  if (origin.endsWith('.vercel.app') && origin.includes('passerelles')) return origin;
+  const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
+  if (ALLOWED_ORIGINS.includes(origin) || origin === siteUrl) return origin;
   return null;
 };
 
