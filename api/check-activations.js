@@ -53,8 +53,9 @@ module.exports = async (req, res) => {
 
   try {
     // Récupérer tous les utilisateurs (programme de petite taille)
-    const { data: { users }, error } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+    const { data, error } = await supabase.auth.admin.listUsers({ perPage: 1000 });
     if (error) throw error;
+    const users = data?.users ?? [];
 
     const emailSet = new Set(emails.map(e => e.toLowerCase().trim()));
     const result = {};
