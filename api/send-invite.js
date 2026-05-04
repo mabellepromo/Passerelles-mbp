@@ -48,6 +48,12 @@ module.exports = async (req, res) => {
     return res.status(404).json({ error: 'not_in_program' });
   }
 
+  // Vérifier si le compte auth existe déjà
+  const { data: existingData } = await supabase.auth.admin.getUserByEmail(emailLower);
+  if (existingData?.user) {
+    return res.status(409).json({ error: 'account_exists' });
+  }
+
   const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
 
   // Générer un magic link (crée le compte auth si inexistant, valable 24h)

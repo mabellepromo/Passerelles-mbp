@@ -58,6 +58,8 @@ export default function Login() {
       });
       if (res.status === 404) {
         setError('Cet email n\'est pas enregistre dans le programme. Contactez contact@mabellepromo.org.');
+      } else if (res.status === 409) {
+        setError('Vous avez deja un compte. Utilisez l\'onglet "Connexion" ou "Mot de passe oublie" si vous avez oublie votre mot de passe.');
       } else if (!res.ok) {
         setError('Une erreur est survenue. Reessayez ou contactez contact@mabellepromo.org.');
       } else {
