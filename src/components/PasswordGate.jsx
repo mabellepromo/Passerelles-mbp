@@ -34,11 +34,20 @@ export default function PasswordGate({ children }) {
     <div className="min-h-screen flex flex-col items-center justify-center px-4"
       style={{ background: 'linear-gradient(135deg,#0a2e18 0%,#0f5530 60%,#1a7a45 100%)' }}>
 
+      {/* Bandeau ouverture publique */}
+      <div className="fixed top-0 left-0 right-0 z-50 py-4 px-6 text-center"
+        style={{ background: 'linear-gradient(135deg,#b8941f,#d4aa35)', boxShadow: '0 4px 24px rgba(184,148,31,0.5)' }}>
+        <p className="text-white font-bold text-base tracking-wide">Ouverture au public</p>
+        <p className="text-white/90 text-sm mt-0.5">
+          Le site sera accessible à tous le <strong>5 mai 2026</strong> entre <strong>12h00 et 14h00 UTC</strong>
+        </p>
+      </div>
+
       {/* Grille de fond */}
       <div className="absolute inset-0 opacity-[0.04] pointer-events-none"
         style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.6) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.6) 1px,transparent 1px)', backgroundSize: '36px 36px' }} />
 
-      <div className="relative w-full max-w-sm">
+      <div className="relative w-full max-w-sm mt-20">
 
         {/* Logo */}
         <div className="flex flex-col items-center mb-8">
@@ -100,14 +109,6 @@ export default function PasswordGate({ children }) {
               Accéder
             </button>
           </form>
-        </div>
-
-        <div className="mt-5 rounded-xl px-4 py-3 text-center"
-          style={{ background: 'rgba(212,170,53,0.12)', border: '1px solid rgba(212,170,53,0.3)' }}>
-          <p className="text-xs font-semibold" style={{ color: '#d4aa35' }}>Ouverture au public</p>
-          <p className="text-emerald-200/80 text-xs mt-0.5">
-            Le site sera accessible à tous le <span className="text-white font-semibold">5 mai 2026</span> entre <span className="text-white font-semibold">12h00 et 14h00 UTC</span>
-          </p>
         </div>
 
         <p className="text-center text-emerald-400/40 text-xs mt-6">
