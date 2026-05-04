@@ -53,10 +53,19 @@ const makeEntity = (tableName) => ({
     if (error) throw error;
     return { id };
   },
+  subscribe: (callback) => {
+    const channel = supabase
+      .channel(`realtime:${tableName}:${Math.random()}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: tableName }, (payload) => {
+        callback({ data: payload.new || payload.old });
+      })
+      .subscribe();
+    return () => supabase.removeChannel(channel);
+  },
 });
 
 // Liste des emails admin
-const ADMIN_EMAILS = ['contact@mabellepromo.org', 'senayhola@gmail.com'];
+const ADMIN_EMAILS = ['contact@mabellepromo.org', 'senayhola@gmail.com', 'mabellepromo@gmail.com'];
 
 const isUserAdmin = (user) => {
   if (!user) return false;

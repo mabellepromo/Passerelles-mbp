@@ -1,4 +1,4 @@
-const ADMIN_EMAILS = ['contact@mabellepromo.org', 'senayhola@gmail.com'];
+const ADMIN_EMAILS = ['contact@mabellepromo.org', 'senayhola@gmail.com', 'mabellepromo@gmail.com'];
 
 const isUserAdmin = (user) => {
   if (!user?.email) return false;
