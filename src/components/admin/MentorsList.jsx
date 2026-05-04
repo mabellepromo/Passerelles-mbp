@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -92,7 +93,7 @@ function MentorFormDialog({ mentor, open, onClose, onSaved }) {
       onSaved();
       onClose();
     } catch (e) {
-      alert('Erreur : ' + e.message);
+      toast.error('Erreur : ' + e.message);
     } finally {
       setSaving(false);
     }

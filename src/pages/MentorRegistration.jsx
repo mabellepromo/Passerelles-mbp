@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import ContactModal from '@/components/ContactModal';
 // contactOpen state added below in component
 import { Button } from '@/components/ui/button';
@@ -112,7 +113,7 @@ export default function MentorRegistration() {
       });
       setIsSuccess(true);
     } catch (err) {
-      alert(`Erreur lors de l'envoi : ${err?.message || err?.details || 'Erreur inconnue'}`);
+      toast.error(`Erreur lors de l'envoi : ${err?.message || err?.details || 'Erreur inconnue'}`);
     } finally {
       setIsSubmitting(false);
     }

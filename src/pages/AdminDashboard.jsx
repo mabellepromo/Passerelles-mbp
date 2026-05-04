@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import {
   Users, GraduationCap, UserCheck, Link2, ClipboardList,
@@ -233,7 +234,7 @@ function ContactMessagesView({ messages, onMarkRead, onDelete }) {
       });
       setReplyDone(true);
       setReplyOpen(false);
-    } catch (err) { alert(`Erreur : ${err.message}`); }
+    } catch (err) { toast.error(`Erreur : ${err.message}`); }
     finally { setReplySending(false); }
   };
 
@@ -246,7 +247,7 @@ function ContactMessagesView({ messages, onMarkRead, onDelete }) {
         attachments: vals.attachments || [],
       });
       setComposeDone(true);
-    } catch (err) { alert(`Erreur : ${err.message}`); }
+    } catch (err) { toast.error(`Erreur : ${err.message}`); }
     finally { setComposeSending(false); }
   };
 

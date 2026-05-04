@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -219,7 +220,7 @@ export default function SuiviMensuel() {
 
     setIsSuccess(true);
     } catch (err) {
-      alert(`Erreur lors de l'enregistrement : ${err instanceof Error ? err.message : 'Veuillez réessayer.'}`);
+      toast.error(`Erreur lors de l'enregistrement : ${err instanceof Error ? err.message : 'Veuillez réessayer.'}`);
     } finally {
       setIsSubmitting(false);
     }

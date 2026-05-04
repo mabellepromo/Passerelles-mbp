@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import ContactModal from '@/components/ContactModal';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -231,7 +232,7 @@ Fournis une évaluation détaillée avec les scores pour chaque sous-critère et
     
     setIsSuccess(true);
     } catch (err) {
-      alert(`Erreur lors de l'envoi : ${err?.message || err?.details || 'Erreur inconnue'}`);
+      toast.error(`Erreur lors de l'envoi : ${err?.message || err?.details || 'Erreur inconnue'}`);
     } finally {
       setIsSubmitting(false);
     }

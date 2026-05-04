@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -158,7 +159,7 @@ export default function AlertesBinomes() {
     try {
       await sendReminderEmails(binome);
     } catch (err) {
-      alert(`Erreur lors de l'envoi : ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
+      toast.error(`Erreur lors de l'envoi : ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
     } finally {
       setSendingId(null);
     }
@@ -171,7 +172,7 @@ export default function AlertesBinomes() {
         if (!sentLog[b.id]) await sendReminderEmails(b);
       }
     } catch (err) {
-      alert(`Erreur lors de l'envoi : ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
+      toast.error(`Erreur lors de l'envoi : ${err instanceof Error ? err.message : 'Erreur inconnue'}`);
     } finally {
       setSendingAll(false);
     }

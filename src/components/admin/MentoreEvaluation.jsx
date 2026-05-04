@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Dialog,
@@ -117,7 +118,7 @@ Retourne aussi un commentaire général sur le candidat.`;
     mentore.ai_evaluation = aiEvalData;
     mentore.selection_score = total;
     } catch (err) {
-      alert(`Erreur évaluation IA : ${err instanceof Error ? err.message : 'Veuillez réessayer.'}`);
+      toast.error(`Erreur évaluation IA : ${err instanceof Error ? err.message : 'Veuillez réessayer.'}`);
     } finally {
       setIsEvaluatingAI(false);
     }
