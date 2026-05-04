@@ -50,7 +50,7 @@ module.exports = async (req, res) => {
 
   // Vérifier si le compte auth existe déjà via listUsers
   try {
-    const { data: listData } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+    const { data: listData } = await supabase.auth.admin.listUsers();
     const existingUser = listData?.users?.find(u => u.email?.toLowerCase() === emailLower);
     if (existingUser) {
       return res.status(409).json({ error: 'account_exists' });
