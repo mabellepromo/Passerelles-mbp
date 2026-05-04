@@ -8,7 +8,7 @@ const getAllowedOrigin = (origin) => {
   if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
   const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
   if (origin === siteUrl) return origin;
-  if (origin.endsWith('.vercel.app')) return origin;
+  if (origin.endsWith('.vercel.app') && origin.includes('passerelles')) return origin;
   return null;
 };
 
@@ -43,12 +43,8 @@ module.exports = async (req, res) => {
     supabase.from('mentore').select('email, full_name').ilike('email', emailLower).maybeSingle(),
   ]);
 
-  console.log('mentor query:', JSON.stringify(mentorRes));
-  console.log('mentore query:', JSON.stringify(mentoreRes));
-
   const member = mentorRes.data || mentoreRes.data;
   if (!member) {
-    console.log('not_in_program for:', emailLower);
     return res.status(404).json({ error: 'not_in_program' });
   }
 

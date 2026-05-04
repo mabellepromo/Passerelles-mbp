@@ -13,7 +13,7 @@ const getAllowedOrigin = (origin) => {
   if (!origin) return null;
   if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
   if (origin === (process.env.SITE_URL || 'https://passerelles.vercel.app')) return origin;
-  if (origin.endsWith('.vercel.app')) return origin;
+  if (origin.endsWith('.vercel.app') && origin.includes('passerelles')) return origin;
   return null;
 };
 

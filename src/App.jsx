@@ -23,6 +23,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import RequireAuth from '@/components/RequireAuth';
+import RequireAdmin from '@/components/RequireAdmin';
 import GuideMentor from './pages/GuideMentor';
 import GuideMentore from './pages/GuideMentore';
 import CharteEngagement from './pages/CharteEngagement';
@@ -65,7 +66,7 @@ const AuthenticatedApp = () => {
           .map(([path, Page]) => (
             <Route key={path} path={`/${path}`} element={<LayoutWrapper currentPageName={path}><Page /></LayoutWrapper>} />
           ))}
-        <Route path="/AdminDashboard" element={<RequireAuth><LayoutWrapper currentPageName="AdminDashboard"><AdminDashboard /></LayoutWrapper></RequireAuth>} />
+        <Route path="/AdminDashboard" element={<RequireAdmin><LayoutWrapper currentPageName="AdminDashboard"><AdminDashboard /></LayoutWrapper></RequireAdmin>} />
         <Route path="/MonSuivi" element={<RequireAuth><LayoutWrapper currentPageName="MonSuivi"><MonSuivi /></LayoutWrapper></RequireAuth>} />
         <Route path="/SuiviMensuel" element={<RequireAuth><LayoutWrapper currentPageName="SuiviMensuel"><SuiviMensuel /></LayoutWrapper></RequireAuth>} />
         <Route path="/JournalDeBord" element={<RequireAuth><LayoutWrapper currentPageName="JournalDeBord"><JournalDeBord /></LayoutWrapper></RequireAuth>} />

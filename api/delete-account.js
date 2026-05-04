@@ -3,12 +3,23 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
+const getAllowedOrigin = (origin) => {
+  if (!origin) return null;
+  if (origin === 'http://localhost:5173' || origin === 'http://127.0.0.1:5173') return origin;
+  if (origin === (process.env.SITE_URL || 'https://passerelles.vercel.app')) return origin;
+  if (origin.endsWith('.vercel.app') && origin.includes('passerelles')) return origin;
+  return null;
+};
+
 module.exports = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
+  const origin = req.headers.origin;
+  const allowOrigin = getAllowedOrigin(origin);
+  res.setHeader('Access-Control-Allow-Origin', allowOrigin || 'null');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method === 'OPTIONS') return res.status(204).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
+  if (!allowOrigin) return res.status(403).json({ error: 'Origine non autorisée' });
 
   const authHeader = req.headers.authorization || '';
   const accessToken = authHeader.replace('Bearer ', '');
