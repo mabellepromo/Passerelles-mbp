@@ -10,13 +10,7 @@ const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY || SUP
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 
-const ADMIN_EMAILS = ['contact@mabellepromo.org', 'senayhola@gmail.com'];
-const isUserAdmin = (user) => {
-  if (!user?.email) return false;
-  if (ADMIN_EMAILS.includes(user.email)) return true;
-  const role = user.user_metadata?.role || user.app_metadata?.role;
-  return role === 'admin';
-};
+const { ADMIN_EMAILS, isUserAdmin } = require('./_admin');
 
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;

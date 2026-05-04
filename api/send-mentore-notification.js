@@ -25,7 +25,7 @@ const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.VITE_SUPABASE_SERVICE_ROLE_KEY;
 const supabaseAuth = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, { auth: { persistSession: false } });
 
-const ADMIN_EMAILS = ['contact@mabellepromo.org', 'senayhola@gmail.com'];
+const { ADMIN_EMAILS, isUserAdmin } = require('./_admin');
 
 const escapeHtml = (value) => {
   if (typeof value !== 'string') return '';
@@ -39,13 +39,6 @@ const escapeHtml = (value) => {
 
 const validateEmail = (email) =>
   typeof email === 'string' && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-
-const isUserAdmin = (user) => {
-  if (!user?.email) return false;
-  if (ADMIN_EMAILS.includes(user.email)) return true;
-  const role = user.user_metadata?.role || user.app_metadata?.role;
-  return role === 'admin';
-};
 
 const getAllowedOrigin = (origin) => {
   if (!origin) return null;

@@ -1,3 +1,4 @@
+import React, { lazy, Suspense } from 'react';
 import AuthCallback from './pages/AuthCallback';
 import Login from './pages/Login';
 import { Toaster } from "@/components/ui/toaster"
@@ -9,29 +10,36 @@ import PageNotFound from './lib/PageNotFound';
 import PageTransition from '@/components/PageTransition';
 import PageTitle from '@/components/PageTitle';
 import ScrollToTop from '@/components/ScrollToTop';
-import MonSuivi from './pages/MonSuivi';
-import ResultatsCohorte1 from './pages/ResultatsCohorte1';
-import AProposMBP from './pages/AProposMBP';
-import GuideNavigation from './pages/GuideNavigation';
-import ProgrammeComplet from './pages/ProgrammeComplet';
-import SuiviMensuel from './pages/SuiviMensuel';
-import JournalDeBord from './pages/JournalDeBord';
-import MonEspace from './pages/MonEspace';
-import BilanFinal from './pages/BilanFinal';
-import Messagerie from './pages/Messagerie';
-import AdminDashboard from './pages/AdminDashboard';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import RequireAuth from '@/components/RequireAuth';
 import RequireAdmin from '@/components/RequireAdmin';
-import GuideMentor from './pages/GuideMentor';
-import GuideMentore from './pages/GuideMentore';
-import CharteEngagement from './pages/CharteEngagement';
-import CriteresSelection from './pages/CriteresSelection';
-import MentorRegistration from './pages/MentorRegistration';
-import MentoreRegistration from './pages/MentoreRegistration';
-import PolitiqueConfidentialite from './pages/PolitiqueConfidentialite';
-import MentionsLegales from './pages/MentionsLegales';
+
+const MonSuivi           = lazy(() => import('./pages/MonSuivi'));
+const ResultatsCohorte1  = lazy(() => import('./pages/ResultatsCohorte1'));
+const AProposMBP         = lazy(() => import('./pages/AProposMBP'));
+const GuideNavigation    = lazy(() => import('./pages/GuideNavigation'));
+const ProgrammeComplet   = lazy(() => import('./pages/ProgrammeComplet'));
+const SuiviMensuel       = lazy(() => import('./pages/SuiviMensuel'));
+const JournalDeBord      = lazy(() => import('./pages/JournalDeBord'));
+const MonEspace          = lazy(() => import('./pages/MonEspace'));
+const BilanFinal         = lazy(() => import('./pages/BilanFinal'));
+const Messagerie         = lazy(() => import('./pages/Messagerie'));
+const AdminDashboard     = lazy(() => import('./pages/AdminDashboard'));
+const GuideMentor        = lazy(() => import('./pages/GuideMentor'));
+const GuideMentore       = lazy(() => import('./pages/GuideMentore'));
+const CharteEngagement   = lazy(() => import('./pages/CharteEngagement'));
+const CriteresSelection  = lazy(() => import('./pages/CriteresSelection'));
+const MentorRegistration   = lazy(() => import('./pages/MentorRegistration'));
+const MentoreRegistration  = lazy(() => import('./pages/MentoreRegistration'));
+const PolitiqueConfidentialite = lazy(() => import('./pages/PolitiqueConfidentialite'));
+const MentionsLegales    = lazy(() => import('./pages/MentionsLegales'));
+
+const PageLoader = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="w-10 h-10 rounded-full border-4 border-emerald-200 border-t-emerald-600 animate-spin" />
+  </div>
+);
 
 
 const { Pages, Layout, mainPage } = pagesConfig;
@@ -52,6 +60,7 @@ const AuthenticatedApp = () => {
 
   return (
     <PageTransition>
+      <Suspense fallback={<PageLoader />}>
       <Routes>
         <Route path="/GuideMentor" element={<LayoutWrapper currentPageName="GuideMentor"><GuideMentor /></LayoutWrapper>} />
         <Route path="/GuideMentore" element={<LayoutWrapper currentPageName="GuideMentore"><GuideMentore /></LayoutWrapper>} />
@@ -83,6 +92,7 @@ const AuthenticatedApp = () => {
         <Route path="/MentionsLegales" element={<LayoutWrapper currentPageName="MentionsLegales"><MentionsLegales /></LayoutWrapper>} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
+      </Suspense>
     </PageTransition>
   );
 };
