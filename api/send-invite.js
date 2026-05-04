@@ -130,6 +130,9 @@ module.exports = async (req, res) => {
               &nbsp;&ndash;&nbsp;+228 96 09 07 07
             </p>
             <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;font-family:Arial,sans-serif;">© 2026 Ma Belle Promo – Programme PASSERELLES</p>
+            <p style="color:#9ca3af;font-size:11px;margin:4px 0 0;font-family:Arial,sans-serif;">
+              <a href="${siteUrl}/PolitiqueConfidentialite" style="color:#9ca3af;text-decoration:underline;">Politique de confidentialité</a>
+            </p>
           </td>
         </tr>
       </table>

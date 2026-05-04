@@ -156,6 +156,7 @@ const emailMentor = (mentor_name, mentore_name, mentore_specialisation, mentore_
             <p style="color:#6b7280;font-size:12px;margin:0 0 4px;font-family:Arial,sans-serif;">Association Ma Belle Promo &ndash; Lomé, Togo</p>
             <p style="color:#6b7280;font-size:12px;margin:0;font-family:Arial,sans-serif;"><a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a> &ndash; +228 96 09 07 07</p>
             <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;font-family:Arial,sans-serif;">© 2026 Ma Belle Promo – Programme PASSERELLES</p>
+            <p style="color:#9ca3af;font-size:11px;margin:4px 0 0;font-family:Arial,sans-serif;"><a href="${siteUrl}/PolitiqueConfidentialite" style="color:#9ca3af;text-decoration:underline;">Politique de confidentialité</a></p>
           </td>
         </tr>
 
@@ -236,6 +237,7 @@ const emailMentore = (mentore_name, mentor_name, mentor_profession, mentor_organ
             <p style="color:#6b7280;font-size:12px;margin:0 0 4px;font-family:Arial,sans-serif;">Association Ma Belle Promo &ndash; Lomé, Togo</p>
             <p style="color:#6b7280;font-size:12px;margin:0;font-family:Arial,sans-serif;"><a href="mailto:contact@mabellepromo.org" style="color:#1a7a45;">contact@mabellepromo.org</a> &ndash; +228 96 09 07 07</p>
             <p style="color:#9ca3af;font-size:11px;margin:8px 0 0;font-family:Arial,sans-serif;">© 2026 Ma Belle Promo – Programme PASSERELLES</p>
+            <p style="color:#9ca3af;font-size:11px;margin:4px 0 0;font-family:Arial,sans-serif;"><a href="${siteUrl}/PolitiqueConfidentialite" style="color:#9ca3af;text-decoration:underline;">Politique de confidentialité</a></p>
           </td>
         </tr>
 

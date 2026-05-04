@@ -70,8 +70,8 @@ export default function AuthCallback({ forceReset = false }) {
       setError('Les mots de passe ne correspondent pas.');
       return;
     }
-    if (password.length < 6) {
-      setError('Minimum 6 caractères.');
+    if (password.length < 10) {
+      setError('Minimum 10 caractères.');
       return;
     }
     setLoading(true);

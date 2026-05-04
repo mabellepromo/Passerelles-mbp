@@ -53,9 +53,6 @@ const makeEntity = (tableName) => ({
     if (error) throw error;
     return { id };
   },
-  subscribe: (callback) => {
-    return () => {};
-  },
 });
 
 // Liste des emails admin
@@ -186,7 +183,7 @@ export const base44 = {
   auth,
   functions,
   integrations,
-  appLogs: { logUserInApp: async () => {} },
+  appLogs: {},
   entities: {
     Binome:        makeEntity('binome'),
     Mentor:        makeEntity('mentor'),

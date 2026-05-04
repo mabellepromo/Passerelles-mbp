@@ -127,14 +127,14 @@ export default function Login() {
             {mode === 'login' && (
               <form onSubmit={handleLogin} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Adresse email</label>
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                  <label htmlFor="login-email" className="block text-sm font-medium text-gray-700 mb-1">Adresse email</label>
+                  <input id="login-email" type="email" value={email} onChange={e => setEmail(e.target.value)}
                     placeholder="votre@email.com" required
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm" />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
-                  <input type="password" value={password} onChange={e => setPassword(e.target.value)}
+                  <label htmlFor="login-password" className="block text-sm font-medium text-gray-700 mb-1">Mot de passe</label>
+                  <input id="login-password" type="password" value={password} onChange={e => setPassword(e.target.value)}
                     placeholder="••••••••" required
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm" />
                 </div>
@@ -152,8 +152,8 @@ export default function Login() {
                   Vous etes mentor ou mentore selectionne ? Entrez votre email pour recevoir un lien et creer votre mot de passe.
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Votre adresse email</label>
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                  <label htmlFor="first-email" className="block text-sm font-medium text-gray-700 mb-1">Votre adresse email</label>
+                  <input id="first-email" type="email" value={email} onChange={e => setEmail(e.target.value)}
                     placeholder="votre@email.com" required
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm" />
                 </div>
@@ -168,8 +168,8 @@ export default function Login() {
             {mode === 'reset' && (
               <form onSubmit={handleReset} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Votre adresse email</label>
-                  <input type="email" value={email} onChange={e => setEmail(e.target.value)}
+                  <label htmlFor="reset-email" className="block text-sm font-medium text-gray-700 mb-1">Votre adresse email</label>
+                  <input id="reset-email" type="email" value={email} onChange={e => setEmail(e.target.value)}
                     placeholder="votre@email.com" required
                     className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm" />
                 </div>
