@@ -48,20 +48,32 @@ module.exports = async (req, res) => {
     return res.status(404).json({ error: 'not_in_program' });
   }
 
-  // Vérifier si le compte auth existe déjà
-  const { data: existingData } = await supabase.auth.admin.getUserByEmail(emailLower);
-  if (existingData?.user) {
-    return res.status(409).json({ error: 'account_exists' });
+  // Vérifier si le compte auth existe déjà via listUsers
+  try {
+    const { data: listData } = await supabase.auth.admin.listUsers({ perPage: 1000 });
+    const existingUser = listData?.users?.find(u => u.email?.toLowerCase() === emailLower);
+    if (existingUser) {
+      return res.status(409).json({ error: 'account_exists' });
+    }
+  } catch (e) {
+    console.error('listUsers error:', e.message);
+    return res.status(500).json({ error: 'Erreur vérification compte' });
   }
 
   const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
 
   // Générer un magic link (crée le compte auth si inexistant, valable 24h)
-  const { data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
-    type: 'magiclink',
-    email: emailLower,
-    options: { redirectTo: `${siteUrl}/auth/reset` },
-  });
+  let linkData, linkError;
+  try {
+    ({ data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
+      type: 'magiclink',
+      email: emailLower,
+      options: { redirectTo: `${siteUrl}/auth/reset` },
+    }));
+  } catch (e) {
+    console.error('generateLink exception:', e.message);
+    return res.status(500).json({ error: 'Erreur génération du lien' });
+  }
 
   if (linkError || !linkData?.properties?.action_link) {
     console.error('generateLink error:', linkError);
