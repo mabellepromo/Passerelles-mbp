@@ -102,6 +102,14 @@ export default function PasswordGate({ children }) {
           </form>
         </div>
 
+        <div className="mt-5 rounded-xl px-4 py-3 text-center"
+          style={{ background: 'rgba(212,170,53,0.12)', border: '1px solid rgba(212,170,53,0.3)' }}>
+          <p className="text-xs font-semibold" style={{ color: '#d4aa35' }}>Ouverture au public</p>
+          <p className="text-emerald-200/80 text-xs mt-0.5">
+            Le site sera accessible à tous le <span className="text-white font-semibold">5 mai 2026</span> entre <span className="text-white font-semibold">12h00 et 14h00 UTC</span>
+          </p>
+        </div>
+
         <p className="text-center text-emerald-400/40 text-xs mt-6">
           © 2026 Association Ma Belle Promo
         </p>
