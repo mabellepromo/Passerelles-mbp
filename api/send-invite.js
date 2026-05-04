@@ -37,13 +37,18 @@ module.exports = async (req, res) => {
   const emailLower = email.toLowerCase().trim();
 
   // Vérifier que l'email est dans le programme (table mentor ou mentore)
+  // ilike = insensible à la casse (couvre les emails stockés en majuscules)
   const [mentorRes, mentoreRes] = await Promise.all([
-    supabase.from('mentor').select('email, full_name').eq('email', emailLower).maybeSingle(),
-    supabase.from('mentore').select('email, full_name').eq('email', emailLower).maybeSingle(),
+    supabase.from('mentor').select('email, full_name').ilike('email', emailLower).maybeSingle(),
+    supabase.from('mentore').select('email, full_name').ilike('email', emailLower).maybeSingle(),
   ]);
+
+  console.log('mentor query:', JSON.stringify(mentorRes));
+  console.log('mentore query:', JSON.stringify(mentoreRes));
 
   const member = mentorRes.data || mentoreRes.data;
   if (!member) {
+    console.log('not_in_program for:', emailLower);
     return res.status(404).json({ error: 'not_in_program' });
   }
 
