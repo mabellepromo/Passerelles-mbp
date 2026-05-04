@@ -50,13 +50,21 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setError('');
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset`
-    });
-    if (error) {
-      setError('Cet email n\'est pas enregistre dans le programme. Contactez contact@mabellepromo.org.');
-    } else {
-      setSuccess('Un lien de reinitialisation vous a ete envoye. Cliquez dessus pour choisir votre mot de passe et acceder a votre espace.');
+    try {
+      const res = await fetch('/api/send-invite', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      if (res.status === 404) {
+        setError('Cet email n\'est pas enregistre dans le programme. Contactez contact@mabellepromo.org.');
+      } else if (!res.ok) {
+        setError('Une erreur est survenue. Reessayez ou contactez contact@mabellepromo.org.');
+      } else {
+        setSuccess('Un lien de creation de compte vous a ete envoye. Cliquez dessus pour choisir votre mot de passe et acceder a votre espace.');
+      }
+    } catch {
+      setError('Une erreur est survenue. Verifiez votre connexion et reessayez.');
     }
     setLoading(false);
   };
