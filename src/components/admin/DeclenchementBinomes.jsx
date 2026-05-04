@@ -58,7 +58,7 @@ export default function DeclenchementBinomes() {
       return data.activations || {};
     },
     enabled: binomesDeclenches.length > 0,
-    staleTime: 60000,
+    staleTime: 0,
   });
 
   const isActivated = (email) => activations[email?.toLowerCase()]?.activated === true;
