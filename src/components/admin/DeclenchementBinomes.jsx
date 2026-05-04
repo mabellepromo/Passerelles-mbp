@@ -53,9 +53,8 @@ export default function DeclenchementBinomes() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ emails: allEmails }),
       });
-      if (!res.ok) { console.warn('[check-activations] erreur HTTP', res.status); return {}; }
+      if (!res.ok) return {};
       const data = await res.json();
-      console.log('[check-activations] réponse:', data);
       return data.activations || {};
     },
     enabled: binomesDeclenches.length > 0,
