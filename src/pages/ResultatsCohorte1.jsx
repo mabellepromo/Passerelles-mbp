@@ -61,9 +61,9 @@ const cityLabel = (val, other) => {
 
 // score ici est le match_score sur 100
 const consensusTag = (score) => {
-  if (score >= 90) return { tag: "Unanimité · 5/5 SAD + Comité MBP", color: "emerald" };
-  if (score >= 78) return { tag: "Fort consensus · 4/5 SAD + Comité MBP", color: "blue" };
-  return { tag: "Consensus · 3/5 SAD + Comité MBP", color: "amber" };
+  if (score >= 90) return { tag: "Unanimité · 5/5 SIAD + Comité MBP", color: "emerald" };
+  if (score >= 78) return { tag: "Fort consensus · 4/5 SIAD + Comité MBP", color: "blue" };
+  return { tag: "Consensus · 3/5 SIAD + Comité MBP", color: "amber" };
 };
 
 // Extrait le justificatif depuis le champ notes (texte après le premier "—")
@@ -545,7 +545,7 @@ export default function ResultatsCohorte1() {
             <h2 className="text-4xl font-bold text-white font-playfair mb-3">
               Les {cohorte1Binomes.length} Binômes Officiels
             </h2>
-            <p className="text-slate-400 max-w-2xl mx-auto text-sm">Consensus du SAD (Système d'Aide à la Décision), pondéré par le comité MBP
+            <p className="text-slate-400 max-w-2xl mx-auto text-sm">Consensus du SIAD (Système d'Aide à la Décision), pondéré par le comité MBP
 
             </p>
             <p className="text-slate-500 text-xs mt-2">
@@ -739,17 +739,17 @@ export default function ResultatsCohorte1() {
             })}
           </div>
 
-          {/* Note SAD */}
+          {/* Note SIAD */}
           <p className="mt-4 text-center text-xs text-slate-500 italic">
-            * SAD — Système d'Aide à la Décision
+            * SIAD — Système d'Aide à la Décision
           </p>
 
           {/* Légende */}
           <div className="mt-4 flex flex-wrap gap-3 justify-center">
             {[
-            { color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.35)', label: 'Unanimité · 5/5 SAD + Comité MBP' },
-            { color: '#3b82f6', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.35)', label: 'Fort consensus · 4/5 SAD + Comité MBP' },
-            { color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.35)', label: 'Consensus · 3/5 SAD + Comité MBP' }].
+            { color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.35)', label: 'Unanimité · 5/5 SIAD + Comité MBP' },
+            { color: '#3b82f6', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.35)', label: 'Fort consensus · 4/5 SIAD + Comité MBP' },
+            { color: '#f59e0b', bg: 'rgba(245,158,11,0.15)', border: 'rgba(245,158,11,0.35)', label: 'Consensus · 3/5 SIAD + Comité MBP' }].
             map((l) =>
             <div key={l.label} className="flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium"
             style={{ background: l.bg, border: `1px solid ${l.border}`, color: l.color }}>
