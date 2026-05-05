@@ -140,11 +140,11 @@ export default function MotPresidente() {
               }}
             >
               <Quote className="h-10 w-10 mb-5 opacity-30 text-yellow-300" />
-              <p className="font-inter text-white leading-relaxed text-justify"
+              <p className="font-garamond text-white leading-relaxed text-justify"
                 style={{ fontSize: 'clamp(1rem, 2vw, 1.15rem)' }}>
                 Il y a des projets qui naissent deux fois : une première fois dans les textes, et une seconde, bien plus belle, dans la réalité.
               </p>
-              <p className="mt-5 font-inter italic"
+              <p className="mt-5 font-garamond italic"
                 style={{ color: '#d4aa35', fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)', fontStyle: 'italic' }}>
                 Le programme PASSERELLES est de ceux-là.
               </p>
@@ -168,7 +168,7 @@ export default function MotPresidente() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 className={[
-                  'font-inter leading-relaxed text-justify',
+                  'font-garamond leading-relaxed text-justify',
                   p.highlight
                     ? 'text-gray-900'
                     : 'text-gray-800',
