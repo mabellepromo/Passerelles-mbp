@@ -922,7 +922,7 @@ export default function ResultatsCohorte1() {
                 { name: "Grok", approach: "Alignement de personnalité et complémentarité", icon: "⚡" },
                 { name: "Deepseek", approach: "Potentiel de développement long terme", icon: "🔮" },
                 { name: "Perplexity", approach: "Optimisation globale de la cohorte", icon: "🌐" },
-                { name: "Pondération Comité MBP", approach: "Analyse croisée disponibilité + spécialité", icon: "✨" }].
+                { name: "Pondération Comité MBP", approach: "Vision contextuelle, évaluation de l'engagement émotionnel, « signaux faibles », arbitrage final", icon: "✨" }].
                 map((ia) =>
                 <div key={ia.name} className="flex items-center gap-3 rounded-xl p-3" style={{ background: 'rgba(255,255,255,0.7)' }}>
                     <span className="text-xl flex-shrink-0">{ia.icon}</span>
