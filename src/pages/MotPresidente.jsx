@@ -140,12 +140,12 @@ export default function MotPresidente() {
               }}
             >
               <Quote className="h-10 w-10 mb-5 opacity-30 text-yellow-300" />
-              <p className="font-cormorant text-white leading-relaxed text-justify"
-                style={{ fontSize: 'clamp(1.2rem, 2.4vw, 1.5rem)', fontWeight: 500, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
+              <p className="font-inter text-white leading-relaxed text-justify"
+                style={{ fontSize: 'clamp(1rem, 2vw, 1.15rem)' }}>
                 Il y a des projets qui naissent deux fois : une première fois dans les textes, et une seconde, bien plus belle, dans la réalité.
               </p>
-              <p className="mt-5 font-cormorant italic"
-                style={{ color: '#d4aa35', fontSize: 'clamp(1.1rem, 2.1vw, 1.3rem)', fontWeight: 500, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
+              <p className="mt-5 font-inter italic"
+                style={{ color: '#d4aa35', fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)', fontStyle: 'italic' }}>
                 Le programme PASSERELLES est de ceux-là.
               </p>
             </motion.div>
@@ -168,7 +168,7 @@ export default function MotPresidente() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 className={[
-                  'font-cormorant leading-relaxed text-justify',
+                  'font-inter leading-relaxed text-justify',
                   p.highlight
                     ? 'text-gray-900'
                     : 'text-gray-800',
@@ -178,9 +178,7 @@ export default function MotPresidente() {
                 ].join(' ')}
                 style={{
                   fontSize: 'clamp(1.2rem, 2vw, 1.4rem)',
-                  fontWeight: p.highlight ? 600 : 500,
-                  WebkitFontSmoothing: 'antialiased',
-                  MozOsxFontSmoothing: 'grayscale',
+                  fontWeight: p.highlight ? 600 : 400,
                 }}
                 style={p.accent ? {
                   borderColor: '#d4aa35',
