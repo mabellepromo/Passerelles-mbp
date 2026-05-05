@@ -219,8 +219,8 @@ export default function Home() {
                     style={{ background: '#f0fdf4' }}>
                     <p.icon className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: '#1a7a45' }} />
                   </div>
-                  <h3 className="font-bold text-gray-900 text-sm sm:text-base mb-1">{p.label}</h3>
-                  <p className="text-xs sm:text-sm text-gray-500 leading-relaxed">{p.desc}</p>
+                  <h3 className="font-bold text-gray-900 text-[11px] sm:text-xs mb-1">{p.label}</h3>
+                  <p className="text-[10px] sm:text-[11px] text-gray-500 leading-relaxed">{p.desc}</p>
                 </div>
               </motion.div>
             ))}
