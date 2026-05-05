@@ -56,12 +56,18 @@ module.exports = async (req, res) => {
   const prenom = member.full_name ? member.full_name.split(' ')[0] : 'Membre';
   const role = mentoreRes.data ? 'mentoré(e)' : 'mentor(e)';
 
-  // Vérifier si le compte auth existe déjà — si oui, envoyer un lien de récupération
+  // Vérifier si le compte auth existe déjà — pagination complète (50 par page)
   let isReset = false;
   try {
-    const { data: listData } = await supabase.auth.admin.listUsers();
-    const existingUser = listData?.users?.find(u => u.email?.toLowerCase() === emailLower);
-    if (existingUser) isReset = true;
+    let page = 1;
+    outer: while (true) {
+      const { data: listData, error: listErr } = await supabase.auth.admin.listUsers({ page, perPage: 50 });
+      if (listErr) throw listErr;
+      const users = listData?.users || [];
+      if (users.find(u => u.email?.toLowerCase() === emailLower)) { isReset = true; break outer; }
+      if (users.length < 50) break;
+      page++;
+    }
   } catch (e) {
     console.error('listUsers error:', e.message);
     return res.status(500).json({ error: 'Erreur vérification compte' });
@@ -77,12 +83,12 @@ module.exports = async (req, res) => {
     }));
   } catch (e) {
     console.error('generateLink exception:', e.message);
-    return res.status(500).json({ error: 'Erreur génération du lien' });
+    return res.status(500).json({ error: `Erreur génération du lien : ${e.message}` });
   }
 
   if (linkError || !linkData?.properties?.action_link) {
     console.error('generateLink error:', linkError);
-    return res.status(500).json({ error: 'Erreur génération du lien' });
+    return res.status(500).json({ error: `Erreur génération du lien : ${linkError?.message || 'lien non retourné'}` });
   }
 
   const link = linkData.properties.action_link;
