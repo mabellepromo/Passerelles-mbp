@@ -141,12 +141,12 @@ export default function MotPresidente() {
                   boxShadow: '0 24px 64px rgba(10,46,24,0.2)',
                 }}>
                 <Quote className="h-10 w-10 mb-4 opacity-30 text-yellow-300" />
-                <p className="font-playfair text-white leading-relaxed"
-                  style={{ fontSize: 'clamp(1.05rem, 2.2vw, 1.3rem)' }}>
+                <p className="font-cormorant text-white leading-relaxed text-justify"
+                  style={{ fontSize: 'clamp(1.15rem, 2.4vw, 1.45rem)', fontWeight: 400 }}>
                   Il y a des projets qui naissent deux fois : une première fois dans les textes, et une seconde, bien plus belle, dans la réalité.
                 </p>
-                <p className="mt-4 font-playfair italic"
-                  style={{ color: '#d4aa35', fontSize: 'clamp(1rem, 2vw, 1.15rem)' }}>
+                <p className="mt-4 font-cormorant italic"
+                  style={{ color: '#d4aa35', fontSize: 'clamp(1.05rem, 2.1vw, 1.25rem)' }}>
                   Le programme PASSERELLES est de ceux-là.
                 </p>
               </div>
@@ -170,14 +170,15 @@ export default function MotPresidente() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 className={[
-                  'leading-relaxed text-base sm:text-lg',
+                  'font-cormorant leading-relaxed text-justify',
                   p.highlight
-                    ? 'font-playfair font-semibold text-gray-900'
-                    : 'text-gray-600',
+                    ? 'font-semibold text-gray-900'
+                    : 'text-gray-700',
                   p.accent
                     ? 'pl-5 border-l-4 rounded-r-xl py-3 pr-4'
                     : '',
                 ].join(' ')}
+                style={{ fontSize: 'clamp(1.15rem, 2vw, 1.35rem)', fontWeight: p.highlight ? 600 : 400 }}
                 style={p.accent ? {
                   borderColor: '#d4aa35',
                   background: 'linear-gradient(90deg, rgba(212,170,53,0.06), transparent)',

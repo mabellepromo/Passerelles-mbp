@@ -7,6 +7,7 @@ module.exports = {
       fontFamily: {
         inter: ['Inter', 'sans-serif'],
         playfair: ['Libre Baskerville', 'Georgia', 'serif'],
+        cormorant: ['Cormorant Garamond', 'Georgia', 'serif'],
         dm: ['DM Sans', 'sans-serif'],
       },
       boxShadow: {
