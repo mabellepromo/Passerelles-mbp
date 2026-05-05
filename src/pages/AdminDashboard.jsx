@@ -25,6 +25,7 @@ import ProgrammeCharts from '@/components/admin/ProgrammeCharts.jsx';
 import AnalytiqueDashboard from '@/components/admin/AnalytiqueDashboard.jsx';
 import DeclenchementBinomes from '@/components/admin/DeclenchementBinomes.jsx';
 import EnvoiEmailLibre from '@/components/admin/EnvoiEmailLibre.jsx';
+import RenvoiLien from '@/components/admin/RenvoiLien.jsx';
 
 const NAV = [
   { id: 'overview',      label: 'Vue d\'ensemble', icon: BarChart3,      group: 'Principal' },
@@ -36,6 +37,7 @@ const NAV = [
   { id: 'matching',      label: 'Appariement',       icon: Link2,          group: 'Outils' },
   { id: 'declenchement', label: 'Déclenchement',     icon: Send,           group: 'Outils' },
   { id: 'email-libre',   label: 'Email libre',       icon: Mail,           group: 'Outils' },
+  { id: 'renvoi-lien',  label: 'Lien d\'accès',     icon: Link2,          group: 'Outils' },
   { id: 'alertes',       label: 'Alertes',           icon: AlertTriangle,  group: 'Outils', count: 'issuesReported', alert: true },
   { id: 'suivis',        label: 'Suivis',            icon: ClipboardList,  group: 'Données', count: 'totalSuivis' },
   { id: 'contacts',      label: 'Messages Contact',  icon: Inbox,          group: 'Données', count: 'unreadContacts', alert: true },
@@ -707,6 +709,7 @@ export default function AdminDashboard() {
             {activeTab === 'images'        && <ImageManager />}
             {activeTab === 'declenchement' && <DeclenchementBinomes />}
             {activeTab === 'email-libre'   && <EnvoiEmailLibre />}
+            {activeTab === 'renvoi-lien'  && <RenvoiLien />}
             {activeTab === 'contacts'      && (
               <ContactMessagesView messages={contactMsgs} onMarkRead={async (msg) => {
                 await base44.entities.Message.update(msg.id, { read: true });
