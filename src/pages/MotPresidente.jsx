@@ -20,7 +20,7 @@ const paragraphs = [
     highlight: true,
   },
   {
-    text: `Le programme PASSERELLES est de ceux-là. Inscrit dans nos statuts depuis plus de huit ans, il a longtemps été une promesse que nous portions avec conviction, en attendant les conditions, les ressources, et peut-être aussi la maturité collective pour le faire bien. Aujourd'hui, cette promesse devient programme. Elle a un nom, des visages, et onze binômes qui vont écrire ensemble les premières pages d'une belle aventure.`,
+    text: `Inscrit dans nos statuts depuis plus de huit ans, il a longtemps été une promesse que nous portions avec conviction, en attendant les conditions, les ressources, et peut-être aussi la maturité collective pour le faire bien. Aujourd'hui, cette promesse devient programme. Elle a un nom, des visages, et onze binômes qui vont écrire ensemble les premières pages d'une belle aventure.`,
   },
   {
     text: `Pour notre association, c'est une fierté immense. Pas la fierté facile de ceux qui annoncent — mais celle, plus profonde, de ceux qui ont construit.`,
