@@ -255,8 +255,8 @@ export default function Home() {
               <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: '#d4aa35' }}>
                 Mot de la Présidente
               </p>
-              <blockquote className="font-playfair text-white leading-relaxed mb-5"
-                style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)' }}>
+              <blockquote className="text-white leading-relaxed mb-5 text-sm sm:text-base"
+                style={{ fontStyle: 'italic' }}>
                 "Il y a des projets qui naissent deux fois. PASSERELLES, inscrit dans nos statuts depuis plus de huit ans, naît enfin pour de vrai — et c'est une fierté immense pour notre association."
               </blockquote>
               <Link to="/MotPresidente">
