@@ -140,12 +140,12 @@ export default function MotPresidente() {
               }}
             >
               <Quote className="h-10 w-10 mb-5 opacity-30 text-yellow-300" />
-              <p className="font-garamond text-white leading-relaxed text-justify"
-                style={{ fontSize: 'clamp(1rem, 2vw, 1.15rem)' }}>
+              <p className="text-white leading-relaxed text-justify"
+                style={{ fontFamily: "'EB Garamond', Georgia, serif", fontSize: 'clamp(1rem, 2vw, 1.15rem)' }}>
                 Il y a des projets qui naissent deux fois : une première fois dans les textes, et une seconde, bien plus belle, dans la réalité.
               </p>
-              <p className="mt-5 font-garamond italic"
-                style={{ color: '#d4aa35', fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)', fontStyle: 'italic' }}>
+              <p className="mt-5 italic"
+                style={{ fontFamily: "'EB Garamond', Georgia, serif", color: '#d4aa35', fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)' }}>
                 Le programme PASSERELLES est de ceux-là.
               </p>
             </motion.div>
@@ -168,22 +168,16 @@ export default function MotPresidente() {
                 whileInView="visible"
                 viewport={{ once: true }}
                 className={[
-                  'font-garamond leading-relaxed text-justify',
-                  p.highlight
-                    ? 'text-gray-900'
-                    : 'text-gray-800',
-                  p.accent
-                    ? 'pl-5 border-l-4 rounded-r-xl py-3 pr-4'
-                    : '',
+                  'leading-relaxed text-justify',
+                  p.highlight ? 'text-gray-900' : 'text-gray-800',
+                  p.accent ? 'pl-5 border-l-4 rounded-r-xl py-3 pr-4' : '',
                 ].join(' ')}
                 style={{
+                  fontFamily: "'EB Garamond', Georgia, serif",
                   fontSize: 'clamp(1.2rem, 2vw, 1.4rem)',
                   fontWeight: p.highlight ? 600 : 400,
+                  ...(p.accent ? { borderColor: '#d4aa35', background: 'linear-gradient(90deg, rgba(212,170,53,0.06), transparent)' } : {}),
                 }}
-                style={p.accent ? {
-                  borderColor: '#d4aa35',
-                  background: 'linear-gradient(90deg, rgba(212,170,53,0.06), transparent)',
-                } : {}}
               >
                 {p.text}
               </motion.p>
