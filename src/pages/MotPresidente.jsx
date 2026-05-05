@@ -1,7 +1,4 @@
 import React from 'react';
-import '@fontsource/eb-garamond/400.css';
-import '@fontsource/eb-garamond/500.css';
-import '@fontsource/eb-garamond/400-italic.css';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import NavBar from '@/components/NavBar';
