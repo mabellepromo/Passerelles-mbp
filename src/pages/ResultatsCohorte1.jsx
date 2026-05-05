@@ -888,7 +888,7 @@ export default function ResultatsCohorte1() {
             <h2 className="text-2xl font-bold text-gray-900 font-playfair mb-1">🔬 Méthodologie de Sélection</h2>
             <p className="text-gray-500 text-sm">Grille de 100 pts · 4 systèmes d'aide à la décision + Pondération Comité</p>
             <p className="text-gray-600 text-sm leading-relaxed mt-3">
-              Pour la sélection des candidats, l'association a mis en place un Système d'Aide à la Décision Hybride. Ce processus repose sur une analyse multi-agents (utilisant la complémentarité de plusieurs modèles d'IA) dont les résultats sont soumis à une pondération humaine par le comité de sélection. Cette approche garantit une analyse exhaustive des candidatures tout en maintenant un arbitrage final éthique et inclusif.
+              Pour la sélection des candidats, l'association a mis en place un Système d'Aide à la Décision Hybride. Ce processus repose sur une analyse multi-agents (utilisant la complémentarité de plusieurs modèles d'IA) dont les résultats sont soumis à une pondération humaine par le comité de sélection. Afin de garantir l'impartialité de l'analyse, l'ensemble des candidatures a été préalablement anonymisé avant toute soumission aux modèles d'IA. Cette approche garantit une analyse exhaustive des candidatures tout en maintenant un arbitrage final éthique et inclusif.
             </p>
           </div>
           <div className="grid lg:grid-cols-2 gap-6">
