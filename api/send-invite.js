@@ -52,25 +52,26 @@ module.exports = async (req, res) => {
     return res.status(404).json({ error: 'not_in_program' });
   }
 
-  // Vérifier si le compte auth existe déjà via listUsers
+  const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
+  const prenom = member.full_name ? member.full_name.split(' ')[0] : 'Membre';
+  const role = mentoreRes.data ? 'mentoré(e)' : 'mentor(e)';
+
+  // Vérifier si le compte auth existe déjà — si oui, envoyer un lien de récupération
+  let isReset = false;
   try {
     const { data: listData } = await supabase.auth.admin.listUsers();
     const existingUser = listData?.users?.find(u => u.email?.toLowerCase() === emailLower);
-    if (existingUser) {
-      return res.status(409).json({ error: 'account_exists' });
-    }
+    if (existingUser) isReset = true;
   } catch (e) {
     console.error('listUsers error:', e.message);
     return res.status(500).json({ error: 'Erreur vérification compte' });
   }
 
-  const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
-
-  // Générer un magic link (crée le compte auth si inexistant, valable 24h)
+  // Générer un magic link (nouveau compte) ou un lien de récupération (compte existant)
   let linkData, linkError;
   try {
     ({ data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
-      type: 'magiclink',
+      type: isReset ? 'recovery' : 'magiclink',
       email: emailLower,
       options: { redirectTo: `${siteUrl}/auth/reset` },
     }));
@@ -85,10 +86,26 @@ module.exports = async (req, res) => {
   }
 
   const link = linkData.properties.action_link;
-  const prenom = member.full_name ? member.full_name.split(' ')[0] : 'Membre';
-  const role = mentoreRes.data ? 'mentoré(e)' : 'mentor(e)';
 
-  const htmlContent = `
+  const htmlContent = isReset ? `
+<p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">Bonjour <strong>${prenom}</strong>,</p>
+<p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">
+  Un compte existe déjà pour cette adresse dans le <strong>Programme PASSERELLES</strong>.
+  Cliquez sur le bouton ci-dessous pour définir ou réinitialiser votre mot de passe et accéder à votre espace personnel.
+</p>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0;">
+  <tr>
+    <td align="center">
+      <a href="${link}"
+        style="display:inline-block;background-color:#0f5530;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;font-family:Arial,sans-serif;">
+        Accéder à mon espace
+      </a>
+    </td>
+  </tr>
+</table>
+<p style="color:#6b7280;font-size:13px;line-height:1.6;margin:0 0 8px;">
+  Ce lien est valable <strong>24 heures</strong>. Si vous n'avez pas fait cette demande, ignorez cet email.
+</p>` : `
 <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">Bonjour <strong>${prenom}</strong>,</p>
 <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">
   Votre adresse email a été reconnue en tant que <strong>${role}</strong> du <strong>Programme PASSERELLES</strong>.
