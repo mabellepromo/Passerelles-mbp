@@ -56,28 +56,12 @@ module.exports = async (req, res) => {
   const prenom = member.full_name ? member.full_name.split(' ')[0] : 'Membre';
   const role = mentoreRes.data ? 'mentoré(e)' : 'mentor(e)';
 
-  // Vérifier si le compte auth existe déjà — pagination complète (50 par page)
-  let isReset = false;
-  try {
-    let page = 1;
-    outer: while (true) {
-      const { data: listData, error: listErr } = await supabase.auth.admin.listUsers({ page, perPage: 50 });
-      if (listErr) throw listErr;
-      const users = listData?.users || [];
-      if (users.find(u => u.email?.toLowerCase() === emailLower)) { isReset = true; break outer; }
-      if (users.length < 50) break;
-      page++;
-    }
-  } catch (e) {
-    console.error('listUsers error:', e.message);
-    return res.status(500).json({ error: 'Erreur vérification compte' });
-  }
-
-  // Générer un magic link (nouveau compte) ou un lien de récupération (compte existant)
+  // Générer un magic link — fonctionne pour nouveau compte comme pour compte existant.
+  // La redirection vers /auth/reset (forceReset=true) affiche toujours le formulaire de mot de passe.
   let linkData, linkError;
   try {
     ({ data: linkData, error: linkError } = await supabase.auth.admin.generateLink({
-      type: isReset ? 'recovery' : 'magiclink',
+      type: 'magiclink',
       email: emailLower,
       options: { redirectTo: `${siteUrl}/auth/reset` },
     }));
@@ -93,11 +77,11 @@ module.exports = async (req, res) => {
 
   const link = linkData.properties.action_link;
 
-  const htmlContent = isReset ? `
+  const htmlContent = `
 <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">Bonjour <strong>${prenom}</strong>,</p>
 <p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">
-  Un compte existe déjà pour cette adresse dans le <strong>Programme PASSERELLES</strong>.
-  Cliquez sur le bouton ci-dessous pour définir ou réinitialiser votre mot de passe et accéder à votre espace personnel.
+  Votre adresse email a été reconnue en tant que <strong>${role}</strong> du <strong>Programme PASSERELLES</strong>.
+  Cliquez sur le bouton ci-dessous pour accéder à votre espace personnel et définir votre mot de passe.
 </p>
 <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0;">
   <tr>
@@ -105,24 +89,6 @@ module.exports = async (req, res) => {
       <a href="${link}"
         style="display:inline-block;background-color:#0f5530;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;font-family:Arial,sans-serif;">
         Accéder à mon espace
-      </a>
-    </td>
-  </tr>
-</table>
-<p style="color:#6b7280;font-size:13px;line-height:1.6;margin:0 0 8px;">
-  Ce lien est valable <strong>24 heures</strong>. Si vous n'avez pas fait cette demande, ignorez cet email.
-</p>` : `
-<p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">Bonjour <strong>${prenom}</strong>,</p>
-<p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">
-  Votre adresse email a été reconnue en tant que <strong>${role}</strong> du <strong>Programme PASSERELLES</strong>.
-  Cliquez sur le bouton ci-dessous pour créer votre mot de passe et accéder à votre espace personnel.
-</p>
-<table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0;">
-  <tr>
-    <td align="center">
-      <a href="${link}"
-        style="display:inline-block;background-color:#0f5530;color:#ffffff;padding:14px 32px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;font-family:Arial,sans-serif;">
-        Créer mon compte
       </a>
     </td>
   </tr>
