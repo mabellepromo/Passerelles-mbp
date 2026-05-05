@@ -367,6 +367,32 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ══════════ AIDE CONNEXION ══════════ */}
+      <section className="py-7 px-4 sm:px-6" style={{ background: '#fff' }}>
+        <div className="max-w-4xl mx-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 rounded-2xl px-6 py-5"
+            style={{ background: 'linear-gradient(135deg, #f0fdf4, #ecfdf5)', border: '1px solid rgba(26,122,69,0.15)' }}>
+            <div className="flex items-center gap-3 text-center sm:text-left">
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ background: '#1a7a45' }}>
+                <Scale className="h-4 w-4 text-white" />
+              </div>
+              <div>
+                <p className="font-semibold text-gray-900 text-sm">Problème de connexion ?</p>
+                <p className="text-xs text-gray-500 mt-0.5">Consultez notre guide illustré étape par étape.</p>
+              </div>
+            </div>
+            <Link to="/AideConnexion" className="flex-shrink-0">
+              <Button className="font-semibold text-sm px-5 py-2 h-auto transition-all hover:opacity-90 whitespace-nowrap"
+                style={{ background: 'linear-gradient(135deg, #0f5530, #1a7a45)', color: 'white', border: 'none' }}>
+                Voir le guide
+                <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
       <Footer />
     </div>
   );
