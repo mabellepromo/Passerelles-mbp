@@ -856,7 +856,7 @@ export default function ResultatsCohorte1() {
                           style={{ width: `${pct}%`, background: `linear-gradient(90deg, #f59e0b, #d97706)` }} />
                         </div>
                         <div className="flex items-center justify-between mt-1">
-                          <span className="text-[9px] text-gray-400">SG : {row.ai}</span>
+                          <span className="text-[9px] text-gray-400">SG* : {row.ai}</span>
                           <span className="text-[9px] text-gray-400">{pct}% du top</span>
                         </div>
                       </div>
@@ -872,6 +872,9 @@ export default function ResultatsCohorte1() {
             })}
           </div>
 
+          <p className="mt-4 text-center text-xs text-gray-400 italic">
+            * SG — Score Global de sélection (sur 100 pts)
+          </p>
           
 
           
