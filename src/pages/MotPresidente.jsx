@@ -86,23 +86,27 @@ export default function MotPresidente() {
       {/* ── PORTRAIT + INTRO ── */}
       <section className="py-14 px-4 sm:px-6">
         <div className="max-w-5xl mx-auto">
-          <div className="flex flex-col lg:flex-row items-center gap-10 lg:gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
 
-            {/* Photo */}
+            {/* Colonne photo */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.92 }}
+              initial={{ opacity: 0, scale: 0.94 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7 }}
-              className="flex-shrink-0 flex flex-col items-center"
+              className="rounded-3xl flex flex-col items-center justify-center py-10 px-8"
+              style={{
+                background: 'linear-gradient(135deg, #f8fdf9 0%, #ecfdf5 100%)',
+                border: '1px solid rgba(26,122,69,0.12)',
+                boxShadow: '0 8px 32px rgba(10,46,24,0.07)',
+              }}
             >
-              <div className="relative">
+              <div className="relative mb-6">
                 <div className="absolute -inset-2 rounded-full"
-                  style={{ background: 'linear-gradient(135deg, #b8941f, #d4aa35, #1a7a45)', padding: '3px' }}>
-                  <div className="w-full h-full rounded-full bg-white" />
+                  style={{ background: 'linear-gradient(135deg, #b8941f, #d4aa35, #1a7a45)' }}>
                 </div>
-                <div className="relative w-52 h-52 sm:w-64 sm:h-64 rounded-full overflow-hidden"
-                  style={{ border: '4px solid white', boxShadow: '0 20px 60px rgba(0,0,0,0.18)' }}>
+                <div className="relative w-48 h-48 sm:w-56 sm:h-56 rounded-full overflow-hidden"
+                  style={{ border: '4px solid white', boxShadow: '0 16px 48px rgba(0,0,0,0.15)' }}>
                   <img
                     src="/images/fabienne.webp"
                     alt="La Présidente de Ma Belle Promo"
@@ -111,45 +115,39 @@ export default function MotPresidente() {
                 </div>
               </div>
 
-              <div className="mt-5 text-center">
-                <p className="font-playfair font-bold text-gray-900 text-lg">Fabienne</p>
-                <p className="text-sm font-semibold mt-0.5" style={{ color: '#1a7a45' }}>
-                  Présidente
-                </p>
-                <p className="text-xs text-gray-400 mt-0.5">Ma Belle Promo</p>
+              <p className="font-playfair font-bold text-gray-900 text-xl text-center">Fabienne</p>
+              <p className="text-sm font-semibold mt-1 text-center" style={{ color: '#1a7a45' }}>Présidente</p>
+              <p className="text-xs text-gray-400 mt-0.5 text-center">Ma Belle Promo</p>
 
-                <div className="mt-3 flex items-center justify-center gap-1.5">
-                  <span className="w-6 h-px" style={{ background: '#d4aa35' }} />
-                  <span className="w-1.5 h-1.5 rounded-full" style={{ background: '#d4aa35' }} />
-                  <span className="w-6 h-px" style={{ background: '#d4aa35' }} />
-                </div>
+              <div className="mt-4 flex items-center justify-center gap-2">
+                <span className="w-8 h-px" style={{ background: '#d4aa35' }} />
+                <span className="w-2 h-2 rounded-full" style={{ background: '#d4aa35' }} />
+                <span className="w-8 h-px" style={{ background: '#d4aa35' }} />
               </div>
             </motion.div>
 
-            {/* Citation d'ouverture */}
+            {/* Colonne citation */}
             <motion.div
               custom={1}
               variants={fadeUp}
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true }}
-              className="flex-1"
+              className="rounded-3xl flex flex-col justify-center p-8 sm:p-10"
+              style={{
+                background: 'linear-gradient(135deg, #0a2e18 0%, #0f5530 100%)',
+                boxShadow: '0 24px 64px rgba(10,46,24,0.2)',
+              }}
             >
-              <div className="relative rounded-3xl p-8 sm:p-10"
-                style={{
-                  background: 'linear-gradient(135deg, #0a2e18 0%, #0f5530 100%)',
-                  boxShadow: '0 24px 64px rgba(10,46,24,0.2)',
-                }}>
-                <Quote className="h-10 w-10 mb-4 opacity-30 text-yellow-300" />
-                <p className="font-cormorant text-white leading-relaxed text-justify"
-                  style={{ fontSize: 'clamp(1.15rem, 2.4vw, 1.45rem)', fontWeight: 400 }}>
-                  Il y a des projets qui naissent deux fois : une première fois dans les textes, et une seconde, bien plus belle, dans la réalité.
-                </p>
-                <p className="mt-4 font-cormorant italic"
-                  style={{ color: '#d4aa35', fontSize: 'clamp(1.05rem, 2.1vw, 1.25rem)' }}>
-                  Le programme PASSERELLES est de ceux-là.
-                </p>
-              </div>
+              <Quote className="h-10 w-10 mb-5 opacity-30 text-yellow-300" />
+              <p className="font-cormorant text-white leading-relaxed text-justify"
+                style={{ fontSize: 'clamp(1.15rem, 2.4vw, 1.45rem)', fontWeight: 400 }}>
+                Il y a des projets qui naissent deux fois : une première fois dans les textes, et une seconde, bien plus belle, dans la réalité.
+              </p>
+              <p className="mt-5 font-cormorant italic"
+                style={{ color: '#d4aa35', fontSize: 'clamp(1.05rem, 2.1vw, 1.25rem)' }}>
+                Le programme PASSERELLES est de ceux-là.
+              </p>
             </motion.div>
 
           </div>
