@@ -141,11 +141,11 @@ export default function MotPresidente() {
             >
               <Quote className="h-10 w-10 mb-5 opacity-30 text-yellow-300" />
               <p className="font-cormorant text-white leading-relaxed text-justify"
-                style={{ fontSize: 'clamp(1.15rem, 2.4vw, 1.45rem)', fontWeight: 400 }}>
+                style={{ fontSize: 'clamp(1.2rem, 2.4vw, 1.5rem)', fontWeight: 500, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
                 Il y a des projets qui naissent deux fois : une première fois dans les textes, et une seconde, bien plus belle, dans la réalité.
               </p>
               <p className="mt-5 font-cormorant italic"
-                style={{ color: '#d4aa35', fontSize: 'clamp(1.05rem, 2.1vw, 1.25rem)' }}>
+                style={{ color: '#d4aa35', fontSize: 'clamp(1.1rem, 2.1vw, 1.3rem)', fontWeight: 500, WebkitFontSmoothing: 'antialiased', MozOsxFontSmoothing: 'grayscale' }}>
                 Le programme PASSERELLES est de ceux-là.
               </p>
             </motion.div>
@@ -170,13 +170,18 @@ export default function MotPresidente() {
                 className={[
                   'font-cormorant leading-relaxed text-justify',
                   p.highlight
-                    ? 'font-semibold text-gray-900'
-                    : 'text-gray-700',
+                    ? 'text-gray-900'
+                    : 'text-gray-800',
                   p.accent
                     ? 'pl-5 border-l-4 rounded-r-xl py-3 pr-4'
                     : '',
                 ].join(' ')}
-                style={{ fontSize: 'clamp(1.15rem, 2vw, 1.35rem)', fontWeight: p.highlight ? 600 : 400 }}
+                style={{
+                  fontSize: 'clamp(1.2rem, 2vw, 1.4rem)',
+                  fontWeight: p.highlight ? 600 : 500,
+                  WebkitFontSmoothing: 'antialiased',
+                  MozOsxFontSmoothing: 'grayscale',
+                }}
                 style={p.accent ? {
                   borderColor: '#d4aa35',
                   background: 'linear-gradient(90deg, rgba(212,170,53,0.06), transparent)',
