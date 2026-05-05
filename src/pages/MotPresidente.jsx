@@ -6,7 +6,6 @@ import Footer from '@/components/Footer';
 import { ArrowRight, Quote } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const EB_GARAMOND = "'EB Garamond', Georgia, serif";
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -143,12 +142,11 @@ export default function MotPresidente() {
               }}
             >
               <Quote className="h-10 w-10 mb-5 opacity-30 text-yellow-300" />
-              <p className="text-white leading-relaxed text-justify"
-                style={{ fontFamily: EB_GARAMOND, fontSize: 'clamp(1rem, 2vw, 1.15rem)' }}>
+              <p className="text-white leading-relaxed text-justify text-base sm:text-lg">
                 Il y a des projets qui naissent deux fois : une première fois dans les textes, et une seconde, bien plus belle, dans la réalité.
               </p>
-              <p className="mt-5 italic"
-                style={{ fontFamily: EB_GARAMOND, color: '#d4aa35', fontSize: 'clamp(0.95rem, 1.8vw, 1.1rem)' }}>
+              <p className="mt-5 italic text-sm sm:text-base"
+                style={{ color: '#d4aa35' }}>
                 Le programme PASSERELLES est de ceux-là.
               </p>
             </motion.div>
@@ -176,8 +174,6 @@ export default function MotPresidente() {
                   p.accent ? 'pl-5 border-l-4 rounded-r-xl py-3 pr-4' : '',
                 ].join(' ')}
                 style={{
-                  fontFamily: EB_GARAMOND,
-                  fontSize: 'clamp(1.2rem, 2vw, 1.4rem)',
                   fontWeight: p.highlight ? 600 : 400,
                   ...(p.accent ? { borderColor: '#d4aa35', background: 'linear-gradient(90deg, rgba(212,170,53,0.06), transparent)' } : {}),
                 }}
