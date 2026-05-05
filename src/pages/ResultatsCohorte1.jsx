@@ -545,7 +545,7 @@ export default function ResultatsCohorte1() {
             <h2 className="text-4xl font-bold text-white font-playfair mb-3">
               Les {cohorte1Binomes.length} Binômes Officiels
             </h2>
-            <p className="text-slate-400 max-w-2xl mx-auto text-sm">Consensus du SAD,   pondéré par le comité  MBP
+            <p className="text-slate-400 max-w-2xl mx-auto text-sm">Consensus du SAD (Système d'Aide à la Décision), pondéré par le comité MBP
 
             </p>
             <p className="text-slate-500 text-xs mt-2">
@@ -592,7 +592,7 @@ export default function ResultatsCohorte1() {
                           <span className="text-base font-bold font-playfair" style={{ color: scoreColor }}>#{i + 1}</span>
                           <div className="px-2 py-0.5 rounded-full text-[9px] font-bold"
                           style={{ background: scoreBg, color: scoreColor, border: `1px solid ${scoreBorder}` }}>
-                            {color === 'emerald' ? '5/5 SAD ✓' : color === 'blue' ? '4/5 SAD ✓' : '3/5 SAD ✓'}
+                            {color === 'emerald' ? '5/5 ✓' : color === 'blue' ? '4/5 ✓' : '3/5 ✓'}
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -621,8 +621,6 @@ export default function ResultatsCohorte1() {
                               <span className="text-[9px] font-bold uppercase tracking-widest" style={{ color: '#6ee7b7' }}>Mentor</span>
                             </div>
                             <p className="font-bold text-white text-sm leading-tight truncate">{formatName(b.mentor_name)}</p>
-                            <p className="text-xs text-slate-400 truncate mt-0.5">{mentor?.profession || '—'}</p>
-                            {mentor?.city && <p className="text-[10px] text-slate-500">{cityLabel(mentor.city, mentor.city_other)}</p>}
                           </div>
                         </div>
                         {/* Mentoré */}
@@ -637,7 +635,6 @@ export default function ResultatsCohorte1() {
                               <span className="text-[9px] font-bold uppercase tracking-widest text-violet-400">Mentoré(e)</span>
                             </div>
                             <p className="font-bold text-white text-sm leading-tight truncate">{formatName(b.mentore_name)}</p>
-                            <p className="text-xs text-slate-400 truncate mt-0.5">{mentore?.level ? `${mentore.level} · ` : ''}{mentore?.specialization || '—'}</p>
                             {mentore?.selection_score != null &&
                             <div className="flex items-center gap-2 mt-1">
                                 <div className="flex-1 rounded-full h-1" style={{ background: 'rgba(255,255,255,0.1)' }}>
@@ -671,8 +668,6 @@ export default function ResultatsCohorte1() {
                             <span className="text-[10px] font-bold uppercase tracking-widest" style={{ color: '#6ee7b7' }}>Mentor</span>
                           </div>
                           <p className="font-bold text-white text-sm leading-tight truncate">{formatName(b.mentor_name)}</p>
-                          <p className="text-xs text-slate-400 truncate mt-0.5">{mentor?.profession || '—'}</p>
-                          <p className="text-[11px] text-slate-500">{mentor?.years_experience ? `${mentor.years_experience} ans` : ''}{mentor?.city ? ` · ${cityLabel(mentor.city, mentor.city_other)}` : ''}</p>
                         </div>
                       </div>
                       {/* Score central */}
@@ -684,7 +679,7 @@ export default function ResultatsCohorte1() {
                         </div>
                         <div className="mt-1.5 px-2 py-0.5 rounded-full text-[9px] font-bold text-center leading-tight max-w-[80px]"
                         style={{ background: scoreBg, color: scoreColor, border: `1px solid ${scoreBorder}` }}>
-                          {color === 'emerald' ? '5/5 SAD ✓' : color === 'blue' ? '4/5 SAD ✓' : '3/5 SAD ✓'}
+                          {color === 'emerald' ? '5/5 ✓' : color === 'blue' ? '4/5 ✓' : '3/5 ✓'}
                         </div>
                       </div>
                       {/* MENTORÉ */}
@@ -699,7 +694,6 @@ export default function ResultatsCohorte1() {
                             <span className="text-[10px] font-bold uppercase tracking-widest text-violet-400">Mentoré(e)</span>
                           </div>
                           <p className="font-bold text-white text-sm leading-tight truncate">{formatName(b.mentore_name)}</p>
-                          <p className="text-xs text-slate-400 truncate mt-0.5">{mentore?.level ? `${mentore.level} · ` : ''}{mentore?.specialization || '—'}</p>
                           {mentore?.selection_score != null &&
                           <div className="flex items-center gap-2 mt-1.5">
                               <div className="flex-1 rounded-full h-1" style={{ background: 'rgba(255,255,255,0.1)' }}>
@@ -745,8 +739,13 @@ export default function ResultatsCohorte1() {
             })}
           </div>
 
+          {/* Note SAD */}
+          <p className="mt-4 text-center text-xs text-slate-500 italic">
+            * SAD — Système d'Aide à la Décision
+          </p>
+
           {/* Légende */}
-          <div className="mt-8 flex flex-wrap gap-3 justify-center">
+          <div className="mt-4 flex flex-wrap gap-3 justify-center">
             {[
             { color: '#10b981', bg: 'rgba(16,185,129,0.15)', border: 'rgba(16,185,129,0.35)', label: 'Unanimité · 5/5 SAD + Comité MBP' },
             { color: '#3b82f6', bg: 'rgba(59,130,246,0.15)', border: 'rgba(59,130,246,0.35)', label: 'Fort consensus · 4/5 SAD + Comité MBP' },
@@ -800,7 +799,7 @@ export default function ResultatsCohorte1() {
               <div className="inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold border" style={{ background: 'rgba(180,120,20,0.1)', borderColor: 'rgba(180,120,20,0.3)', color: '#92600a' }}>⏳ Liste de réserve — Cohorte 1</div>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 font-playfair">Les 11 Réservistes</h2>
-            <p className="text-gray-500 text-sm mt-1 max-w-2xl">Contactés en cas de désistement. Priorité absolue pour la Cohorte 2.</p>
+            <p className="text-gray-500 text-sm mt-1 max-w-2xl">Contactés en cas de désistement.</p>
           </div>
 
           {/* Graphical cards */}
@@ -838,14 +837,11 @@ export default function ResultatsCohorte1() {
                         </div>
                         <div className="min-w-0">
                           <p className="font-semibold text-gray-800 text-sm truncate">{row.name}</p>
-                          <p className="text-xs text-gray-400 truncate">{row.domaine}</p>
                         </div>
                       </div>
 
-                      {/* Badges niveau + étab */}
-                      <div className="flex items-center gap-1.5 px-2 flex-shrink-0">
-                        <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 text-slate-600">{row.niv}</span>
-                        <span className="hidden sm:inline text-xs px-2 py-0.5 rounded-full bg-slate-100 text-slate-500">{row.etab}</span>
+                      {/* Badge genre */}
+                      <div className="flex items-center px-2 flex-shrink-0">
                         <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${row.s === 'F' ? 'bg-pink-100 text-pink-700' : 'bg-blue-100 text-blue-700'}`}>{row.s === 'F' ? '♀' : '♂'}</span>
                       </div>
 
@@ -860,7 +856,7 @@ export default function ResultatsCohorte1() {
                           style={{ width: `${pct}%`, background: `linear-gradient(90deg, #f59e0b, #d97706)` }} />
                         </div>
                         <div className="flex items-center justify-between mt-1">
-                          <span className="text-[9px] text-gray-400">IA : {row.ai}</span>
+                          <span className="text-[9px] text-gray-400">SG : {row.ai}</span>
                           <span className="text-[9px] text-gray-400">{pct}% du top</span>
                         </div>
                       </div>
