@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
@@ -72,6 +72,45 @@ const faqs = [
   { q: "Besoin d'aide ?",                    a: "Écrivez-nous à contact@mabellepromo.org ou appelez le +228 96 09 07 07. On répond rapidement !" },
   { q: "Quelle est la langue du programme ?", a: "Le programme se déroule entièrement en français, tant à l'oral que dans les documents et échanges écrits." },
 ];
+
+function Typewriter({ text, speed = 55, className = '', style = {} }) {
+  const [displayed, setDisplayed] = useState('');
+  const [done, setDone] = useState(false);
+  const ref = useRef(null);
+  const started = useRef(false);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started.current) {
+          started.current = true;
+          let i = 0;
+          const interval = setInterval(() => {
+            i++;
+            setDisplayed(text.slice(0, i));
+            if (i >= text.length) {
+              clearInterval(interval);
+              setDone(true);
+            }
+          }, speed);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    if (ref.current) observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [text, speed]);
+
+  return (
+    <span ref={ref} className={className} style={style}>
+      {displayed}
+      {!done && (
+        <span className="inline-block w-0.5 h-4 ml-0.5 align-middle animate-pulse"
+          style={{ background: '#1a7a45' }} />
+      )}
+    </span>
+  );
+}
 
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
@@ -378,7 +417,7 @@ export default function Home() {
                 <Scale className="h-4 w-4 text-white" />
               </div>
               <div>
-                <p className="font-semibold text-gray-900 text-sm">Problème de connexion ?</p>
+                <Typewriter text="Problème de connexion ?" className="font-semibold text-gray-900 text-sm" />
                 <p className="text-xs text-gray-500 mt-0.5">Consultez notre guide illustré étape par étape.</p>
               </div>
             </div>
