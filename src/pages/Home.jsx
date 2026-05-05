@@ -228,6 +228,49 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ══════════ MOT DE LA PRÉSIDENTE ══════════ */}
+      <section className="py-10 px-4 sm:px-6" style={{ background: 'linear-gradient(135deg, #f8fdf9 0%, #fff 100%)' }}>
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.6 }}
+            className="rounded-3xl overflow-hidden flex flex-col lg:flex-row"
+            style={{ boxShadow: '0 16px 48px rgba(10,46,24,0.12)', border: '1px solid rgba(10,46,24,0.08)' }}
+          >
+            {/* Photo */}
+            <div className="relative lg:w-64 flex-shrink-0 overflow-hidden" style={{ minHeight: '220px' }}>
+              <img src="/images/fabienne.webp" alt="La Présidente"
+                className="w-full h-full object-cover object-top absolute inset-0" />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to right, transparent 60%, rgba(10,46,24,0.3))' }} />
+              <div className="absolute bottom-4 left-4">
+                <span className="text-xs font-bold px-2.5 py-1 rounded-full text-white"
+                  style={{ background: 'rgba(184,148,31,0.85)', backdropFilter: 'blur(4px)' }}>
+                  Présidente · MBP
+                </span>
+              </div>
+            </div>
+
+            {/* Texte */}
+            <div className="flex-1 p-7 sm:p-9" style={{ background: 'linear-gradient(135deg, #0a2e18, #0f5530)' }}>
+              <p className="text-xs font-bold tracking-widest uppercase mb-3" style={{ color: '#d4aa35' }}>
+                Mot de la Présidente
+              </p>
+              <blockquote className="font-playfair text-white leading-relaxed mb-5"
+                style={{ fontSize: 'clamp(1rem, 2vw, 1.2rem)' }}>
+                "Il y a des projets qui naissent deux fois. PASSERELLES, inscrit dans nos statuts depuis plus de huit ans, naît enfin pour de vrai — et c'est une fierté immense pour notre association."
+              </blockquote>
+              <Link to="/MotPresidente">
+                <Button className="font-semibold text-sm px-5 py-2 h-auto transition-all hover:opacity-90"
+                  style={{ background: 'linear-gradient(135deg, #b8941f, #d4aa35)', color: 'white', border: 'none' }}>
+                  Lire le message complet
+                  <ArrowRight className="h-3.5 w-3.5 ml-1.5" />
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ══════════ STATS ══════════ */}
       <section className="py-6 px-4 sm:px-6" style={{ background: 'var(--brand-cream)' }}>
         <div className="max-w-6xl mx-auto">

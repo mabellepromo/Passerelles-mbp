@@ -1,4 +1,8 @@
 {
+  "functions": {
+    "api/send-mentore-notification.js": { "maxDuration": 30 },
+    "api/send-binome-email.js": { "maxDuration": 30 }
+  },
   "routes": [
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/index.html" }
