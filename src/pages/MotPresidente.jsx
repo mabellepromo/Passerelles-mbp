@@ -1,4 +1,7 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import '@fontsource/eb-garamond/400.css';
+import '@fontsource/eb-garamond/500.css';
+import '@fontsource/eb-garamond/400-italic.css';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import NavBar from '@/components/NavBar';
@@ -44,17 +47,9 @@ const paragraphs = [
 ];
 
 export default function MotPresidente() {
-  useEffect(() => {
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = 'https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap';
-    document.head.appendChild(link);
-    return () => document.head.removeChild(link);
-  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
-      <style>{`@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap');`}</style>
       <NavBar />
 
       {/* ── HERO ── */}
