@@ -142,11 +142,10 @@ export default function MotPresidente() {
               }}
             >
               <Quote className="h-10 w-10 mb-5 opacity-30 text-yellow-300" />
-              <p className="text-white leading-relaxed text-justify text-base sm:text-lg">
+              <p className="font-playfair text-white leading-relaxed text-justify text-base sm:text-lg" style={{ fontStyle: 'italic' }}>
                 Il y a des projets qui naissent deux fois : une première fois dans les textes, et une seconde, bien plus belle, dans la réalité.
               </p>
-              <p className="mt-5 italic text-sm sm:text-base"
-                style={{ color: '#d4aa35' }}>
+              <p className="font-playfair mt-5 text-sm sm:text-base" style={{ fontStyle: 'italic', color: '#d4aa35' }}>
                 Le programme PASSERELLES est de ceux-là.
               </p>
             </motion.div>
