@@ -156,10 +156,33 @@ export default function MotPresidente() {
       </section>
 
       {/* ── CORPS DU MESSAGE ── */}
-      <section className="pb-16 px-4 sm:px-6" style={{ background: '#fff' }}>
-        <div className="max-w-3xl mx-auto">
+      <section
+        className="relative overflow-hidden pb-0"
+        style={{ background: 'linear-gradient(160deg, #0a2e18 0%, #0f5530 60%, #0a2e18 100%)' }}
+      >
+        {/* Watermark MBP */}
+        <div
+          className="absolute inset-0 flex items-center justify-center pointer-events-none"
+          aria-hidden="true"
+        >
+          <img
+            src="/logo-mbp.png"
+            alt=""
+            className="w-[420px] sm:w-[560px] opacity-[0.045] select-none"
+            style={{ filter: 'grayscale(1) brightness(3)' }}
+          />
+        </div>
 
-          <div className="space-y-6">
+        <div className="relative max-w-3xl mx-auto px-6 sm:px-10 py-16 sm:py-20">
+
+          {/* Séparateur haut */}
+          <div className="flex items-center justify-center gap-4 mb-12">
+            <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, transparent, rgba(212,170,53,0.5))' }} />
+            <div className="w-2 h-2 rounded-full" style={{ background: '#d4aa35' }} />
+            <div className="h-px flex-1" style={{ background: 'linear-gradient(90deg, rgba(212,170,53,0.5), transparent)' }} />
+          </div>
+
+          <div className="space-y-8">
             {paragraphs.slice(1).map((p, i) => (
               <motion.p
                 key={i}
@@ -168,14 +191,18 @@ export default function MotPresidente() {
                 initial="hidden"
                 whileInView="visible"
                 viewport={{ once: true }}
-                className={[
-                  'leading-relaxed text-justify',
-                  p.highlight ? 'text-gray-900' : 'text-gray-800',
-                  p.accent ? 'pl-5 border-l-4 rounded-r-xl py-3 pr-4' : '',
-                ].join(' ')}
+                className="font-playfair leading-loose text-center text-base sm:text-lg"
                 style={{
+                  color: p.highlight ? '#ffffff' : 'rgba(255,255,255,0.82)',
+                  fontStyle: 'italic',
                   fontWeight: p.highlight ? 600 : 400,
-                  ...(p.accent ? { borderColor: '#d4aa35', background: 'linear-gradient(90deg, rgba(212,170,53,0.06), transparent)' } : {}),
+                  ...(p.accent ? {
+                    borderTop: '1px solid rgba(212,170,53,0.3)',
+                    borderBottom: '1px solid rgba(212,170,53,0.3)',
+                    paddingTop: '1.25rem',
+                    paddingBottom: '1.25rem',
+                    color: '#f0d060',
+                  } : {}),
                 }}
               >
                 {p.text}
@@ -190,24 +217,33 @@ export default function MotPresidente() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
-            className="mt-14 flex flex-col items-center text-center"
+            className="mt-16 flex flex-col items-center text-center"
           >
-            <div className="w-16 h-px mb-6" style={{ background: 'linear-gradient(90deg, transparent, #d4aa35, transparent)' }} />
-
-            <p className="text-xs tracking-widest uppercase text-gray-400 mb-1">Lomé, Mai 2026</p>
-
-            <p className="font-playfair font-bold text-2xl text-gray-900 mt-2">Bienvenue dans la Cohorte 1.</p>
-
-            <div className="mt-6 flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full overflow-hidden mb-3"
-                style={{ border: '2px solid #d4aa35' }}>
-                <img src="/images/fabienne.webp" alt="" className="w-full h-full object-cover object-top" />
-              </div>
-              <p className="font-playfair font-semibold text-gray-900">Fabienne</p>
-              <p className="text-sm mt-0.5" style={{ color: '#1a7a45' }}>Présidente · Ma Belle Promo</p>
+            {/* Ligne déco */}
+            <div className="flex items-center justify-center gap-4 mb-8">
+              <div className="h-px w-16" style={{ background: 'linear-gradient(90deg, transparent, #d4aa35)' }} />
+              <div className="w-2 h-2 rounded-full" style={{ background: '#d4aa35' }} />
+              <div className="h-px w-16" style={{ background: 'linear-gradient(90deg, #d4aa35, transparent)' }} />
             </div>
 
-            <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
+            <p className="text-xs tracking-widest uppercase mb-2" style={{ color: 'rgba(212,170,53,0.7)' }}>
+              Lomé, Mai 2026
+            </p>
+
+            <p className="font-playfair font-bold text-2xl sm:text-3xl italic text-white mt-1">
+              Bienvenue dans la Cohorte 1.
+            </p>
+
+            <div className="mt-8 flex flex-col items-center">
+              <div className="w-12 h-12 rounded-full overflow-hidden mb-3"
+                style={{ border: '2px solid #d4aa35', boxShadow: '0 0 0 4px rgba(212,170,53,0.15)' }}>
+                <img src="/images/fabienne.webp" alt="" className="w-full h-full object-cover object-top" />
+              </div>
+              <p className="font-playfair font-semibold text-white text-lg">Fabienne</p>
+              <p className="text-sm mt-0.5" style={{ color: 'rgba(212,170,53,0.8)' }}>Présidente · Ma Belle Promo</p>
+            </div>
+
+            <div className="mt-10 pb-16 flex flex-col sm:flex-row gap-3 justify-center">
               <Link to="/ResultatsCohorte1">
                 <Button className="font-semibold px-6 py-2.5 h-auto text-sm text-white transition-all"
                   style={{ background: 'linear-gradient(135deg, #b8941f, #d4aa35)', border: 'none' }}>
@@ -217,7 +253,7 @@ export default function MotPresidente() {
               </Link>
               <Link to="/">
                 <Button variant="outline" className="font-semibold px-6 py-2.5 h-auto text-sm transition-all"
-                  style={{ borderColor: '#1a7a45', color: '#1a7a45' }}>
+                  style={{ borderColor: 'rgba(212,170,53,0.5)', color: '#f0d060', background: 'transparent' }}>
                   Retour à l'accueil
                 </Button>
               </Link>
