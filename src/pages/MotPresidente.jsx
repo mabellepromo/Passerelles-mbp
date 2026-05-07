@@ -173,7 +173,7 @@ export default function MotPresidente() {
                   p.accent ? 'pl-5 border-l-4 rounded-r-xl py-3 pr-4' : '',
                 ].join(' ')}
                 style={{
-                  color: p.highlight ? '#111827' : '#374151',
+                  color: p.highlight ? '#4b5563' : '#6b7280',
                   fontWeight: p.highlight ? 600 : 400,
                   fontStyle: 'italic',
                   ...(p.accent ? { borderColor: '#d4aa35', background: 'linear-gradient(90deg, rgba(212,170,53,0.06), transparent)' } : {}),
