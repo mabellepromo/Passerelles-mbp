@@ -139,7 +139,7 @@ export default function MonEspace() {
   const QUICK = [
     { to: createPageUrl('MonSuivi'),     icon: ClipboardList, label: 'Mes Suivis',     sub: 'Historique séances',    grad: ['#2563eb','#1d4ed8'], light: '#eff6ff' },
     { to: createPageUrl('JournalDeBord'),icon: BookMarked,    label: 'Journal',         sub: 'Notes & objectifs',     grad: ['#7c3aed','#6d28d9'], light: '#f5f3ff' },
-    { to: createPageUrl('SuiviMensuel'), icon: Plus,          label: 'Nouvelle séance', sub: 'Enregistrer une séance',grad: ['#059669','#047857'], light: '#ecfdf5' },
+    { to: createPageUrl('SuiviMensuel'), icon: Plus,          label: 'Fiche de Suivi mensuel', sub: 'Enregistrer une séance',grad: ['#059669','#047857'], light: '#ecfdf5' },
     { to: createPageUrl('Messagerie'),   icon: MessageCircle, label: 'Messagerie',      sub: 'Chat binôme',           grad: ['#0891b2','#0e7490'], light: '#ecfeff' },
   ];
 
