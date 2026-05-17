@@ -114,9 +114,10 @@ export default function MonEspace() {
     loadAll();
   }, []);
 
+  const isAdmin        = user?.role === 'admin';
   const mentorBinomes  = allUserBinomes.filter(b => b.mentor_email  === user?.email);
   const mentoreBinomes = allUserBinomes.filter(b => b.mentore_email === user?.email);
-  const allBinomes     = [...mentorBinomes, ...mentoreBinomes];
+  const allBinomes     = isAdmin ? allUserBinomes : [...mentorBinomes, ...mentoreBinomes];
   const isMentor  = mentorBinomes.length  > 0;
   const isMentore = mentoreBinomes.length > 0;
 
