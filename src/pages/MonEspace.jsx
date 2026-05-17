@@ -91,14 +91,20 @@ export default function MonEspace() {
         const u = await base44.auth.me();
         if (!u) { base44.auth.redirectToLogin(window.location.href); return; }
         setUser(u);
-        const [binomesRes, sv, journal] = await Promise.all([
-          base44.functions.invoke('getMyBinomes', {}),
-          base44.entities.SuiviMensuel.list('-meeting_date', 30),
-          base44.entities.JournalDeBord.list('-date_entree', 100),
-        ]);
+
+        const binomesRes = await base44.functions.invoke('getMyBinomes', {});
         setAllUserBinomes(binomesRes.data?.binomes || []);
-        setSuivis(sv);
-        setJournalEntries(journal);
+
+        try {
+          const [sv, journal] = await Promise.all([
+            base44.entities.SuiviMensuel.list('-meeting_date', 30),
+            base44.entities.JournalDeBord.list('-date_entree', 100),
+          ]);
+          setSuivis(sv);
+          setJournalEntries(journal);
+        } catch (e) {
+          console.error('MonEspace: erreur chargement suivis/journal', e);
+        }
       } catch (e) {
         if (e?.status === 401 || e?.status === 403) base44.auth.redirectToLogin(window.location.href);
       } finally {

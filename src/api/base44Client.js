@@ -143,9 +143,10 @@ const functions = {
         return { data: { binomes: data ?? [] } };
       }
 
-      const { data } = await supabase.from('binome').select('*')
+      const { data, error } = await supabase.from('binome').select('*')
         .or(`mentor_email.eq.${user.email},mentore_email.eq.${user.email}`)
         .eq('status', 'active');
+      if (error) console.error('getMyBinomes error:', error);
       return { data: { binomes: data ?? [] } };
     }
     return { data: {} };
