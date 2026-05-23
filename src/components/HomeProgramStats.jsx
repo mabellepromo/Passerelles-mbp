@@ -1,16 +1,37 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Users, GraduationCap, ClipboardList, Star } from 'lucide-react';
-
-const stats = [
-  { value: 45, label: 'Candidatures reçues', icon: Users },
-  { value: 11, label: 'Mentors engagés', icon: Users },
-  { value: 11, label: 'Binômes formés (Cohorte 1)', icon: GraduationCap },
-  { value: 0,  label: 'Séances réalisées', icon: ClipboardList },
-  { value: '–', label: 'Satisfaction moyenne', icon: Star },
-];
+import { supabase } from '@/api/base44Client';
 
 export default function HomeProgramStats() {
+  const [seancesCount, setSeancesCount] = useState(0);
+  const [avgSatisfaction, setAvgSatisfaction] = useState('–');
+
+  useEffect(() => {
+    supabase
+      .from('suivi_mensuel')
+      .select('satisfaction_mentor, satisfaction_mentore', { count: 'exact' })
+      .then(({ data, count, error }) => {
+        if (error || !data) return;
+        setSeancesCount(count ?? data.length);
+        if (data.length > 0) {
+          const avg = data.reduce(
+            (acc, s) => acc + ((s.satisfaction_mentor || 0) + (s.satisfaction_mentore || 0)) / 2,
+            0
+          ) / data.length;
+          setAvgSatisfaction(`${avg.toFixed(1)}/5`);
+        }
+      });
+  }, []);
+
+  const stats = [
+    { value: 45,           label: 'Candidatures reçues',        icon: Users },
+    { value: 11,           label: 'Mentors engagés',             icon: Users },
+    { value: 11,           label: 'Binômes formés (Cohorte 1)', icon: GraduationCap },
+    { value: seancesCount, label: 'Séances réalisées',           icon: ClipboardList },
+    { value: avgSatisfaction, label: 'Satisfaction moyenne',     icon: Star },
+  ];
+
   return (
     <div className="py-8 bg-[#1e5631]">
       <div className="w-full max-w-5xl mx-auto px-4">
