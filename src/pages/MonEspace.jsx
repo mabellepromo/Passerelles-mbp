@@ -258,7 +258,7 @@ export default function MonEspace() {
               <p className="text-sm text-gray-400 mt-1">Vous serez notifié par email dès qu'un appariement sera réalisé.</p>
             </motion.div>
           ) : allBinomes.map((binome, idx) => {
-            const iAmMentor = binome.mentor_email === user?.email;
+            const iAmMentor = !isAdmin && binome.mentor_email === user?.email;
             const partner   = formatName(iAmMentor ? binome.mentore_name : binome.mentor_name);
             const binomeSuivis  = suivis.filter(s => s.binome_id === binome.id);
             const binomeJournal = journalEntries.filter(j => j.binome_id === binome.id);
@@ -277,20 +277,51 @@ export default function MonEspace() {
                       style={{ background:'radial-gradient(circle,#d4aa35,transparent)' }} />
 
                     <div className="relative flex items-start justify-between gap-3">
-                      <div className="flex items-center gap-4">
-                        {/* Partner avatar */}
-                        <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold flex-shrink-0"
-                          style={{ background: iAmMentor ? 'linear-gradient(135deg,#7c3aed,#4f46e5)' : 'linear-gradient(135deg,#1a7a45,#0f5530)', border:'2px solid rgba(255,255,255,0.2)' }}>
-                          {initials(partner)}
+                      {isAdmin ? (
+                        /* Vue admin : mentor ↔ mentoré */
+                        <div className="flex items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-base font-bold flex-shrink-0"
+                              style={{ background:'linear-gradient(135deg,#1a7a45,#0f5530)', border:'2px solid rgba(255,255,255,0.2)' }}>
+                              {initials(binome.mentor_name)}
+                            </div>
+                            <div className="text-white/40 font-bold text-xl">↔</div>
+                            <div className="w-12 h-12 rounded-xl flex items-center justify-center text-base font-bold flex-shrink-0"
+                              style={{ background:'linear-gradient(135deg,#7c3aed,#4f46e5)', border:'2px solid rgba(255,255,255,0.2)' }}>
+                              {initials(binome.mentore_name)}
+                            </div>
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-1 text-amber-300">Binôme PASSERELLES</p>
+                            <p className="text-lg font-bold font-playfair leading-tight">
+                              <span style={{ color:'#6ee7b7' }}>{formatName(binome.mentor_name)}</span>
+                              <span className="text-white/40 mx-2">↔</span>
+                              <span style={{ color:'#c4b5fd' }}>{formatName(binome.mentore_name)}</span>
+                            </p>
+                            <p className="text-[10px] text-white/50 mt-1">
+                              <span style={{ color:'#6ee7b7' }}>Mentor</span>
+                              <span className="text-white/30 mx-1">·</span>
+                              <span style={{ color:'#c4b5fd' }}>Mentoré(e)</span>
+                            </p>
+                            {binome.match_date && <p className="text-xs text-white/40 mt-0.5">Formé le {binome.match_date}</p>}
+                          </div>
                         </div>
-                        <div>
-                          <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: iAmMentor ? '#c4b5fd' : '#6ee7b7' }}>
-                            {iAmMentor ? 'Votre mentoré(e)' : 'Votre mentor(e)'}
-                          </p>
-                          <p className="text-xl font-bold font-playfair">{partner}</p>
-                          {binome.match_date && <p className="text-xs text-white/50 mt-0.5">Binôme formé le {binome.match_date}</p>}
+                      ) : (
+                        /* Vue mentor/mentoré : partenaire uniquement */
+                        <div className="flex items-center gap-4">
+                          <div className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold flex-shrink-0"
+                            style={{ background: iAmMentor ? 'linear-gradient(135deg,#7c3aed,#4f46e5)' : 'linear-gradient(135deg,#1a7a45,#0f5530)', border:'2px solid rgba(255,255,255,0.2)' }}>
+                            {initials(partner)}
+                          </div>
+                          <div>
+                            <p className="text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: iAmMentor ? '#c4b5fd' : '#6ee7b7' }}>
+                              {iAmMentor ? 'Votre mentoré(e)' : 'Votre mentor(e)'}
+                            </p>
+                            <p className="text-xl font-bold font-playfair">{partner}</p>
+                            {binome.match_date && <p className="text-xs text-white/50 mt-0.5">Binôme formé le {binome.match_date}</p>}
+                          </div>
                         </div>
-                      </div>
+                      )}
                       <div className="flex items-center gap-1.5 text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0"
                         style={{ background:`${statusColor}22`, border:`1px solid ${statusColor}55`, color: statusColor }}>
                         <div className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: statusColor }} />
@@ -520,8 +551,8 @@ export default function MonEspace() {
           </motion.div>
         </div>
 
-        {/* ── DERNIÈRES SÉANCES ── */}
-        {suivis.length > 0 && (
+        {/* ── DERNIÈRES SÉANCES (admin uniquement) ── */}
+        {isAdmin && suivis.length > 0 && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
