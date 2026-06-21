@@ -7,7 +7,7 @@ import {
   User, Users, BookOpen, ClipboardList, Plus, ArrowRight,
   CheckCircle2, Clock, TrendingUp, Target, Calendar, AlertCircle,
   UserCheck, GraduationCap, Trophy, MessageCircle, Star,
-  Flame, Zap, BarChart3, BookMarked, ChevronRight, LogOut, Trash2, Shield, Download
+  Flame, Zap, BarChart3, BookMarked, ChevronRight, LogOut, Trash2, Shield, Download, KeyRound
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import NavBar from '@/components/NavBar';
@@ -32,6 +32,30 @@ export default function MonEspace() {
   const [isDeleting, setIsDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState('');
   const [isExporting, setIsExporting] = useState(false);
+  const [pwdOpen, setPwdOpen] = useState(false);
+  const [pwdNew, setPwdNew] = useState('');
+  const [pwdConfirm, setPwdConfirm] = useState('');
+  const [pwdSaving, setPwdSaving] = useState(false);
+  const [pwdError, setPwdError] = useState('');
+  const [pwdSuccess, setPwdSuccess] = useState(false);
+
+  const handleChangePassword = async () => {
+    setPwdError('');
+    if (pwdNew.length < 8) { setPwdError('Minimum 8 caractères.'); return; }
+    if (pwdNew !== pwdConfirm) { setPwdError('Les mots de passe ne correspondent pas.'); return; }
+    setPwdSaving(true);
+    const { error } = await supabase.auth.updateUser({ password: pwdNew });
+    if (error) {
+      setPwdError('Erreur : ' + error.message);
+      setPwdSaving(false);
+    } else {
+      setPwdSuccess(true);
+      setPwdNew('');
+      setPwdConfirm('');
+      setPwdSaving(false);
+      setTimeout(() => { setPwdSuccess(false); setPwdOpen(false); }, 2500);
+    }
+  };
 
   const handleExportData = async () => {
     setIsExporting(true);
@@ -623,12 +647,62 @@ export default function MonEspace() {
                   <Download className="h-3.5 w-3.5" /> {isExporting ? 'Préparation...' : 'Exporter mes données'}
                 </button>
                 <button
+                  onClick={() => { setPwdOpen(o => !o); setPwdNew(''); setPwdConfirm(''); setPwdError(''); setPwdSuccess(false); }}
+                  className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-all hover:bg-emerald-50"
+                  style={{ border: '1.5px solid #a7f3d0', color: '#059669' }}>
+                  <KeyRound className="h-3.5 w-3.5" /> Changer mon mot de passe
+                </button>
+                <button
                   onClick={() => { setDeleteConfirm(true); setDeleteInput(''); setDeleteError(''); }}
                   className="flex items-center gap-1.5 text-xs font-semibold px-3 py-2 rounded-xl transition-all hover:bg-red-50"
                   style={{ border: '1.5px solid #fecaca', color: '#dc2626' }}>
                   <Trash2 className="h-3.5 w-3.5" /> Supprimer mon compte
                 </button>
               </div>
+
+              {/* Changer mot de passe */}
+              {pwdOpen && (
+                <div className="rounded-xl border border-emerald-200 bg-emerald-50 p-4 space-y-3">
+                  <p className="font-bold text-emerald-800 text-sm">Définir un nouveau mot de passe</p>
+                  {pwdSuccess ? (
+                    <p className="text-sm text-emerald-700 font-semibold flex items-center gap-1.5">
+                      <CheckCircle2 className="h-4 w-4" /> Mot de passe modifié avec succès.
+                    </p>
+                  ) : (
+                    <>
+                      <input
+                        type="password"
+                        value={pwdNew}
+                        onChange={e => setPwdNew(e.target.value)}
+                        placeholder="Nouveau mot de passe (min. 8 caractères)"
+                        className="w-full border border-emerald-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500"
+                      />
+                      <input
+                        type="password"
+                        value={pwdConfirm}
+                        onChange={e => setPwdConfirm(e.target.value)}
+                        placeholder="Confirmer le mot de passe"
+                        className="w-full border border-emerald-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-emerald-500"
+                      />
+                      {pwdError && <p className="text-xs text-red-600">{pwdError}</p>}
+                      <div className="flex gap-2">
+                        <button
+                          onClick={handleChangePassword}
+                          disabled={pwdSaving || !pwdNew || !pwdConfirm}
+                          className="flex items-center gap-1.5 text-xs font-bold px-4 py-2 rounded-lg text-white disabled:opacity-40 transition-all"
+                          style={{ background: 'linear-gradient(135deg,#0f5530,#1a7a45)' }}>
+                          {pwdSaving ? 'Enregistrement...' : 'Enregistrer'}
+                        </button>
+                        <button
+                          onClick={() => setPwdOpen(false)}
+                          className="text-xs font-semibold px-4 py-2 rounded-lg text-gray-500 hover:bg-gray-100 transition-all">
+                          Annuler
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* Confirmation suppression */}
               {deleteConfirm && (
