@@ -18,6 +18,7 @@ import {
 import Breadcrumb from '@/components/Breadcrumb';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
+import { notifyAdmin } from '@/api/notifyAdmin';
 
 const StarRating = ({ value, onChange, color = 'amber' }) => (
   <div className="flex items-center gap-1">
@@ -173,7 +174,7 @@ export default function SuiviMensuel() {
         progress_rating: Math.round((formData.progress_mentor + formData.progress_mentore) / 2),
         issue_description: formData.issues_reported ? formData.issue_description : undefined,
         issues_reported: formData.issues_reported,
-        next_meeting_date: formData.next_meeting_date,
+        next_meeting_date: formData.next_meeting_date || null,
       });
     } else {
       // Créer un nouveau suivi
@@ -216,6 +217,14 @@ export default function SuiviMensuel() {
           total_meetings: (selectedBinome.total_meetings || 0) + 1
         });
       }
+      notifyAdmin('suivi', {
+        'Binôme':      selectedBinome ? `${selectedBinome.mentor_name} ↔ ${selectedBinome.mentore_name}` : '',
+        'Soumis par':  formData.submitted_by === 'mentor' ? 'Le Mentor' : formData.submitted_by === 'mentore' ? 'Le Mentoré' : 'Les deux',
+        'Rencontre':   `#${formData.meeting_number} du ${formData.meeting_date?.split('-').reverse().join('/')}`,
+        'Format':      formData.format === 'presentiel' ? 'Présentiel' : 'Virtuel',
+        'Durée':       `${formData.duration_hours}h`,
+        'Signalement': formData.issues_reported ? 'Oui ⚠️' : '',
+      });
     }
 
     setIsSuccess(true);
