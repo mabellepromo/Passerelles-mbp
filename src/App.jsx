@@ -36,6 +36,7 @@ const PolitiqueConfidentialite = lazy(() => import('./pages/PolitiqueConfidentia
 const MentionsLegales    = lazy(() => import('./pages/MentionsLegales'));
 const MotPresidente      = lazy(() => import('./pages/MotPresidente'));
 const AideConnexion      = lazy(() => import('./pages/AideConnexion'));
+const Webinaire          = lazy(() => import('./pages/Webinaire'));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -94,6 +95,7 @@ const AuthenticatedApp = () => {
         <Route path="/MentionsLegales" element={<LayoutWrapper currentPageName="MentionsLegales"><MentionsLegales /></LayoutWrapper>} />
         <Route path="/MotPresidente" element={<LayoutWrapper currentPageName="MotPresidente"><MotPresidente /></LayoutWrapper>} />
         <Route path="/AideConnexion" element={<AideConnexion />} />
+        <Route path="/Webinaire" element={<LayoutWrapper currentPageName="Webinaire"><Webinaire /></LayoutWrapper>} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
       </Suspense>

@@ -317,6 +317,87 @@ export default function Home() {
         </div>
       </section>
 
+      {/* ══════════ WEBINAIRE ══════════ */}
+      <section className="py-6 px-4 sm:px-6" style={{ background: '#ffffff' }}>
+        <div className="max-w-6xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }} transition={{ duration: 0.5 }}
+          >
+            <Link to="/Webinaire" className="block group">
+              <div className="relative overflow-hidden rounded-2xl px-6 py-5 sm:px-8 sm:py-7 flex flex-col sm:flex-row items-start sm:items-center gap-4 transition-all duration-300 group-hover:shadow-xl"
+                style={{
+                  background: 'linear-gradient(135deg, #0a163a 0%, #1a3a7a 55%, #0d1f4e 100%)',
+                  boxShadow: '0 4px 28px rgba(13,31,78,0.22)',
+                }}>
+
+                {/* Grille décorative */}
+                <div className="absolute inset-0 opacity-[0.035]"
+                  style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.7) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.7) 1px, transparent 1px)', backgroundSize: '44px 44px' }} />
+
+                {/* Halo doré */}
+                <div className="absolute -top-16 -left-16 w-48 h-48 rounded-full pointer-events-none"
+                  style={{ background: 'radial-gradient(circle, rgba(212,170,53,0.15) 0%, transparent 70%)' }} />
+
+                {/* Badge + titre + sous-titre */}
+                <div className="relative flex-1 min-w-0">
+                  <div className="flex flex-wrap items-center gap-2 mb-3">
+                    <span className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full"
+                      style={{ background: 'rgba(212,170,53,0.14)', color: '#f0d060', border: '1px solid rgba(212,170,53,0.32)' }}>
+                      <span className="w-1.5 h-1.5 rounded-full animate-pulse" style={{ background: '#f0d060' }} />
+                      Prochain événement · Gratuit
+                    </span>
+                  </div>
+
+                  <h3 className="font-playfair font-bold leading-snug mb-2" style={{ fontSize: 'clamp(1.1rem, 2vw, 1.55rem)' }}>
+                    <span className="text-white">Les Fondamentaux et </span>
+                    <span style={{
+                      background: 'linear-gradient(90deg, #f5e08a, #d4aa35, #f0d060)',
+                      WebkitBackgroundClip: 'text',
+                      WebkitTextFillColor: 'transparent',
+                      backgroundClip: 'text',
+                    }}>
+                      l'Utilité Concrète de l'Assurance
+                    </span>
+                  </h3>
+
+                  <p className="text-xs text-blue-100/55 leading-relaxed mb-3 max-w-lg">
+                    Une soirée d'experts pour comprendre l'assurance sans jargon — et faire les bons choix pour vous et vos projets.
+                  </p>
+
+                  <div className="flex flex-wrap items-center gap-3">
+                    <div className="flex -space-x-2.5">
+                      {['/images/Jocelyne.webp', '/images/Georges Koutoh.webp', '/images/Akata.webp'].map((src, i) => (
+                        <div key={i} className="w-8 h-8 rounded-full overflow-hidden"
+                          style={{ border: '2px solid rgba(13,31,78,0.9)', boxShadow: '0 0 0 1px rgba(212,170,53,0.4)' }}>
+                          <img src={src} alt="" className="w-full h-full object-cover object-top" />
+                        </div>
+                      ))}
+                    </div>
+                    <span className="text-[11px] text-blue-200/60">3 experts · NSIA & SanlamAllianz Togo</span>
+                    <span className="hidden sm:inline text-[11px] text-white/35">·</span>
+                    <span className="hidden sm:inline text-[11px] text-white/45 font-medium">26 juin 2026 · 18h30 · Zoom</span>
+                  </div>
+                </div>
+
+                {/* CTA */}
+                <div className="relative flex-shrink-0 w-full sm:w-auto">
+                  <div className="flex items-center justify-between sm:justify-end gap-2">
+                    <span className="text-xs text-white/40 sm:hidden">26 juin · 18h30</span>
+                    <span className="inline-flex items-center gap-1.5 font-semibold text-xs px-4 py-2 rounded-xl transition-all duration-200 group-hover:gap-2.5"
+                      style={{ background: 'linear-gradient(135deg, #b8941f, #d4aa35)', color: 'white' }}>
+                      Voir les détails
+                      <ArrowRight className="h-3.5 w-3.5 transition-transform duration-200 group-hover:translate-x-0.5" />
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            </Link>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ══════════ OUTILS ══════════ */}
       <section className="py-9 px-4 sm:px-6" style={{ background: '#ffffff' }}>
         <div className="max-w-6xl mx-auto">
