@@ -318,6 +318,8 @@ export default function Home() {
       </section>
 
       {/* ══════════ WEBINAIRE ══════════ */}
+      {/* Masquée automatiquement à partir du 27 juin 2026 (lendemain de l'événement) */}
+      {new Date() < new Date('2026-06-27T00:00:00') && (
       <section className="py-6 px-4 sm:px-6" style={{ background: '#ffffff' }}>
         <div className="max-w-6xl mx-auto">
           <motion.div
@@ -397,6 +399,7 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+      )}
 
       {/* ══════════ OUTILS ══════════ */}
       <section className="py-9 px-4 sm:px-6" style={{ background: '#ffffff' }}>
