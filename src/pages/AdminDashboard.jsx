@@ -26,6 +26,7 @@ import AnalytiqueDashboard from '@/components/admin/AnalytiqueDashboard.jsx';
 import DeclenchementBinomes from '@/components/admin/DeclenchementBinomes.jsx';
 import EnvoiEmailLibre from '@/components/admin/EnvoiEmailLibre.jsx';
 import RenvoiLien from '@/components/admin/RenvoiLien.jsx';
+import BilanReview from '@/components/admin/BilanReview.jsx';
 
 const NAV = [
   { id: 'overview',      label: 'Vue d\'ensemble', icon: BarChart3,      group: 'Principal' },
@@ -40,6 +41,7 @@ const NAV = [
   { id: 'renvoi-lien',  label: 'Lien d\'accès',     icon: Link2,          group: 'Outils' },
   { id: 'alertes',       label: 'Alertes',           icon: AlertTriangle,  group: 'Outils', count: 'issuesReported', alert: true },
   { id: 'suivis',        label: 'Suivis',            icon: ClipboardList,  group: 'Données', count: 'totalSuivis' },
+  { id: 'bilan',         label: 'Bilan mi-parcours', icon: Star,           group: 'Données' },
   { id: 'contacts',      label: 'Messages Contact',  icon: Inbox,          group: 'Données', count: 'unreadContacts', alert: true },
   { id: 'export',        label: 'Export CSV',        icon: Download,       group: 'Données' },
   { id: 'import',        label: 'Import CSV',        icon: FileSpreadsheet,group: 'Données' },
@@ -701,6 +703,7 @@ export default function AdminDashboard() {
             {activeTab === 'matching'      && <MatchingTool mentors={mentors.filter(m => m.status === 'approved')} mentores={mentores.filter(m => m.status === 'approved')} />}
             {activeTab === 'binomes'       && <BinomesList binomes={binomes} />}
             {activeTab === 'suivis'        && <SuivisList suivis={suivis} />}
+            {activeTab === 'bilan'         && <BilanReview />}
             {activeTab === 'analytique'    && <AnalytiqueDashboard binomes={binomes} suivis={suivis} />}
             {activeTab === 'charts'        && <ProgrammeCharts mentors={mentors} mentores={mentores} binomes={binomes} suivis={suivis} />}
             {activeTab === 'export'        && <ExportCSV />}
