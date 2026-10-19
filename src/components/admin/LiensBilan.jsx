@@ -1,15 +1,24 @@
 import React, { useMemo, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { supabase } from '@/api/base44Client';
+import { supabase, base44 } from '@/api/base44Client';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import {
   Search, Copy, CheckCircle2, Loader2, UserCheck, GraduationCap,
-  RefreshCw, Sparkles,
+  RefreshCw, Sparkles, Send,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
 const SITE_URL = 'https://passerelles.vercel.app';
+
+function buildMessage(link, url) {
+  const prenom = (link.participant_name || '').split(' ')[0] || '';
+  const roleLabel = link.role === 'mentor' ? 'mentor' : 'mentoré(e)';
+  return {
+    subject: 'Votre bilan mi-parcours — Programme PASSERELLES',
+    text: `Bonjour ${prenom},\n\nDans le cadre du programme PASSERELLES, nous vous invitons à compléter votre bilan mi-parcours en tant que ${roleLabel}. Cela ne prend que quelques minutes et nous aide à suivre le bon déroulement de votre binôme.\n\nVoici votre lien personnel (valable 30 jours) :\n${url}\n\nMerci pour votre implication !\n\nL'équipe Ma Belle Promo`,
+  };
+}
 
 function statusOf(link) {
   if (link.used_at) return { label: 'Répondu', color: '#059669', bg: '#ecfdf5' };
@@ -22,6 +31,7 @@ export default function LiensBilan() {
   const [copiedToken, setCopiedToken] = useState(null);
   const [generating, setGenerating] = useState(false);
   const [reissuing, setReissuing] = useState({});
+  const [sending, setSending] = useState({});
   const queryClient = useQueryClient();
 
   const { data: links = [], isLoading } = useQuery({
@@ -62,6 +72,32 @@ export default function LiensBilan() {
     }
   };
 
+  const sendLink = async (link) => {
+    if (!link.participant_email) {
+      toast.error('Aucun email connu pour cette personne');
+      return;
+    }
+    setSending(s => ({ ...s, [link.token_id]: true }));
+    try {
+      const url = `${SITE_URL}/bilan/${link.token}`;
+      const { subject, text } = buildMessage(link, url);
+      const token = await base44.auth.getAccessToken();
+      const res = await fetch('/api/send-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ to: link.participant_email, subject, text }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Échec de l\'envoi');
+      toast.success(`Lien envoyé par email à ${link.participant_name || link.participant_email}`);
+      queryClient.invalidateQueries({ queryKey: ['review_links_admin'] });
+    } catch (err) {
+      toast.error(`Erreur : ${err.message}`);
+    } finally {
+      setSending(s => { const n = { ...s }; delete n[link.token_id]; return n; });
+    }
+  };
+
   const reissue = async (link) => {
     setReissuing(s => ({ ...s, [link.token_id]: true }));
     try {
@@ -91,7 +127,7 @@ export default function LiensBilan() {
         <div>
           <h2 className="text-base font-bold text-gray-900">Liens du bilan mi-parcours</h2>
           <p className="text-xs text-gray-500 mt-0.5">
-            Rien n'est envoyé automatiquement — copiez chaque lien et transmettez-le vous-même (WhatsApp, email…).
+            Envoyez le lien par email en un clic, ou copiez-le pour le transmettre vous-même (WhatsApp…).
           </p>
         </div>
         <button
@@ -159,14 +195,26 @@ export default function LiensBilan() {
                               Renvoyer un lien
                             </button>
                           ) : (
-                            <button
-                              onClick={() => copyLink(link)}
-                              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:opacity-90"
-                              style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}
-                            >
-                              {isCopied ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-                              {isCopied ? 'Copié !' : 'Copier le lien'}
-                            </button>
+                            <>
+                              <button
+                                onClick={() => sendLink(link)}
+                                disabled={!!sending[link.token_id]}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold text-white transition-all hover:opacity-90 disabled:opacity-50"
+                                style={{ background: `linear-gradient(135deg, ${color}, ${color}cc)` }}
+                                title="Envoyer le lien par email directement à la personne"
+                              >
+                                {sending[link.token_id] ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                                Envoyer par email
+                              </button>
+                              <button
+                                onClick={() => copyLink(link)}
+                                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all hover:opacity-90"
+                                style={{ background: '#f3f4f6', color: '#374151', border: '1px solid #e5e7eb' }}
+                              >
+                                {isCopied ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                                {isCopied ? 'Copié !' : 'Copier'}
+                              </button>
+                            </>
                           )}
                         </div>
                       </div>
@@ -188,7 +236,8 @@ export default function LiensBilan() {
       <div className="rounded-xl p-4 text-xs text-gray-500 space-y-1" style={{ background: '#f8f9fa', border: '1px solid #e5e7eb' }}>
         <p className="font-semibold text-gray-700 mb-2">Comment ça marche</p>
         <p>• <strong>Générer les liens manquants</strong> — crée un lien pour chaque mentor/mentoré d'un binôme actif qui n'en a pas encore. N'écrase rien, n'envoie rien.</p>
-        <p>• <strong>Copier le lien</strong> — copie le lien dans le presse-papier pour l'envoyer vous-même.</p>
+        <p>• <strong>Envoyer par email</strong> — envoie directement le lien à la personne avec un message prêt à l'emploi.</p>
+        <p>• <strong>Copier</strong> — copie le lien dans le presse-papier pour l'envoyer vous-même (WhatsApp…).</p>
         <p>• <strong>Renvoyer un lien</strong> — pour quelqu'un qui a déjà répondu et doit corriger : génère un nouveau lien indépendant, sans toucher à sa réponse précédente.</p>
       </div>
     </div>
