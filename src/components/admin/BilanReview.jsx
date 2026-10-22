@@ -1,16 +1,29 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Input } from '@/components/ui/input';
-import { Search, AlertTriangle, TrendingUp, Users, MessageSquareQuote, Eye } from 'lucide-react';
+import { Search, AlertTriangle, TrendingUp, Users, MessageSquareQuote, Eye, Trash2, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 const QUOTE_CONSENT_LABEL = {
   none: 'Pas de citation',
@@ -50,6 +63,25 @@ function isPairAtRisk(pair) {
 export default function BilanReview() {
   const [search, setSearch] = useState('');
   const [selectedResponse, setSelectedResponse] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+  const queryClient = useQueryClient();
+
+  const deleteResponse = async (responseId) => {
+    setDeleting(true);
+    try {
+      const { error } = await supabase.rpc('admin_delete_review_response', { p_response_id: responseId });
+      if (error) throw error;
+      toast.success('Réponse supprimée.');
+      setSelectedResponse(null);
+      queryClient.invalidateQueries({ queryKey: ['review_by_participant'] });
+      queryClient.invalidateQueries({ queryKey: ['review_pair_comparison'] });
+      queryClient.invalidateQueries({ queryKey: ['review_global_stats'] });
+    } catch (err) {
+      toast.error(`Erreur : ${err.message}`);
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   const { data: globalStats = [], isLoading: loadingStats } = useQuery({
     queryKey: ['review_global_stats'],
@@ -273,6 +305,35 @@ export default function BilanReview() {
                       <p className="text-sm text-gray-700">{Array.isArray(value) ? value.join(', ') : String(value)}</p>
                     </div>
                   ))}
+                </div>
+                <div className="pt-2 border-t border-gray-100 flex justify-end">
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700">
+                        <Trash2 className="h-3.5 w-3.5 mr-2" /> Supprimer cette réponse
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Supprimer cette réponse ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          La réponse de {selectedResponse.participant_name} sera définitivement supprimée.
+                          Son lien de bilan redeviendra utilisable pour une nouvelle soumission.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => deleteResponse(selectedResponse.id)}
+                          disabled={deleting}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          {deleting ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                          Supprimer
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </div>
               </div>
             </>
