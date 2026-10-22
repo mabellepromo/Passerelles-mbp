@@ -8,7 +8,8 @@ import {
   Users, GraduationCap, UserCheck, Link2, ClipboardList,
   TrendingUp, AlertTriangle, BarChart3, Upload, FileSpreadsheet,
   Download, Activity, FileText, Send, Home, Star, CheckCircle2,
-  Clock, ChevronRight, Menu, X, BookOpen, Mail, Eye, Inbox, PenSquare, User, Paperclip, FileIcon, Trash2
+  Clock, ChevronRight, Menu, X, BookOpen, Mail, Eye, Inbox, PenSquare, User, Paperclip, FileIcon, Trash2,
+  Sparkles,
 } from 'lucide-react';
 
 import AdminStats from '@/components/admin/AdminStats.jsx';
@@ -28,6 +29,7 @@ import EnvoiEmailLibre from '@/components/admin/EnvoiEmailLibre.jsx';
 import RenvoiLien from '@/components/admin/RenvoiLien.jsx';
 import BilanReview from '@/components/admin/BilanReview.jsx';
 import LiensBilan from '@/components/admin/LiensBilan.jsx';
+import RapportBilan from '@/components/admin/RapportBilan.jsx';
 
 const NAV = [
   { id: 'overview',      label: 'Vue d\'ensemble', icon: BarChart3,      group: 'Principal' },
@@ -44,6 +46,7 @@ const NAV = [
   { id: 'alertes',       label: 'Alertes',           icon: AlertTriangle,  group: 'Outils', count: 'issuesReported', alert: true },
   { id: 'suivis',        label: 'Suivis',            icon: ClipboardList,  group: 'Données', count: 'totalSuivis' },
   { id: 'bilan',         label: 'Bilan', icon: Star,           group: 'Données' },
+  { id: 'rapport-bilan', label: 'Rapport de bilan', icon: Sparkles, group: 'Données' },
   { id: 'contacts',      label: 'Messages Contact',  icon: Inbox,          group: 'Données', count: 'unreadContacts', alert: true },
   { id: 'export',        label: 'Export CSV',        icon: Download,       group: 'Données' },
   { id: 'import',        label: 'Import CSV',        icon: FileSpreadsheet,group: 'Données' },
@@ -706,6 +709,7 @@ export default function AdminDashboard() {
             {activeTab === 'binomes'       && <BinomesList binomes={binomes} />}
             {activeTab === 'suivis'        && <SuivisList suivis={suivis} />}
             {activeTab === 'bilan'         && <BilanReview />}
+            {activeTab === 'rapport-bilan' && <RapportBilan />}
             {activeTab === 'analytique'    && <AnalytiqueDashboard binomes={binomes} suivis={suivis} />}
             {activeTab === 'charts'        && <ProgrammeCharts mentors={mentors} mentores={mentores} binomes={binomes} suivis={suivis} />}
             {activeTab === 'export'        && <ExportCSV />}
