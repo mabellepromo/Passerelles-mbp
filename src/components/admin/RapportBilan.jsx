@@ -122,10 +122,10 @@ export default function RapportBilan() {
     setGenerating(true);
     try {
       const headers = await getAuthHeader();
-      const res = await fetch('/api/generate-review-report', {
+      const res = await fetch('/api/invoke-llm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...headers },
-        body: JSON.stringify({ cohorte: cohorte === 'toutes' ? null : cohorte }),
+        body: JSON.stringify({ action: 'generate_review_report', cohorte: cohorte === 'toutes' ? null : cohorte }),
       });
       const payload = await res.json();
       if (!res.ok) throw new Error(payload.error || 'Échec de la génération');
