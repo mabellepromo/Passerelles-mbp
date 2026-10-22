@@ -15,8 +15,8 @@ function buildMessage(link, url) {
   const prenom = (link.participant_name || '').split(' ')[0] || '';
   const roleLabel = link.role === 'mentor' ? 'mentor' : 'mentoré(e)';
   return {
-    subject: 'Votre bilan — Programme PASSERELLES',
-    text: `Bonjour ${prenom},\n\nDans le cadre du programme PASSERELLES, nous vous invitons à compléter votre bilan en tant que ${roleLabel}. Cela ne prend que quelques minutes et nous aide à suivre le bon déroulement de votre binôme.\n\nVoici votre lien personnel (valable 30 jours) :\n${url}\n\nMerci pour votre implication !\n\nL'équipe Ma Belle Promo`,
+    subject: 'Votre sondage — Programme PASSERELLES',
+    text: `Bonjour ${prenom},\n\nDans le cadre du programme PASSERELLES, nous vous invitons à compléter votre sondage en tant que ${roleLabel}. Cela ne prend que quelques minutes et nous aide à suivre le bon déroulement de votre binôme.\n\nVoici votre lien personnel (valable 30 jours) :\n${url}\n\nMerci pour votre implication !\n\nL'équipe Ma Belle Promo`,
   };
 }
 
