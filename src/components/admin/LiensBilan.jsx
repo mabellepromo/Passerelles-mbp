@@ -15,8 +15,8 @@ function buildMessage(link, url) {
   const prenom = (link.participant_name || '').split(' ')[0] || '';
   const roleLabel = link.role === 'mentor' ? 'mentor' : 'mentoré(e)';
   return {
-    subject: 'Votre bilan mi-parcours — Programme PASSERELLES',
-    text: `Bonjour ${prenom},\n\nDans le cadre du programme PASSERELLES, nous vous invitons à compléter votre bilan mi-parcours en tant que ${roleLabel}. Cela ne prend que quelques minutes et nous aide à suivre le bon déroulement de votre binôme.\n\nVoici votre lien personnel (valable 30 jours) :\n${url}\n\nMerci pour votre implication !\n\nL'équipe Ma Belle Promo`,
+    subject: 'Votre bilan — Programme PASSERELLES',
+    text: `Bonjour ${prenom},\n\nDans le cadre du programme PASSERELLES, nous vous invitons à compléter votre bilan en tant que ${roleLabel}. Cela ne prend que quelques minutes et nous aide à suivre le bon déroulement de votre binôme.\n\nVoici votre lien personnel (valable 30 jours) :\n${url}\n\nMerci pour votre implication !\n\nL'équipe Ma Belle Promo`,
   };
 }
 
@@ -125,7 +125,7 @@ export default function LiensBilan() {
     <div className="space-y-5">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div>
-          <h2 className="text-base font-bold text-gray-900">Liens du bilan mi-parcours</h2>
+          <h2 className="text-base font-bold text-gray-900">Liens du bilan</h2>
           <p className="text-xs text-gray-500 mt-0.5">
             Envoyez le lien par email en un clic, ou copiez-le pour le transmettre vous-même (WhatsApp…).
           </p>

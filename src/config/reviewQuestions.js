@@ -8,7 +8,7 @@ export const REVIEW_SECTIONS = [
   'Apports',
   'Organisation',
   'Satisfaction',
-  'Perspectives',
+  'Pour conclure',
 ];
 
 export const mentorQuestions = [
@@ -26,7 +26,7 @@ export const mentorQuestions = [
     label: 'La communication avec {pairFirstName} a-t-elle été facile et fluide ?' },
 
   { id: 'objectives_achieved', section: 'Objectifs', type: 'likert', required: true,
-    label: 'Dans quelle mesure les objectifs SMART fixés avec {pairFirstName} ont-ils été atteints ?' },
+    label: 'Dans quelle mesure les objectifs fixés avec {pairFirstName} ont-ils été atteints ?' },
   { id: 'objectives_comment', section: 'Objectifs', type: 'text', required: false,
     label: 'Précise ce qui a aidé ou freiné l\'atteinte de ces objectifs (facultatif).' },
 
@@ -50,15 +50,9 @@ export const mentorQuestions = [
   { id: 'improvements', section: 'Satisfaction', type: 'text', required: true,
     label: 'Qu\'est-ce qui pourrait être amélioré dans le programme ?' },
 
-  { id: 'continue_same_pair', section: 'Perspectives', type: 'select', required: true,
-    label: 'Souhaites-tu continuer à accompagner {pairFirstName} au-delà de cette période ?',
-    options: ['Oui', 'Non', 'Je ne sais pas encore'] },
-  { id: 'future_availability', section: 'Perspectives', type: 'select', required: true,
-    label: 'Serais-tu disponible pour mentorer à nouveau lors d\'une prochaine cohorte ?',
-    options: ['Oui', 'Non', 'Peut-être'] },
-  { id: 'suggestions', section: 'Perspectives', type: 'text', required: false,
-    label: 'As-tu des suggestions pour la suite du programme ? (facultatif)' },
-  { id: 'quote_consent', section: 'Perspectives', type: 'select', required: true,
+  { id: 'suggestions', section: 'Pour conclure', type: 'text', required: false,
+    label: 'As-tu des suggestions pour améliorer le programme ? (facultatif)' },
+  { id: 'quote_consent', section: 'Pour conclure', type: 'select', required: true,
     label: 'Acceptes-tu que certaines de tes réponses soient citées dans les communications de Ma Belle Promo ?',
     options: [
       { value: 'none', label: 'Non, pas de citation' },
@@ -82,7 +76,7 @@ export const mentoreQuestions = [
     label: 'À quel point te sens-tu à l\'aise pour échanger ouvertement avec {pairFirstName} ?' },
 
   { id: 'objectives_achieved', section: 'Objectifs', type: 'likert', required: true,
-    label: 'Dans quelle mesure les objectifs SMART fixés avec {pairFirstName} ont-ils été atteints ?' },
+    label: 'Dans quelle mesure les objectifs fixés avec {pairFirstName} ont-ils été atteints ?' },
   { id: 'objectives_comment', section: 'Objectifs', type: 'text', required: false,
     label: 'Précise ce qui a aidé ou freiné l\'atteinte de ces objectifs (facultatif).' },
 
@@ -106,15 +100,9 @@ export const mentoreQuestions = [
   { id: 'improvements', section: 'Satisfaction', type: 'text', required: true,
     label: 'Qu\'est-ce qui pourrait être amélioré dans le programme ?' },
 
-  { id: 'continue_same_pair', section: 'Perspectives', type: 'select', required: true,
-    label: 'Souhaites-tu continuer à être accompagné·e par {pairFirstName} au-delà de cette période ?',
-    options: ['Oui', 'Non', 'Je ne sais pas encore'] },
-  { id: 'future_availability', section: 'Perspectives', type: 'select', required: true,
-    label: 'Serais-tu intéressé·e pour participer à une prochaine cohorte PASSERELLES ?',
-    options: ['Oui', 'Non', 'Peut-être'] },
-  { id: 'suggestions', section: 'Perspectives', type: 'text', required: false,
-    label: 'As-tu des suggestions pour la suite du programme ? (facultatif)' },
-  { id: 'quote_consent', section: 'Perspectives', type: 'select', required: true,
+  { id: 'suggestions', section: 'Pour conclure', type: 'text', required: false,
+    label: 'As-tu des suggestions pour améliorer le programme ? (facultatif)' },
+  { id: 'quote_consent', section: 'Pour conclure', type: 'select', required: true,
     label: 'Acceptes-tu que certaines de tes réponses soient citées dans les communications de Ma Belle Promo ?',
     options: [
       { value: 'none', label: 'Non, pas de citation' },

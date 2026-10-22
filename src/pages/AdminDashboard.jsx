@@ -43,7 +43,7 @@ const NAV = [
   { id: 'liens-bilan',  label: 'Liens bilan',       icon: Link2,          group: 'Outils' },
   { id: 'alertes',       label: 'Alertes',           icon: AlertTriangle,  group: 'Outils', count: 'issuesReported', alert: true },
   { id: 'suivis',        label: 'Suivis',            icon: ClipboardList,  group: 'Données', count: 'totalSuivis' },
-  { id: 'bilan',         label: 'Bilan mi-parcours', icon: Star,           group: 'Données' },
+  { id: 'bilan',         label: 'Bilan', icon: Star,           group: 'Données' },
   { id: 'contacts',      label: 'Messages Contact',  icon: Inbox,          group: 'Données', count: 'unreadContacts', alert: true },
   { id: 'export',        label: 'Export CSV',        icon: Download,       group: 'Données' },
   { id: 'import',        label: 'Import CSV',        icon: FileSpreadsheet,group: 'Données' },
