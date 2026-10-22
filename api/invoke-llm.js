@@ -162,6 +162,32 @@ Réponds UNIQUEMENT en JSON valide (sans markdown, sans balises de code), avec e
 }`;
 }
 
+// Extraction tolérante du JSON renvoyé par le modèle : certains modèles
+// ajoutent des balises markdown (```json ... ```) ou du texte autour du JSON
+// malgré la consigne. On retire les balises éventuelles puis on isole le
+// premier objet JSON complet trouvé dans le texte.
+function extractJson(rawText) {
+  let text = rawText.trim();
+  const fenced = text.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fenced) text = fenced[1].trim();
+
+  try {
+    return JSON.parse(text);
+  } catch {
+    // ignore, on tente l'extraction par accolades ci-dessous
+  }
+
+  const start = text.indexOf('{');
+  const end = text.lastIndexOf('}');
+  if (start === -1 || end === -1 || end <= start) return null;
+
+  try {
+    return JSON.parse(text.slice(start, end + 1));
+  } catch {
+    return null;
+  }
+}
+
 // Ré-association des pseudonymes aux vraies identités, uniquement côté
 // serveur, juste avant l'enregistrement du rapport en base.
 function reassociateRefs(analysis, participantMap, binomeMap) {
@@ -227,8 +253,8 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
         },
         body: JSON.stringify({
           model: ANTHROPIC_REPORT_MODEL,
-          max_tokens: 4096,
-          system: "Tu es un assistant d'analyse de données pour un programme de mentorat associatif. Réponds UNIQUEMENT en JSON valide, sans markdown ni backticks. N'invente jamais de donnée absente des informations fournies.",
+          max_tokens: 8192,
+          system: "Tu es un assistant d'analyse de données pour un programme de mentorat associatif. Réponds UNIQUEMENT en JSON valide, sans aucun texte avant ou après, sans balises markdown ni backticks (pas de ```json). Ta réponse doit commencer directement par '{' et se terminer par '}'. N'invente jamais de donnée absente des informations fournies.",
           messages: [{ role: 'user', content: prompt }],
         }),
       });
@@ -250,10 +276,9 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
     const anthropicJson = await anthropicRes.json();
     const rawText = anthropicJson.content?.[0]?.text?.trim() || '';
 
-    let parsedAnalysis;
-    try {
-      parsedAnalysis = JSON.parse(rawText);
-    } catch {
+    const parsedAnalysis = extractJson(rawText);
+    if (parsedAnalysis === null) {
+      console.error('generate_review_report: unparsable AI response (truncated):', rawText.slice(0, 500));
       return res.status(502).json({ error: "Réponse IA invalide : JSON non parsable" });
     }
 
