@@ -30,6 +30,7 @@ import RenvoiLien from '@/components/admin/RenvoiLien.jsx';
 import BilanReview from '@/components/admin/BilanReview.jsx';
 import LiensBilan from '@/components/admin/LiensBilan.jsx';
 import RapportBilan from '@/components/admin/RapportBilan.jsx';
+import CampagneBilan from '@/components/admin/CampagneBilan.jsx';
 
 const NAV = [
   { id: 'overview',      label: 'Vue d\'ensemble', icon: BarChart3,      group: 'Principal' },
@@ -47,6 +48,7 @@ const NAV = [
   { id: 'suivis',        label: 'Suivis',            icon: ClipboardList,  group: 'Données', count: 'totalSuivis' },
   { id: 'bilan',         label: 'Bilan', icon: Star,           group: 'Données' },
   { id: 'rapport-bilan', label: 'Rapport de bilan', icon: Sparkles, group: 'Données' },
+  { id: 'campagne-bilan', label: 'Campagne sondage', icon: Send, group: 'Outils' },
   { id: 'contacts',      label: 'Messages Contact',  icon: Inbox,          group: 'Données', count: 'unreadContacts', alert: true },
   { id: 'export',        label: 'Export CSV',        icon: Download,       group: 'Données' },
   { id: 'import',        label: 'Import CSV',        icon: FileSpreadsheet,group: 'Données' },
@@ -710,6 +712,7 @@ export default function AdminDashboard() {
             {activeTab === 'suivis'        && <SuivisList suivis={suivis} />}
             {activeTab === 'bilan'         && <BilanReview />}
             {activeTab === 'rapport-bilan' && <RapportBilan />}
+            {activeTab === 'campagne-bilan' && <CampagneBilan />}
             {activeTab === 'analytique'    && <AnalytiqueDashboard binomes={binomes} suivis={suivis} />}
             {activeTab === 'charts'        && <ProgrammeCharts mentors={mentors} mentores={mentores} binomes={binomes} suivis={suivis} />}
             {activeTab === 'export'        && <ExportCSV />}
