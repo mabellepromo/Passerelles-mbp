@@ -77,7 +77,7 @@ function buildInvitationEmail({ firstName, role, link, unsubscribeLink }) {
     ${button('Répondre au sondage', link)}
     ${p(`<strong>Merci de répondre avant le ${DEADLINE_LABEL}.</strong>`)}
     ${p(`Merci pour votre implication !`)}
-    ${p(`Eric<br/>Président de Ma Belle Promo — Coordination PASSERELLES`)}
+    ${p(`L'équipe PASSERELLES<br/>Ma Belle Promo`)}
   `, { unsubscribeLink });
 
   const text = `Bonjour ${firstName},
@@ -93,8 +93,8 @@ Merci de répondre avant le ${DEADLINE_LABEL}.
 
 Merci pour votre implication !
 
-Eric
-Président de Ma Belle Promo — Coordination PASSERELLES`;
+L'équipe PASSERELLES
+Ma Belle Promo`;
 
   return { subject, html, text };
 }
@@ -114,7 +114,7 @@ function buildReminderEmail({ firstName, role, link, daysLeft, unsubscribeLink }
     ${button('Répondre au sondage', link)}
     ${p(`Date limite : <strong>${DEADLINE_LABEL}</strong>.`)}
     ${p(`Merci pour votre engagement dans le programme.`)}
-    ${p(`Eric<br/>Président de Ma Belle Promo — Coordination PASSERELLES`)}
+    ${p(`L'équipe PASSERELLES<br/>Ma Belle Promo`)}
   `, { unsubscribeLink });
 
   const text = `Bonjour ${firstName},
@@ -130,8 +130,8 @@ Date limite : ${DEADLINE_LABEL}.
 
 Merci pour votre engagement dans le programme.
 
-Eric
-Président de Ma Belle Promo — Coordination PASSERELLES`;
+L'équipe PASSERELLES
+Ma Belle Promo`;
 
   return { subject, html, text };
 }
@@ -151,7 +151,7 @@ function buildFinalReminderEmail({ firstName, role, link, unsubscribeLink }) {
     ${button('Répondre maintenant', link)}
     ${p(`Cela ne prend que 10 à 12 minutes, et votre retour est précieux pour nous.`)}
     ${p(`Merci pour votre engagement.`)}
-    ${p(`Eric<br/>Président de Ma Belle Promo — Coordination PASSERELLES`)}
+    ${p(`L'équipe PASSERELLES<br/>Ma Belle Promo`)}
   `, { unsubscribeLink });
 
   const text = `Bonjour ${firstName},
@@ -165,8 +165,8 @@ Cela ne prend que 10 à 12 minutes, et votre retour est précieux pour nous.
 
 Merci pour votre engagement.
 
-Eric
-Président de Ma Belle Promo — Coordination PASSERELLES`;
+L'équipe PASSERELLES
+Ma Belle Promo`;
 
   return { subject, html, text };
 }
@@ -183,7 +183,7 @@ function buildThankYouEmail({ firstName, role }) {
     ${p(`Bonjour ${firstName},`)}
     ${p(`Merci d'avoir pris le temps de répondre au sondage sur l'évolution du mentorat en tant que ${roleLabel(role)}. Votre retour est précieux et sera lu avec attention par la coordination du programme PASSERELLES.`)}
     ${p(`Merci pour votre implication !`)}
-    ${p(`Eric<br/>Président de Ma Belle Promo — Coordination PASSERELLES`)}
+    ${p(`L'équipe PASSERELLES<br/>Ma Belle Promo`)}
   `);
 
   const text = `Bonjour ${firstName},
@@ -192,8 +192,8 @@ Merci d'avoir pris le temps de répondre au sondage sur l'évolution du mentorat
 
 Merci pour votre implication !
 
-Eric
-Président de Ma Belle Promo — Coordination PASSERELLES`;
+L'équipe PASSERELLES
+Ma Belle Promo`;
 
   return { subject, html, text };
 }
