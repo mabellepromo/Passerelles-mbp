@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   Send, Loader2, Mail, Users, CheckCircle2, Clock, Pause, Play,
-  AlertTriangle, Search, Copy, RefreshCw, Sparkles,
+  AlertTriangle, Search, Copy, RefreshCw, Sparkles, Trash2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -78,6 +78,7 @@ export default function CampagneBilan() {
   const [copiedToken, setCopiedToken] = useState(null);
   const [sendingOne, setSendingOne] = useState({});
   const [reissuing, setReissuing] = useState({});
+  const [deleting, setDeleting] = useState({});
 
   const { data: campaign, isLoading: loadingCampaign } = useQuery({
     queryKey: ['review_campaign_current'],
@@ -214,6 +215,20 @@ export default function CampagneBilan() {
       toast.error(err.message);
     } finally {
       setReissuing((s) => { const n = { ...s }; delete n[participant.token_id]; return n; });
+    }
+  }
+
+  async function handleDelete(participant) {
+    setDeleting((s) => ({ ...s, [participant.token_id]: true }));
+    try {
+      const { error } = await supabase.rpc('admin_delete_review_token', { p_token_id: participant.token_id });
+      if (error) throw error;
+      toast.success(`Lien supprimé pour ${participant.participant_name}`);
+      queryClient.invalidateQueries({ queryKey: ['review_campaign_participants'] });
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setDeleting((s) => { const n = { ...s }; delete n[participant.token_id]; return n; });
     }
   }
 
@@ -357,19 +372,41 @@ export default function CampagneBilan() {
                       <td className="py-2.5 pr-4">{p.reminders_optout ? <Badge variant="outline" className="text-gray-400">Oui</Badge> : '—'}</td>
                       <td className="py-2.5 pr-4">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          {p.has_responded ? (
-                            <Button variant="outline" size="sm" onClick={() => handleReissue(p)} disabled={!!reissuing[p.token_id]} title="Génère un nouveau lien pour que cette personne puisse remplir à nouveau">
-                              {reissuing[p.token_id] ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
-                            </Button>
-                          ) : (
+                          {!p.has_responded && (
                             <>
-                              <Button variant="outline" size="sm" onClick={() => handleSendOne(p)} disabled={!!sendingOne[p.token_id]} title="Envoyer l'invitation par email">
+                              <Button variant="outline" size="sm" onClick={() => handleSendOne(p)} disabled={!!sendingOne[p.token_id]} title="Envoyer / renvoyer l'invitation par email">
                                 {sendingOne[p.token_id] ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
                               </Button>
                               <Button variant="outline" size="sm" onClick={() => handleCopyLink(p)} title="Copier le lien">
                                 {isCopied ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
                               </Button>
                             </>
+                          )}
+                          <Button variant="outline" size="sm" onClick={() => handleReissue(p)} disabled={!!reissuing[p.token_id]} title="Modifier : génère un nouveau lien et invalide l'ancien">
+                            {reissuing[p.token_id] ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                          </Button>
+                          {!p.has_responded && (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50 hover:text-red-700" disabled={!!deleting[p.token_id]} title="Supprimer ce lien">
+                                  {deleting[p.token_id] ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Supprimer ce lien ?</AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    Le lien de {p.participant_name} ({p.participant_email}) sera définitivement supprimé. Vous pourrez en générer un nouveau via « Générer les liens manquants ».
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                  <AlertDialogAction onClick={() => handleDelete(p)} className="bg-red-600 hover:bg-red-700">
+                                    Supprimer
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
                           )}
                         </div>
                       </td>
