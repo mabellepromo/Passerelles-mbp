@@ -18,9 +18,11 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   Send, Loader2, Mail, Users, CheckCircle2, Clock, Pause, Play,
-  AlertTriangle, Search,
+  AlertTriangle, Search, Copy, RefreshCw, Sparkles,
 } from 'lucide-react';
 import { toast } from 'sonner';
+
+const SITE_URL = 'https://passerelles.vercel.app';
 
 const STATUS_LABEL = {
   draft: { label: 'Brouillon', className: 'bg-gray-100 text-gray-600' },
@@ -28,6 +30,12 @@ const STATUS_LABEL = {
   paused: { label: 'En pause', className: 'bg-amber-100 text-amber-700' },
   closed: { label: 'Clôturée', className: 'bg-gray-200 text-gray-600' },
 };
+
+function participantStatus(p) {
+  if (p.has_responded) return { label: 'Répondu', className: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' };
+  if (p.draft_saved_at) return { label: 'Brouillon en cours', className: 'bg-amber-100 text-amber-700 hover:bg-amber-100' };
+  return { label: 'Pas encore ouvert', className: 'bg-gray-100 text-gray-500 hover:bg-gray-100' };
+}
 
 const EMAIL_TYPE_LABEL = {
   invitation: 'Invitation',
@@ -66,6 +74,10 @@ export default function CampagneBilan() {
   const [launching, setLaunching] = useState(false);
   const [testing, setTesting] = useState(false);
   const [toggling, setToggling] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [copiedToken, setCopiedToken] = useState(null);
+  const [sendingOne, setSendingOne] = useState({});
+  const [reissuing, setReissuing] = useState({});
 
   const { data: campaign, isLoading: loadingCampaign } = useQuery({
     queryKey: ['review_campaign_current'],
@@ -153,6 +165,58 @@ export default function CampagneBilan() {
     }
   }
 
+  async function handleGenerateMissing() {
+    setGenerating(true);
+    try {
+      const { data, error } = await supabase.rpc('generate_missing_review_tokens');
+      if (error) throw error;
+      toast.success(`${data?.created ?? 0} nouveau(x) lien(s) généré(s)`);
+      queryClient.invalidateQueries({ queryKey: ['review_campaign_participants'] });
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setGenerating(false);
+    }
+  }
+
+  async function handleCopyLink(participant) {
+    await navigator.clipboard.writeText(`${SITE_URL}/bilan/${participant.token}`);
+    setCopiedToken(participant.token_id);
+    setTimeout(() => setCopiedToken(null), 3000);
+  }
+
+  async function handleSendOne(participant) {
+    setSendingOne((s) => ({ ...s, [participant.token_id]: true }));
+    try {
+      await callSendEmail('send_single_invitation', { token_id: participant.token_id });
+      toast.success(`Invitation envoyée à ${participant.participant_name || participant.participant_email}`);
+      queryClient.invalidateQueries({ queryKey: ['review_campaign_participants'] });
+      queryClient.invalidateQueries({ queryKey: ['review_email_log'] });
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setSendingOne((s) => { const n = { ...s }; delete n[participant.token_id]; return n; });
+    }
+  }
+
+  async function handleReissue(participant) {
+    setReissuing((s) => ({ ...s, [participant.token_id]: true }));
+    try {
+      const { data, error } = await supabase.rpc('admin_reissue_review_token', {
+        p_participant_email: participant.participant_email,
+        p_role: participant.role,
+      });
+      if (error) throw error;
+      await navigator.clipboard.writeText(`${SITE_URL}/bilan/${data.token}`);
+      toast.success(`Nouveau lien généré et copié pour ${participant.participant_name}`);
+      queryClient.invalidateQueries({ queryKey: ['review_campaign_participants'] });
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setReissuing((s) => { const n = { ...s }; delete n[participant.token_id]; return n; });
+    }
+  }
+
   if (loadingCampaign || loadingParticipants) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -183,6 +247,10 @@ export default function CampagneBilan() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          <Button variant="outline" onClick={handleGenerateMissing} disabled={generating}>
+            {generating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+            Générer les liens manquants
+          </Button>
           <Button variant="outline" onClick={handleTest} disabled={testing}>
             {testing ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Mail className="h-4 w-4 mr-2" />}
             Envoyer un test
@@ -268,29 +336,46 @@ export default function CampagneBilan() {
                   <th className="py-2 pr-4">Rappels reçus</th>
                   <th className="py-2 pr-4">Dernier email</th>
                   <th className="py-2 pr-4">Désinscrit</th>
+                  <th className="py-2 pr-4">Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredParticipants.map((p) => (
-                  <tr key={p.token_id} className="border-b border-gray-50">
-                    <td className="py-2.5 pr-4">
-                      <p className="font-medium text-gray-800">{p.participant_name}</p>
-                      <p className="text-xs text-gray-400">{p.role === 'mentor' ? 'Mentor' : 'Mentoré'} · {p.participant_email}</p>
-                    </td>
-                    <td className="py-2.5 pr-4">
-                      {p.has_responded ? (
-                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">Répondu</Badge>
-                      ) : (
-                        <Badge variant="outline" className="text-gray-400 border-gray-200">En attente</Badge>
-                      )}
-                    </td>
-                    <td className="py-2.5 pr-4">{p.reminders_sent}</td>
-                    <td className="py-2.5 pr-4 text-xs text-gray-500">
-                      {p.last_email_at ? `${EMAIL_TYPE_LABEL[p.last_email_type] || p.last_email_type} · ${new Date(p.last_email_at).toLocaleDateString('fr-FR')}` : '—'}
-                    </td>
-                    <td className="py-2.5 pr-4">{p.reminders_optout ? <Badge variant="outline" className="text-gray-400">Oui</Badge> : '—'}</td>
-                  </tr>
-                ))}
+                {filteredParticipants.map((p) => {
+                  const st = participantStatus(p);
+                  const isCopied = copiedToken === p.token_id;
+                  return (
+                    <tr key={p.token_id} className="border-b border-gray-50">
+                      <td className="py-2.5 pr-4">
+                        <p className="font-medium text-gray-800">{p.participant_name}</p>
+                        <p className="text-xs text-gray-400">{p.role === 'mentor' ? 'Mentor' : 'Mentoré'} · {p.participant_email}</p>
+                      </td>
+                      <td className="py-2.5 pr-4"><Badge className={st.className}>{st.label}</Badge></td>
+                      <td className="py-2.5 pr-4">{p.reminders_sent}</td>
+                      <td className="py-2.5 pr-4 text-xs text-gray-500">
+                        {p.last_email_at ? `${EMAIL_TYPE_LABEL[p.last_email_type] || p.last_email_type} · ${new Date(p.last_email_at).toLocaleDateString('fr-FR')}` : '—'}
+                      </td>
+                      <td className="py-2.5 pr-4">{p.reminders_optout ? <Badge variant="outline" className="text-gray-400">Oui</Badge> : '—'}</td>
+                      <td className="py-2.5 pr-4">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {p.has_responded ? (
+                            <Button variant="outline" size="sm" onClick={() => handleReissue(p)} disabled={!!reissuing[p.token_id]} title="Génère un nouveau lien pour que cette personne puisse remplir à nouveau">
+                              {reissuing[p.token_id] ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                            </Button>
+                          ) : (
+                            <>
+                              <Button variant="outline" size="sm" onClick={() => handleSendOne(p)} disabled={!!sendingOne[p.token_id]} title="Envoyer l'invitation par email">
+                                {sendingOne[p.token_id] ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+                              </Button>
+                              <Button variant="outline" size="sm" onClick={() => handleCopyLink(p)} title="Copier le lien">
+                                {isCopied ? <CheckCircle2 className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                              </Button>
+                            </>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

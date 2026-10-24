@@ -161,6 +161,42 @@ async function handleLaunchCampaign(req, res, adminUser) {
 }
 
 // ----------------------------------------------------------------------------
+// Action admin : envoi ponctuel de l'invitation à un seul participant
+// (remplace l'ancien outil "Liens bilan", fusionné dans la campagne).
+// ----------------------------------------------------------------------------
+
+async function handleSendSingleInvitation(req, res) {
+  const { token_id: tokenId } = req.body || {};
+  if (!tokenId) return res.status(400).json({ error: 'token_id manquant' });
+
+  const { data: participant, error: participantError } = await supabaseService
+    .from('review_campaign_participants').select('*').eq('token_id', tokenId).single();
+  if (participantError || !participant) return res.status(404).json({ error: 'Participant introuvable' });
+  if (participant.has_responded) return res.status(409).json({ error: 'Cette personne a déjà répondu' });
+
+  const { data: campaign } = await supabaseService
+    .from('review_campaigns').select('id').order('created_at', { ascending: false }).limit(1).maybeSingle();
+
+  const link = `${SITE_URL}/bilan/${participant.token}`;
+  const unsubscribeLink = `${SITE_URL}/desinscription/${participant.token}`;
+  const { subject, html, text } = buildInvitationEmail({
+    firstName: firstNameOf(participant.participant_name),
+    role: participant.role,
+    link,
+    unsubscribeLink,
+  });
+
+  try {
+    const messageId = await sendViaBrevo({ to: participant.participant_email, subject, html, text });
+    await logEmail({ campaignId: campaign?.id || null, tokenId, participantEmail: participant.participant_email, emailType: 'invitation', status: 'sent', providerMessageId: messageId });
+    return res.status(200).json({ sent: true });
+  } catch (err) {
+    await logEmail({ campaignId: campaign?.id || null, tokenId, participantEmail: participant.participant_email, emailType: 'invitation', status: 'failed', error: err.message });
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+// ----------------------------------------------------------------------------
 // Action admin : envoyer une invitation d'exemple à l'adresse de test, sans
 // toucher au statut de la campagne ni à la journalisation (pure prévisualisation).
 // ----------------------------------------------------------------------------
@@ -368,7 +404,7 @@ async function handleGenericSend(req, res) {
 // ----------------------------------------------------------------------------
 
 const WEBHOOK_ACTIONS = new Set(['send_review_reminders', 'review_thank_you']);
-const ADMIN_ACTIONS = new Set(['launch_review_campaign', 'test_review_invitation']);
+const ADMIN_ACTIONS = new Set(['launch_review_campaign', 'test_review_invitation', 'send_single_invitation']);
 
 module.exports = async (req, res) => {
   const origin = req.headers.origin;
@@ -409,6 +445,7 @@ module.exports = async (req, res) => {
   if (ADMIN_ACTIONS.has(action)) {
     if (action === 'launch_review_campaign') return handleLaunchCampaign(req, res, userData.user);
     if (action === 'test_review_invitation') return handleTestInvitation(req, res);
+    if (action === 'send_single_invitation') return handleSendSingleInvitation(req, res);
   }
 
   return handleGenericSend(req, res);

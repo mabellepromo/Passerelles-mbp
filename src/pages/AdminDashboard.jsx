@@ -28,7 +28,6 @@ import DeclenchementBinomes from '@/components/admin/DeclenchementBinomes.jsx';
 import EnvoiEmailLibre from '@/components/admin/EnvoiEmailLibre.jsx';
 import RenvoiLien from '@/components/admin/RenvoiLien.jsx';
 import BilanReview from '@/components/admin/BilanReview.jsx';
-import LiensBilan from '@/components/admin/LiensBilan.jsx';
 import RapportBilan from '@/components/admin/RapportBilan.jsx';
 import CampagneBilan from '@/components/admin/CampagneBilan.jsx';
 
@@ -43,12 +42,11 @@ const NAV = [
   { id: 'declenchement', label: 'Déclenchement',     icon: Send,           group: 'Outils' },
   { id: 'email-libre',   label: 'Email libre',       icon: Mail,           group: 'Outils' },
   { id: 'renvoi-lien',  label: 'Lien d\'accès',     icon: Link2,          group: 'Outils' },
-  { id: 'liens-bilan',  label: 'Liens bilan',       icon: Link2,          group: 'Outils' },
   { id: 'alertes',       label: 'Alertes',           icon: AlertTriangle,  group: 'Outils', count: 'issuesReported', alert: true },
   { id: 'suivis',        label: 'Suivis',            icon: ClipboardList,  group: 'Données', count: 'totalSuivis' },
   { id: 'bilan',         label: 'Bilan', icon: Star,           group: 'Données' },
   { id: 'rapport-bilan', label: 'Rapport de bilan', icon: Sparkles, group: 'Données' },
-  { id: 'campagne-bilan', label: 'Campagne sondage', icon: Send, group: 'Outils' },
+  { id: 'campagne-bilan', label: 'Sondage & liens', icon: Send, group: 'Outils' },
   { id: 'contacts',      label: 'Messages Contact',  icon: Inbox,          group: 'Données', count: 'unreadContacts', alert: true },
   { id: 'export',        label: 'Export CSV',        icon: Download,       group: 'Données' },
   { id: 'import',        label: 'Import CSV',        icon: FileSpreadsheet,group: 'Données' },
@@ -722,7 +720,6 @@ export default function AdminDashboard() {
             {activeTab === 'declenchement' && <DeclenchementBinomes />}
             {activeTab === 'email-libre'   && <EnvoiEmailLibre />}
             {activeTab === 'renvoi-lien'  && <RenvoiLien />}
-            {activeTab === 'liens-bilan'  && <LiensBilan />}
             {activeTab === 'contacts'      && (
               <ContactMessagesView messages={contactMsgs} onMarkRead={async (msg) => {
                 await base44.entities.Message.update(msg.id, { read: true });
