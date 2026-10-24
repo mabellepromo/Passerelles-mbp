@@ -22,7 +22,7 @@ function emailShell(bodyHtml, { unsubscribeLink } = {}) {
               Association Ma Belle Promo (MBP)
             </h1>
             <p style="color:#a7f3d0;font-size:13px;margin:0;font-family:Arial,sans-serif;">
-              Programme PASSERELLES &middot; Sondage de bilan
+              Programme PASSERELLES &middot; Sondage sur l'évolution du mentorat
             </p>
           </td>
         </tr>
@@ -67,12 +67,12 @@ function roleLabel(role) {
 // ----------------------------------------------------------------------------
 
 function buildInvitationEmail({ firstName, role, link, unsubscribeLink }) {
-  const subject = 'Votre sondage de bilan — Programme PASSERELLES';
+  const subject = "Votre sondage sur l'évolution du mentorat — Programme PASSERELLES";
   const p = (t) => `<p style="color:#374151;font-size:15px;line-height:1.8;margin:0 0 14px;">${t}</p>`;
 
   const html = emailShell(`
     ${p(`Bonjour ${firstName},`)}
-    ${p(`Dans le cadre du programme PASSERELLES, nous vous invitons à compléter votre sondage de bilan en tant que ${roleLabel(role)}. Vos réponses nous aident à comprendre comment se déroule votre binôme et à améliorer le programme pour la suite.`)}
+    ${p(`Dans le cadre du programme PASSERELLES, nous vous invitons à compléter votre sondage sur l'évolution du mentorat en tant que ${roleLabel(role)}. Vos réponses nous aident à comprendre comment se déroule votre binôme et à améliorer le programme pour la suite.`)}
     ${p(`Vos réponses sont nominatives et lues uniquement par la coordination. Le sondage prend environ <strong>10 à 12 minutes</strong>.`)}
     ${button('Répondre au sondage', link)}
     ${p(`<strong>Merci de répondre avant le ${DEADLINE_LABEL}.</strong>`)}
@@ -82,7 +82,7 @@ function buildInvitationEmail({ firstName, role, link, unsubscribeLink }) {
 
   const text = `Bonjour ${firstName},
 
-Dans le cadre du programme PASSERELLES, nous vous invitons à compléter votre sondage de bilan en tant que ${roleLabel(role)}. Vos réponses nous aident à comprendre comment se déroule votre binôme et à améliorer le programme pour la suite.
+Dans le cadre du programme PASSERELLES, nous vous invitons à compléter votre sondage sur l'évolution du mentorat en tant que ${roleLabel(role)}. Vos réponses nous aident à comprendre comment se déroule votre binôme et à améliorer le programme pour la suite.
 
 Vos réponses sont nominatives et lues uniquement par la coordination. Le sondage prend environ 10 à 12 minutes.
 
@@ -109,7 +109,7 @@ function buildReminderEmail({ firstName, role, link, daysLeft, unsubscribeLink }
 
   const html = emailShell(`
     ${p(`Bonjour ${firstName},`)}
-    ${p(`Un petit rappel amical : nous n'avons pas encore reçu votre réponse au sondage de bilan PASSERELLES en tant que ${roleLabel(role)}.`)}
+    ${p(`Un petit rappel amical : nous n'avons pas encore reçu votre réponse au sondage sur l'évolution du mentorat PASSERELLES en tant que ${roleLabel(role)}.`)}
     ${p(`Il vous reste <strong>${daysLeft} jour${daysLeft > 1 ? 's' : ''}</strong> pour y répondre — cela ne prend que 10 à 12 minutes, et votre avis compte vraiment pour nous.`)}
     ${button('Répondre au sondage', link)}
     ${p(`Date limite : <strong>${DEADLINE_LABEL}</strong>.`)}
@@ -119,7 +119,7 @@ function buildReminderEmail({ firstName, role, link, daysLeft, unsubscribeLink }
 
   const text = `Bonjour ${firstName},
 
-Un petit rappel amical : nous n'avons pas encore reçu votre réponse au sondage de bilan PASSERELLES en tant que ${roleLabel(role)}.
+Un petit rappel amical : nous n'avons pas encore reçu votre réponse au sondage sur l'évolution du mentorat PASSERELLES en tant que ${roleLabel(role)}.
 
 Il vous reste ${daysLeft} jour${daysLeft > 1 ? 's' : ''} pour y répondre — cela ne prend que 10 à 12 minutes, et votre avis compte vraiment pour nous.
 
@@ -146,7 +146,7 @@ function buildFinalReminderEmail({ firstName, role, link, unsubscribeLink }) {
 
   const html = emailShell(`
     ${p(`Bonjour ${firstName},`)}
-    ${p(`C'est aujourd'hui le <strong>dernier jour</strong> pour répondre au sondage de bilan PASSERELLES en tant que ${roleLabel(role)} — la date limite est fixée à ce soir, <strong>${DEADLINE_LABEL}</strong>.`)}
+    ${p(`C'est aujourd'hui le <strong>dernier jour</strong> pour répondre au sondage sur l'évolution du mentorat PASSERELLES en tant que ${roleLabel(role)} — la date limite est fixée à ce soir, <strong>${DEADLINE_LABEL}</strong>.`)}
     ${p(`Si vous n'avez pas encore eu l'occasion de répondre, voici votre lien personnel :`)}
     ${button('Répondre maintenant', link)}
     ${p(`Cela ne prend que 10 à 12 minutes, et votre retour est précieux pour la suite du programme.`)}
@@ -156,7 +156,7 @@ function buildFinalReminderEmail({ firstName, role, link, unsubscribeLink }) {
 
   const text = `Bonjour ${firstName},
 
-C'est aujourd'hui le dernier jour pour répondre au sondage de bilan PASSERELLES en tant que ${roleLabel(role)} — la date limite est fixée à ce soir, ${DEADLINE_LABEL}.
+C'est aujourd'hui le dernier jour pour répondre au sondage sur l'évolution du mentorat PASSERELLES en tant que ${roleLabel(role)} — la date limite est fixée à ce soir, ${DEADLINE_LABEL}.
 
 Si vous n'avez pas encore eu l'occasion de répondre, voici votre lien personnel :
 ${link}
@@ -181,14 +181,14 @@ function buildThankYouEmail({ firstName, role }) {
 
   const html = emailShell(`
     ${p(`Bonjour ${firstName},`)}
-    ${p(`Merci d'avoir pris le temps de répondre au sondage de bilan en tant que ${roleLabel(role)}. Votre retour est précieux et sera lu avec attention par la coordination du programme PASSERELLES.`)}
+    ${p(`Merci d'avoir pris le temps de répondre au sondage sur l'évolution du mentorat en tant que ${roleLabel(role)}. Votre retour est précieux et sera lu avec attention par la coordination du programme PASSERELLES.`)}
     ${p(`Merci pour votre implication !`)}
     ${p(`Eric<br/>Président de Ma Belle Promo — Coordination PASSERELLES`)}
   `);
 
   const text = `Bonjour ${firstName},
 
-Merci d'avoir pris le temps de répondre au sondage de bilan en tant que ${roleLabel(role)}. Votre retour est précieux et sera lu avec attention par la coordination du programme PASSERELLES.
+Merci d'avoir pris le temps de répondre au sondage sur l'évolution du mentorat en tant que ${roleLabel(role)}. Votre retour est précieux et sera lu avec attention par la coordination du programme PASSERELLES.
 
 Merci pour votre implication !
 
