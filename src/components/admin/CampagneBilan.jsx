@@ -18,7 +18,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import {
   Send, Loader2, Mail, Users, CheckCircle2, Clock, Pause, Play,
-  AlertTriangle, Search, Copy, RefreshCw, Sparkles, Trash2,
+  AlertTriangle, Search, Copy, RefreshCw, Sparkles, Trash2, ShieldCheck, ShieldAlert,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -74,6 +74,7 @@ export default function CampagneBilan() {
   const [launching, setLaunching] = useState(false);
   const [testing, setTesting] = useState(false);
   const [toggling, setToggling] = useState(false);
+  const [togglingTestMode, setTogglingTestMode] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [copiedToken, setCopiedToken] = useState(null);
   const [sendingOne, setSendingOne] = useState({});
@@ -163,6 +164,24 @@ export default function CampagneBilan() {
       toast.error(err.message);
     } finally {
       setToggling(false);
+    }
+  }
+
+  async function handleToggleTestMode() {
+    if (!campaign) return;
+    setTogglingTestMode(true);
+    try {
+      const { error } = await supabase
+        .from('review_campaigns')
+        .update({ test_mode: !campaign.test_mode })
+        .eq('id', campaign.id);
+      if (error) throw error;
+      toast.success(campaign.test_mode ? 'Mode test désactivé : le prochain lancement enverra les emails réels.' : 'Mode test réactivé.');
+      queryClient.invalidateQueries({ queryKey: ['review_campaign_current'] });
+    } catch (err) {
+      toast.error(err.message);
+    } finally {
+      setTogglingTestMode(false);
     }
   }
 
@@ -262,6 +281,37 @@ export default function CampagneBilan() {
           </p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          {campaign.status === 'draft' && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  disabled={togglingTestMode}
+                  className={campaign.test_mode ? 'text-amber-600 border-amber-200 hover:bg-amber-50' : 'text-emerald-600 border-emerald-200 hover:bg-emerald-50'}
+                >
+                  {togglingTestMode ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : campaign.test_mode ? <ShieldAlert className="h-4 w-4 mr-2" /> : <ShieldCheck className="h-4 w-4 mr-2" />}
+                  {campaign.test_mode ? 'Activer les envois réels' : 'Repasser en mode test'}
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>{campaign.test_mode ? 'Désactiver le mode test ?' : 'Réactiver le mode test ?'}</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    {campaign.test_mode
+                      ? `Au prochain "Lancer l'envoi", les ${totalParticipants - responded} invitation(s) seront envoyées aux vrais participants (et non plus seulement à ${campaign.test_email}). Assure-toi d'avoir déjà vérifié le contenu avec "Envoyer un test".`
+                      : `Les prochains envois repasseront en mode test : un seul email sera envoyé à ${campaign.test_email}, aucun participant réel ne recevra d'email.`}
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleToggleTestMode} disabled={togglingTestMode}>
+                    {togglingTestMode ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : null}
+                    Confirmer
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
           <Button variant="outline" onClick={handleGenerateMissing} disabled={generating}>
             {generating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
             Générer les liens manquants
