@@ -30,6 +30,22 @@ const VIGILANCE_STYLE = {
 
 const NPS_COLORS = { promoters: '#059669', passives: '#d97706', detractors: '#dc2626' };
 
+const CONTINUATION_LABEL = {
+  yes_definitely: 'Oui, certainement',
+  yes_probably: 'Oui, probablement',
+  unsure: 'Incertain(e)',
+  probably_not: 'Probablement pas',
+  no: 'Non',
+};
+const CONTINUATION_ORDER = ['yes_definitely', 'yes_probably', 'unsure', 'probably_not', 'no'];
+const CONTINUATION_COLORS = {
+  yes_definitely: '#059669',
+  yes_probably: '#65a30d',
+  unsure: '#d97706',
+  probably_not: '#ea580c',
+  no: '#dc2626',
+};
+
 function KpiCard({ label, value, sub, icon: Icon, color = '#1a7a45' }) {
   return (
     <div className="rounded-xl border border-gray-100 p-4 bg-white">
@@ -116,6 +132,18 @@ export default function RapportBilan() {
       byQuestion[row.question_id][row.role] = row.avg_value;
     }
     return Object.values(byQuestion);
+  }, [metrics]);
+
+  const continuationChartData = useMemo(() => {
+    if (!metrics?.continuation_distribution) return [];
+    const byBucket = {};
+    for (const row of metrics.continuation_distribution) {
+      byBucket[row.bucket] = byBucket[row.bucket] || { bucket: row.bucket, mentor: 0, mentore: 0 };
+      byBucket[row.bucket][row.role] = row.n;
+    }
+    return CONTINUATION_ORDER
+      .filter((b) => byBucket[b])
+      .map((b) => ({ ...byBucket[b], label: CONTINUATION_LABEL[b] || b }));
   }, [metrics]);
 
   async function handleGenerate() {
@@ -300,6 +328,27 @@ export default function RapportBilan() {
                     <Bar dataKey="mentore" name="Mentorés" fill="#7c3aed" />
                   </BarChart>
                 </ResponsiveContainer>
+              </CardContent>
+            </Card>
+
+            <Card className="border-0 shadow-md md:col-span-2">
+              <CardHeader><CardTitle className="text-base">Disposition hypothétique à continuer le programme</CardTitle></CardHeader>
+              <CardContent style={{ height: 260 }}>
+                {continuationChartData.length === 0 ? (
+                  <p className="text-sm text-gray-400 text-center py-16">Aucune réponse pour cette période.</p>
+                ) : (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={continuationChartData}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="label" tick={{ fontSize: 11 }} interval={0} />
+                      <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
+                      <Tooltip />
+                      <Legend formatter={(v) => (v === 'mentor' ? 'Mentors' : 'Mentorés')} />
+                      <Bar dataKey="mentor" name="Mentors" fill="#1a7a45" radius={[3, 3, 0, 0]} />
+                      <Bar dataKey="mentore" name="Mentorés" fill="#7c3aed" radius={[3, 3, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                )}
               </CardContent>
             </Card>
           </div>

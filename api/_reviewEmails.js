@@ -62,6 +62,15 @@ function roleLabel(role) {
   return role === 'mentor' ? 'mentor' : 'mentoré(e)';
 }
 
+// Formule de rentrée différente selon le rôle : les mentorés sont des
+// étudiants (année universitaire), les mentors des professionnels en
+// activité (une formule de rentrée générique leur correspond mieux).
+function seasonalGreeting(role) {
+  return role === 'mentor'
+    ? "Toute l'équipe PASSERELLES espère que vous allez bien. Concernant le programme, il nous a paru nécessaire de faire le point en ce début d'année universitaire."
+    : "Toute l'équipe PASSERELLES vous souhaite une excellente année universitaire ! En ce début d'année, il nous a semblé opportun de faire un point sur le déroulement du programme.";
+}
+
 // ----------------------------------------------------------------------------
 // Email d'invitation
 // ----------------------------------------------------------------------------
@@ -72,7 +81,8 @@ function buildInvitationEmail({ firstName, role, link, unsubscribeLink }) {
 
   const html = emailShell(`
     ${p(`Bonjour ${firstName},`)}
-    ${p(`Dans le cadre du programme PASSERELLES, nous vous invitons à compléter un sondage sur l'évolution du mentorat en tant que ${roleLabel(role)}. Vos réponses nous aident à mieux comprendre comment se déroule votre binôme.`)}
+    ${p(seasonalGreeting(role))}
+    ${p(`Nous vous invitons donc à compléter un sondage sur l'évolution du mentorat en tant que ${roleLabel(role)}. Vos réponses nous aident à mieux comprendre comment se déroule votre binôme.`)}
     ${p(`Vos réponses sont nominatives et lues uniquement par la coordination. Le sondage prend environ <strong>10 à 12 minutes</strong>.`)}
     ${button('Répondre au sondage', link)}
     ${p(`<strong>Merci de répondre avant le ${DEADLINE_LABEL}.</strong>`)}
@@ -82,7 +92,9 @@ function buildInvitationEmail({ firstName, role, link, unsubscribeLink }) {
 
   const text = `Bonjour ${firstName},
 
-Dans le cadre du programme PASSERELLES, nous vous invitons à compléter un sondage sur l'évolution du mentorat en tant que ${roleLabel(role)}. Vos réponses nous aident à mieux comprendre comment se déroule votre binôme.
+${seasonalGreeting(role)}
+
+Nous vous invitons donc à compléter un sondage sur l'évolution du mentorat en tant que ${roleLabel(role)}. Vos réponses nous aident à mieux comprendre comment se déroule votre binôme.
 
 Vos réponses sont nominatives et lues uniquement par la coordination. Le sondage prend environ 10 à 12 minutes.
 

@@ -50,6 +50,15 @@ export const mentorQuestions = [
   { id: 'improvements', section: 'Satisfaction', type: 'text', required: true,
     label: 'Qu\'est-ce qui pourrait être amélioré dans le programme ?' },
 
+  { id: 'continuation_interest', section: 'Pour conclure', type: 'select', required: true,
+    label: 'Au vu de la dynamique actuelle de ton binôme et de tes occupations, serais-tu hypothétiquement disposé(e) à continuer le programme PASSERELLES ?',
+    options: [
+      { value: 'yes_definitely', label: 'Oui, certainement' },
+      { value: 'yes_probably', label: 'Oui, probablement' },
+      { value: 'unsure', label: 'Incertain(e)' },
+      { value: 'probably_not', label: 'Probablement pas' },
+      { value: 'no', label: 'Non' },
+    ] },
   { id: 'suggestions', section: 'Pour conclure', type: 'text', required: false,
     label: 'As-tu des suggestions pour améliorer le programme ? (facultatif)' },
   { id: 'quote_consent', section: 'Pour conclure', type: 'select', required: true,
@@ -100,6 +109,15 @@ export const mentoreQuestions = [
   { id: 'improvements', section: 'Satisfaction', type: 'text', required: true,
     label: 'Qu\'est-ce qui pourrait être amélioré dans le programme ?' },
 
+  { id: 'continuation_interest', section: 'Pour conclure', type: 'select', required: true,
+    label: 'Au vu de la dynamique actuelle de ton binôme et de tes occupations, serais-tu hypothétiquement disposé(e) à continuer le programme PASSERELLES ?',
+    options: [
+      { value: 'yes_definitely', label: 'Oui, certainement' },
+      { value: 'yes_probably', label: 'Oui, probablement' },
+      { value: 'unsure', label: 'Incertain(e)' },
+      { value: 'probably_not', label: 'Probablement pas' },
+      { value: 'no', label: 'Non' },
+    ] },
   { id: 'suggestions', section: 'Pour conclure', type: 'text', required: false,
     label: 'As-tu des suggestions pour améliorer le programme ? (facultatif)' },
   { id: 'quote_consent', section: 'Pour conclure', type: 'select', required: true,

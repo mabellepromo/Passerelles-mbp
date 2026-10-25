@@ -3,9 +3,10 @@ import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { Textarea } from '@/components/ui/textarea';
-import { Send, MessageCircle, Loader2, Users, CheckCheck, Search, ArrowLeft } from 'lucide-react';
+import { Send, MessageCircle, Loader2, Users, CheckCheck, Search, ArrowLeft, Pencil, X, Mail } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import NavBar from '@/components/NavBar';
+import { notifyAdmin } from '@/api/notifyAdmin';
 
 const formatTime = (dateStr) => {
   const d = new Date(dateStr);
@@ -40,6 +41,14 @@ export default function Messagerie() {
   const messagesEndRef = useRef(null);
   const queryClient    = useQueryClient();
   const textareaRef    = useRef(null);
+  const [editingMsgId, setEditingMsgId] = useState(null);
+  const [editDraft, setEditDraft]       = useState('');
+  const [hoveredMsgId, setHoveredMsgId] = useState(null);
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailRecipient, setEmailRecipient] = useState('both');
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody]       = useState('');
+  const [sendingEmail, setSendingEmail] = useState(false);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => base44.auth.redirectToLogin(window.location.href));
@@ -135,15 +144,55 @@ export default function Messagerie() {
       read: false
     });
     queryClient.invalidateQueries({ queryKey: ['messages', selectedBinomeId] });
+    notifyAdmin('message', {
+      'De':     `${user.full_name || user.email} (${myRole === 'mentor' ? 'Mentor' : 'Mentoré(e)'})`,
+      'À':      `${partner.name} (${myRole === 'mentor' ? 'Mentoré(e)' : 'Mentor'})`,
+      'Binôme': selectedBinome ? `${selectedBinome.mentor_name} ↔ ${selectedBinome.mentore_name}` : '',
+      'Extrait': content.length > 120 ? content.slice(0, 120) + '…' : content,
+    });
   };
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
 
+  const handleEditSave = async (msgId) => {
+    if (!editDraft.trim()) return;
+    await base44.entities.Message.update(msgId, { content: editDraft.trim() });
+    queryClient.invalidateQueries({ queryKey: ['messages', selectedBinomeId] });
+    setEditingMsgId(null);
+    setEditDraft('');
+  };
+
+  const handleSendEmail = async () => {
+    if (!emailSubject.trim() || !emailBody.trim() || !selectedBinome) return;
+    setSendingEmail(true);
+    try {
+      const token = await base44.auth.getAccessToken();
+      const recipients = [];
+      if (emailRecipient === 'mentor' || emailRecipient === 'both')
+        recipients.push({ email: selectedBinome.mentor_email, name: selectedBinome.mentor_name });
+      if (emailRecipient === 'mentore' || emailRecipient === 'both')
+        recipients.push({ email: selectedBinome.mentore_email, name: selectedBinome.mentore_name });
+      await fetch('/api/admin-send-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ recipients, subject: emailSubject.trim(), body: emailBody.trim() }),
+      });
+      setShowEmailModal(false);
+      setEmailSubject('');
+      setEmailBody('');
+      setEmailRecipient('both');
+    } finally {
+      setSendingEmail(false);
+    }
+  };
+
   const selectBinome = (id) => {
     setSelectedBinomeId(id);
     setMobileShowChat(true);
+    setShowEmailModal(false);
+    setEditingMsgId(null);
   };
 
   if (!user) {
@@ -157,6 +206,7 @@ export default function Messagerie() {
   const totalUnread = Object.values(unreadByBinome).reduce((a, b) => a + b, 0);
 
   return (
+    <>
     <div className="h-screen flex flex-col overflow-hidden" style={{ background:'#f1f5f4' }}>
       <NavBar />
 
@@ -296,6 +346,16 @@ export default function Messagerie() {
                         <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                         Actif
                       </div>
+                      {user.role === 'admin' && (
+                        <button
+                          onClick={() => setShowEmailModal(true)}
+                          className="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 hover:opacity-80 transition-opacity"
+                          style={{ background:'rgba(26,122,69,0.1)', border:'1px solid rgba(26,122,69,0.3)', color:'#1a7a45' }}
+                          title="Envoyer un email à ce binôme">
+                          <Mail className="h-3 w-3" />
+                          Email
+                        </button>
+                      )}
                     </>
                   );
                 })()}
@@ -338,6 +398,8 @@ export default function Messagerie() {
                           animate={{ opacity: 1, y: 0, scale: 1 }}
                           transition={{ duration: 0.2 }}
                           className={`flex ${isMe ? 'justify-end' : 'justify-start'} gap-2`}
+                          onMouseEnter={() => setHoveredMsgId(msg.id)}
+                          onMouseLeave={() => setHoveredMsgId(null)}
                         >
                           {!isMe && (
                             <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 self-end"
@@ -347,18 +409,53 @@ export default function Messagerie() {
                           )}
                           <div className={`max-w-[68%] flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
                             {!isMe && <p className="text-[10px] text-gray-400 px-1 mb-0.5 font-medium">{msg.sender_name}</p>}
-                            <div className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
-                              isMe
-                                ? 'text-white rounded-br-sm'
-                                : 'bg-white text-gray-800 rounded-bl-sm border border-gray-100'
-                            }`}
-                              style={isMe ? { background:'linear-gradient(135deg,#1a7a45,#2ea05c)' } : {}}>
-                              {msg.content}
-                            </div>
-                            <div className={`flex items-center gap-1 px-1 mt-1 ${isMe ? 'flex-row-reverse' : ''}`}>
-                              <span className="text-[10px] text-gray-400">{formatTime(msg.created_date)}</span>
-                              {isMe && <CheckCheck className={`h-3 w-3 ${msg.read ? 'text-blue-400' : 'text-gray-300'}`} />}
-                            </div>
+                            {editingMsgId === msg.id ? (
+                              <div className="w-72">
+                                <Textarea
+                                  value={editDraft}
+                                  onChange={e => setEditDraft(e.target.value)}
+                                  className="text-sm rounded-xl border-gray-300 focus:border-emerald-400 resize-none"
+                                  rows={3}
+                                  autoFocus
+                                />
+                                <div className="flex gap-2 mt-1.5 justify-end">
+                                  <button
+                                    onClick={() => { setEditingMsgId(null); setEditDraft(''); }}
+                                    className="text-xs px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 text-gray-600 transition-colors">
+                                    Annuler
+                                  </button>
+                                  <button
+                                    onClick={() => handleEditSave(msg.id)}
+                                    className="text-xs px-3 py-1.5 rounded-lg text-white transition-colors"
+                                    style={{ background:'linear-gradient(135deg,#1a7a45,#2ea05c)' }}>
+                                    Sauvegarder
+                                  </button>
+                                </div>
+                              </div>
+                            ) : (
+                              <>
+                                <div className={`relative px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm ${
+                                  isMe
+                                    ? 'text-white rounded-br-sm'
+                                    : 'bg-white text-gray-800 rounded-bl-sm border border-gray-100'
+                                }`}
+                                  style={isMe ? { background:'linear-gradient(135deg,#1a7a45,#2ea05c)' } : {}}>
+                                  {msg.content}
+                                  {user?.role === 'admin' && hoveredMsgId === msg.id && (
+                                    <button
+                                      onClick={() => { setEditingMsgId(msg.id); setEditDraft(msg.content); }}
+                                      className="absolute -top-2.5 -right-2.5 w-6 h-6 rounded-full flex items-center justify-center shadow-md bg-white border border-gray-200 hover:border-emerald-300 transition-colors"
+                                      title="Modifier ce message">
+                                      <Pencil className="h-3 w-3 text-gray-500" />
+                                    </button>
+                                  )}
+                                </div>
+                                <div className={`flex items-center gap-1 px-1 mt-1 ${isMe ? 'flex-row-reverse' : ''}`}>
+                                  <span className="text-[10px] text-gray-400">{formatTime(msg.created_date)}</span>
+                                  {isMe && <CheckCheck className={`h-3 w-3 ${msg.read ? 'text-blue-400' : 'text-gray-300'}`} />}
+                                </div>
+                              </>
+                            )}
                           </div>
                           {isMe && (
                             <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 self-end"
@@ -406,5 +503,99 @@ export default function Messagerie() {
         </div>
       </div>
     </div>
+
+    {/* Email modal — admin only */}
+    {showEmailModal && selectedBinome && user?.role === 'admin' && (
+      <div
+        className="fixed inset-0 z-50 flex items-center justify-center p-4"
+        style={{ background:'rgba(0,0,0,0.5)' }}
+        onClick={(e) => { if (e.target === e.currentTarget) setShowEmailModal(false); }}>
+        <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg" onClick={e => e.stopPropagation()}>
+          {/* Header */}
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+            <div>
+              <h2 className="font-bold text-gray-900 text-sm">Envoyer un email</h2>
+              <p className="text-xs text-gray-400 mt-0.5">
+                {selectedBinome.mentor_name} ↔ {selectedBinome.mentore_name}
+              </p>
+            </div>
+            <button onClick={() => setShowEmailModal(false)} className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors">
+              <X className="h-4 w-4 text-gray-500" />
+            </button>
+          </div>
+
+          {/* Body */}
+          <div className="px-6 py-5 space-y-4">
+            {/* Recipient toggle */}
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Destinataire(s)</label>
+              <div className="flex gap-2">
+                {[
+                  { value: 'both',    label: 'Les deux' },
+                  { value: 'mentor',  label: selectedBinome.mentor_name.split(' ')[0] + ' (mentor)' },
+                  { value: 'mentore', label: selectedBinome.mentore_name.split(' ')[0] + ' (mentoré·e)' },
+                ].map(opt => (
+                  <button
+                    key={opt.value}
+                    onClick={() => setEmailRecipient(opt.value)}
+                    className={`flex-1 py-2 px-2 rounded-xl text-[11px] font-semibold border transition-all ${
+                      emailRecipient === opt.value
+                        ? 'text-white border-transparent'
+                        : 'bg-white text-gray-600 border-gray-200 hover:border-emerald-300'
+                    }`}
+                    style={emailRecipient === opt.value ? { background:'linear-gradient(135deg,#1a7a45,#2ea05c)' } : {}}>
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Subject */}
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Objet</label>
+              <input
+                type="text"
+                value={emailSubject}
+                onChange={e => setEmailSubject(e.target.value)}
+                placeholder="Objet de l'email…"
+                className="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-emerald-400 focus:outline-none text-sm"
+              />
+            </div>
+
+            {/* Body */}
+            <div>
+              <label className="block text-[11px] font-semibold text-gray-400 uppercase tracking-wide mb-2">Message</label>
+              <Textarea
+                value={emailBody}
+                onChange={e => setEmailBody(e.target.value)}
+                placeholder="Contenu de l'email…"
+                className="resize-none text-sm rounded-xl border-gray-200 focus:border-emerald-400"
+                rows={5}
+              />
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="px-6 py-4 border-t border-gray-100 flex justify-end gap-3">
+            <button
+              onClick={() => setShowEmailModal(false)}
+              className="px-4 py-2 rounded-xl text-sm text-gray-600 hover:bg-gray-100 transition-colors">
+              Annuler
+            </button>
+            <button
+              onClick={handleSendEmail}
+              disabled={!emailSubject.trim() || !emailBody.trim() || sendingEmail}
+              className="px-5 py-2 rounded-xl text-sm font-semibold text-white flex items-center gap-2 disabled:opacity-50 transition-all"
+              style={{ background:'linear-gradient(135deg,#1a7a45,#2ea05c)' }}>
+              {sendingEmail
+                ? <Loader2 className="h-4 w-4 animate-spin" />
+                : <Send className="h-4 w-4" />}
+              Envoyer
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }

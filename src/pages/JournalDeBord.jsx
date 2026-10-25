@@ -21,6 +21,7 @@ import {
 import Breadcrumb from '@/components/Breadcrumb';
 import NavBar from '@/components/NavBar';
 import Footer from '@/components/Footer';
+import { notifyAdmin } from '@/api/notifyAdmin';
 
 const TYPE_CONFIG = {
   note_seance:  { label: 'Note de séance',     icon: FileText,   color: 'blue',   bg: 'bg-blue-50',   border: 'border-blue-200',   text: 'text-blue-700'   },
@@ -87,6 +88,14 @@ export default function JournalDeBord() {
     ? base44.entities.JournalDeBord.update(editEntry.id, data)
     : base44.entities.JournalDeBord.create(data),
   onSuccess: () => {
+    if (!editEntry) {
+      notifyAdmin('journal', {
+        'Binôme': selectedBinome ? `${selectedBinome.mentor_name} ↔ ${selectedBinome.mentore_name}` : '',
+        'Type':   TYPE_CONFIG[formData.type]?.label || formData.type,
+        'Titre':  formData.titre,
+        'Auteur': formData.auteur_role === 'mentor' ? 'Mentor' : 'Mentoré(e)',
+      });
+    }
     queryClient.invalidateQueries({ queryKey: ['journal', selectedBinomeId] });
     resetForm();
   },
