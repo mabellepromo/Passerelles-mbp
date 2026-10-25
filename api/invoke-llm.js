@@ -85,7 +85,7 @@ async function handleGenericInvoke(req, res) {
 // Action generate_review_report : rapport de bilan PASSERELLES
 // ----------------------------------------------------------------------------
 
-const OPEN_TEXT_FIELDS = ['strengths', 'improvements', 'objectives_comment', 'suggestions'];
+const OPEN_TEXT_FIELDS = ['strengths', 'improvements', 'objectives_comment'];
 
 // Pseudonymisation : table de correspondance en mémoire pour cette seule
 // requête, jamais persistée ni renvoyée au front.

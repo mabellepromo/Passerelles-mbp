@@ -28,7 +28,7 @@ export const mentorQuestions = [
   { id: 'objectives_achieved', section: 'Objectifs', type: 'likert', required: true,
     label: 'Dans quelle mesure les objectifs fixés avec {pairFirstName} ont-ils été atteints ?' },
   { id: 'objectives_comment', section: 'Objectifs', type: 'text', required: false,
-    label: 'Précise ce qui a aidé ou freiné l\'atteinte de ces objectifs (facultatif).' },
+    label: 'Au sein de ton binôme, précise ce qui a concrètement aidé ou freiné l\'atteinte de ces objectifs (facultatif).' },
 
   { id: 'contribution_type', section: 'Apports', type: 'multi-select', required: true,
     label: 'Qu\'as-tu apporté concrètement à {pairFirstName} ?',
@@ -42,6 +42,9 @@ export const mentorQuestions = [
     label: 'Les formulaires de suivi mensuel représentent-ils une charge administrative raisonnable ?' },
   { id: 'whatsapp_adequacy', section: 'Organisation', type: 'likert', required: true,
     label: 'WhatsApp est-il un canal adapté pour échanger avec {pairFirstName} ?' },
+  { id: 'platform_impact', section: 'Organisation', type: 'select', required: false,
+    label: 'Question subsidiaire : si la plateforme PASSERELLES n\'a pas été optimale pour toi, cela a-t-il empêché ton binôme de bien fonctionner ?',
+    options: ['Oui', 'Non', 'Partiellement', 'Non concerné(e)'] },
 
   { id: 'nps', section: 'Satisfaction', type: 'nps', required: true,
     label: 'Sur une échelle de 0 à 10, recommanderais-tu le programme PASSERELLES à un autre professionnel du droit ?' },
@@ -51,7 +54,7 @@ export const mentorQuestions = [
     label: 'Qu\'est-ce qui pourrait être amélioré dans le programme ?' },
 
   { id: 'continuation_interest', section: 'Pour conclure', type: 'select', required: true,
-    label: 'Au vu de la dynamique actuelle de ton binôme et de tes occupations, serais-tu hypothétiquement disposé(e) à continuer le programme PASSERELLES ?',
+    label: 'D\'une manière générale, et au vu de ta dynamique actuelle et de tes occupations, serais-tu hypothétiquement intéressé(e) par une nouvelle expérience de mentorat de ce type à l\'avenir ?',
     options: [
       { value: 'yes_definitely', label: 'Oui, certainement' },
       { value: 'yes_probably', label: 'Oui, probablement' },
@@ -59,8 +62,6 @@ export const mentorQuestions = [
       { value: 'probably_not', label: 'Probablement pas' },
       { value: 'no', label: 'Non' },
     ] },
-  { id: 'suggestions', section: 'Pour conclure', type: 'text', required: false,
-    label: 'As-tu des suggestions pour améliorer le programme ? (facultatif)' },
   { id: 'quote_consent', section: 'Pour conclure', type: 'select', required: true,
     label: 'Acceptes-tu que certaines de tes réponses soient citées dans les communications de Ma Belle Promo ?',
     options: [
@@ -87,7 +88,7 @@ export const mentoreQuestions = [
   { id: 'objectives_achieved', section: 'Objectifs', type: 'likert', required: true,
     label: 'Dans quelle mesure les objectifs fixés avec {pairFirstName} ont-ils été atteints ?' },
   { id: 'objectives_comment', section: 'Objectifs', type: 'text', required: false,
-    label: 'Précise ce qui a aidé ou freiné l\'atteinte de ces objectifs (facultatif).' },
+    label: 'Au sein de ton binôme, précise ce qui a concrètement aidé ou freiné l\'atteinte de ces objectifs (facultatif).' },
 
   { id: 'contribution_received', section: 'Apports', type: 'multi-select', required: true,
     label: 'Qu\'est-ce que {pairFirstName} t\'a apporté concrètement ?',
@@ -101,6 +102,9 @@ export const mentoreQuestions = [
     label: 'Les formulaires de suivi mensuel représentent-ils une charge raisonnable ?' },
   { id: 'whatsapp_adequacy', section: 'Organisation', type: 'likert', required: true,
     label: 'WhatsApp est-il un canal adapté pour échanger avec {pairFirstName} ?' },
+  { id: 'platform_impact', section: 'Organisation', type: 'select', required: false,
+    label: 'Question subsidiaire : si la plateforme PASSERELLES n\'a pas été optimale pour toi, cela a-t-il empêché ton binôme de bien fonctionner ?',
+    options: ['Oui', 'Non', 'Partiellement', 'Non concerné(e)'] },
 
   { id: 'nps', section: 'Satisfaction', type: 'nps', required: true,
     label: 'Sur une échelle de 0 à 10, recommanderais-tu le programme PASSERELLES à un autre étudiant en droit ?' },
@@ -110,7 +114,7 @@ export const mentoreQuestions = [
     label: 'Qu\'est-ce qui pourrait être amélioré dans le programme ?' },
 
   { id: 'continuation_interest', section: 'Pour conclure', type: 'select', required: true,
-    label: 'Au vu de la dynamique actuelle de ton binôme et de tes occupations, serais-tu hypothétiquement disposé(e) à continuer le programme PASSERELLES ?',
+    label: 'D\'une manière générale, et au vu de ta dynamique actuelle et de tes occupations, serais-tu hypothétiquement intéressé(e) par une nouvelle expérience de mentorat de ce type à l\'avenir ?',
     options: [
       { value: 'yes_definitely', label: 'Oui, certainement' },
       { value: 'yes_probably', label: 'Oui, probablement' },
@@ -118,8 +122,6 @@ export const mentoreQuestions = [
       { value: 'probably_not', label: 'Probablement pas' },
       { value: 'no', label: 'Non' },
     ] },
-  { id: 'suggestions', section: 'Pour conclure', type: 'text', required: false,
-    label: 'As-tu des suggestions pour améliorer le programme ? (facultatif)' },
   { id: 'quote_consent', section: 'Pour conclure', type: 'select', required: true,
     label: 'Acceptes-tu que certaines de tes réponses soient citées dans les communications de Ma Belle Promo ?',
     options: [
