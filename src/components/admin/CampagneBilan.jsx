@@ -61,8 +61,23 @@ async function callSendEmail(action, body) {
   return data;
 }
 
-function nextRunLabel() {
+// Prochaine date de relance réelle : premier jour du calendrier fixe
+// (reminder_schedule) non encore atteint. Si la campagne n'a pas de
+// calendrier fixe (ancien système par intervalle), on retombe sur le
+// prochain passage du cron quotidien (9h UTC), qui reste alors la seule
+// information disponible côté front sans interroger la base.
+function nextRunLabel(campaign) {
   const now = new Date();
+
+  if (campaign?.reminder_schedule?.length) {
+    const nextDate = campaign.reminder_schedule
+      .map((d) => new Date(`${d}T09:00:00Z`))
+      .filter((d) => d > now)
+      .sort((a, b) => a - b)[0];
+    if (!nextDate) return 'Terminé';
+    return nextDate.toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'UTC' }) + ' UTC';
+  }
+
   const next = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), 9, 0, 0));
   if (next <= now) next.setUTCDate(next.getUTCDate() + 1);
   return next.toLocaleString('fr-FR', { dateStyle: 'short', timeStyle: 'short', timeZone: 'UTC' }) + ' UTC';
@@ -372,7 +387,7 @@ export default function CampagneBilan() {
         </div>
         <div className="rounded-xl border border-gray-100 p-4 bg-white">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Prochaine relance</p>
-          <p className="text-sm font-bold flex items-center gap-2"><Clock className="h-4 w-4 text-gray-400" />{campaign.status === 'active' ? nextRunLabel() : '—'}</p>
+          <p className="text-sm font-bold flex items-center gap-2"><Clock className="h-4 w-4 text-gray-400" />{campaign.status === 'active' ? nextRunLabel(campaign) : '—'}</p>
         </div>
         <div className="rounded-xl border border-gray-100 p-4 bg-white">
           <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Échecs d'envoi</p>
