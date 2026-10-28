@@ -664,22 +664,6 @@ export default function AdminDashboard() {
                   <p className="text-emerald-200 text-sm">Ma Belle Promo · {new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
                 </div>
               </div>
-
-              {/* Mini KPI strip */}
-              <div className="relative z-10 mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
-                {[
-                  { label: 'Mentors', value: stats.totalMentors, sub: `${stats.approvedMentors} approuvés`, color: '#60a5fa' },
-                  { label: 'Mentorés', value: stats.totalMentores, sub: `${stats.approvedMentores} approuvés`, color: '#a78bfa' },
-                  { label: 'Binômes actifs', value: stats.activeBinomes, sub: `sur ${stats.totalBinomes} total`, color: '#34d399' },
-                  { label: 'Satisfaction moy.', value: `${stats.avgSatisfaction}/5`, sub: `${stats.totalSuivis} suivis soumis`, color: '#fbbf24' },
-                ].map(k => (
-                  <div key={k.label} className="rounded-xl px-4 py-3" style={{ background: 'rgba(255,255,255,0.1)', border: '1px solid rgba(255,255,255,0.12)' }}>
-                    <p className="text-2xl font-bold" style={{ color: k.color }}>{k.value}</p>
-                    <p className="text-xs font-semibold text-white mt-0.5">{k.label}</p>
-                    <p className="text-[10px] text-white/50 mt-0.5">{k.sub}</p>
-                  </div>
-                ))}
-              </div>
             </div>
           </div>
         )}
