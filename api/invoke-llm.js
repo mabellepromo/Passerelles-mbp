@@ -145,6 +145,7 @@ Nombre total de réponses reçues : ${totalResponses}${lowSample ? ' — ÉCHANT
 
 MÉTRIQUES (déjà calculées, chiffres exacts — ne les recalcule jamais, utilise-les tels quels) :
 ${JSON.stringify(metrics)}
+Note : "contribution_distribution" recense ce que les mentors ont apporté / ce que les mentorés ont reçu (compétences juridiques, réseau, orientation, opportunités, soutien moral...) ; "platform_impact_distribution" indique si la plateforme a gêné le bon fonctionnement du binôme. Exploite ces deux clés dans "strengths", "improvements" et "key_learnings" au même titre que le NPS et les moyennes likert — ne te limite pas aux seuls verbatims libres.
 
 VERBATIMS pseudonymisés (M-xx = mentor, E-xx = mentoré, B-xx = binôme ; ce sont des identifiants opaques, ne tente jamais de deviner de vrais noms à partir d'eux) :
 ${JSON.stringify(verbatims)}
