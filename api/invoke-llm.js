@@ -251,7 +251,7 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
     const prompt = buildAnalysisPrompt({ cohorte, metrics, verbatims });
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 55000);
+    const timeout = setTimeout(() => controller.abort(), 58000);
 
     let anthropicRes;
     try {
@@ -265,7 +265,11 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
         },
         body: JSON.stringify({
           model: ANTHROPIC_REPORT_MODEL,
-          max_tokens: 8192,
+          // Les champs de sortie sont plafonnés par le schéma (strengths/improvements
+          // max 5, recommendations max 6...) : 4096 tokens suffisent largement et
+          // réduisent la latence par rapport à 8192, pour rester sous le délai
+          // d'attente côté client (58s) et le maxDuration Vercel (60s, vercel.json).
+          max_tokens: 4096,
           system: "Tu es un assistant d'analyse de données pour un programme de mentorat associatif. Réponds UNIQUEMENT en JSON valide, sans aucun texte avant ou après, sans balises markdown ni backticks (pas de ```json). Ta réponse doit commencer directement par '{' et se terminer par '}'. N'invente jamais de donnée absente des informations fournies.",
           messages: [{ role: 'user', content: prompt }],
         }),
