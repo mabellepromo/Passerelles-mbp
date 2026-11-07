@@ -133,9 +133,15 @@ function buildPseudonymizedVerbatims(responses, participantMap, binomeMap) {
   });
 }
 
+const LOW_SAMPLE_THRESHOLD = 10;
+
 function buildAnalysisPrompt({ cohorte, metrics, verbatims }) {
-  return `Tu analyses les résultats d'un bilan de mentorat (programme PASSERELLES, association Ma Belle Promo).
+  const totalResponses = metrics?.total_responses ?? 0;
+  const lowSample = totalResponses < LOW_SAMPLE_THRESHOLD;
+
+  return `Tu rédiges la synthèse d'un bilan de mentorat (programme PASSERELLES, association Ma Belle Promo), en français soutenu, neutre et factuel, sans superlatif gratuit. Ce texte est destiné à un rapport institutionnel homogène d'une cohorte à l'autre : respecte strictement le format demandé.
 Période analysée : ${cohorte || 'toutes cohortes confondues'}.
+Nombre total de réponses reçues : ${totalResponses}${lowSample ? ' — ÉCHANTILLON FAIBLE (moins de 10 réponses) : tu dois le signaler dans "sample_warning" et formuler toute conclusion avec prudence.' : ''}
 
 MÉTRIQUES (déjà calculées, chiffres exacts — ne les recalcule jamais, utilise-les tels quels) :
 ${JSON.stringify(metrics)}
@@ -144,21 +150,26 @@ VERBATIMS pseudonymisés (M-xx = mentor, E-xx = mentoré, B-xx = binôme ; ce so
 ${JSON.stringify(verbatims)}
 
 Règles strictes, à respecter impérativement :
-1. N'invente AUCUN chiffre, nom, binôme ou citation absent des données ci-dessus.
-2. Chaque affirmation de ta synthèse doit être traçable dans les métriques ou les verbatims fournis.
-3. "notable_quotes" : ne reprends QUE des verbatims dont "quotable" vaut true, en recopiant exactement leur "participant_ref".
-4. "pairs_to_watch" : utilise uniquement des "binome_ref" présents dans les données (pair_gaps ou verbatims).
-5. Si une rubrique ne peut pas être remplie à partir des données fournies, renvoie un tableau vide plutôt que d'inventer du contenu.
+1. N'invente AUCUN chiffre, nom, binôme ou citation absent des données ci-dessus. Si une rubrique ne peut pas être remplie à partir des données fournies, renvoie un tableau vide (ou null pour "sample_warning") plutôt que d'inventer du contenu.
+2. Chaque affirmation de ta synthèse doit être traçable dans les métriques ou les verbatims fournis. Distingue clairement un constat chiffré ("le NPS moyen mentor est de 7,2") d'une interprétation ("cela traduit une satisfaction correcte mais perfectible").
+3. Tout chiffre cité dans "executive_summary", "strengths", "improvements" ou "key_learnings" doit être accompagné de sa base quand elle est connue (ex. « 78 % (7/9 répondants) »).
+4. "notable_quotes" : ne reprends QUE des verbatims dont "quotable" vaut true, en recopiant exactement leur "participant_ref".
+5. "pairs_to_watch" : utilise uniquement des "binome_ref" présents dans les données (pair_gaps ou verbatims).
+6. "key_learnings" : 3 à 5 enseignements courts, formulés comme des leçons réutilisables pour la prochaine cohorte (pas une redite des points forts/faibles).
+7. "recommendations" : 3 à 6 actions concrètes et priorisées ("haute", "moyenne" ou "basse"), chacune avec un "owner" plausible au regard du contexte associatif (ex. "Coordination PASSERELLES", "Équipe mentorat", "Pôle communication") — jamais un nom de personne réelle.
+8. "sample_warning" : si l'échantillon est inférieur à 10 réponses, une phrase expliquant que les résultats doivent être interprétés avec prudence ; sinon null.
 
 Réponds UNIQUEMENT en JSON valide (sans markdown, sans balises de code), avec exactement cette forme :
 {
-  "executive_summary": "string, 5 à 7 phrases",
+  "executive_summary": "string, 5 à 8 phrases : ce qui s'est passé, 3 chiffres clés, appréciation globale, principale recommandation",
   "strengths": [{ "title": "string", "evidence": "string avec chiffres et/ou verbatims" }],
   "improvements": [{ "title": "string", "priority": "haute|moyenne|basse", "evidence": "string" }],
   "recurring_themes": [{ "theme": "string", "frequency": number }],
   "pairs_to_watch": [{ "binome_ref": "string", "reason": "string" }],
-  "recommendations": ["string"],
-  "notable_quotes": [{ "participant_ref": "string", "role": "mentor|mentore", "text": "string" }]
+  "key_learnings": ["string"],
+  "recommendations": [{ "text": "string", "priority": "haute|moyenne|basse", "owner": "string" }],
+  "notable_quotes": [{ "participant_ref": "string", "role": "mentor|mentore", "text": "string" }],
+  "sample_warning": "string ou null"
 }`;
 }
 

@@ -36,14 +36,22 @@ export const NotableQuoteSchema = z.object({
   participant_email: z.string().nullable().optional(),
 });
 
+export const RecommendationSchema = z.object({
+  text: z.string(),
+  priority: z.enum(['haute', 'moyenne', 'basse']),
+  owner: z.string(),
+});
+
 export const ReviewReportAnalysisSchema = z.object({
   executive_summary: z.string().min(1),
   strengths: z.array(StrengthSchema).max(5),
   improvements: z.array(ImprovementSchema).max(5),
   recurring_themes: z.array(RecurringThemeSchema),
   pairs_to_watch: z.array(PairToWatchSchema),
-  recommendations: z.array(z.string()),
+  key_learnings: z.array(z.string()).max(5),
+  recommendations: z.array(RecommendationSchema).max(6),
   notable_quotes: z.array(NotableQuoteSchema),
+  sample_warning: z.string().nullable(),
 });
 
 export const PRIORITY_LABEL = {

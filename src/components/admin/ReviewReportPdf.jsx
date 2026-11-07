@@ -61,6 +61,12 @@ export default function ReviewReportPdf({ report, summaryOverride }) {
           <Text>Analyse générée automatiquement à partir des réponses au bilan, relue et validée par la coordination avant diffusion.</Text>
         </View>
 
+        {analysis.sample_warning && (
+          <View style={styles.disclaimer}>
+            <Text>{analysis.sample_warning}</Text>
+          </View>
+        )}
+
         <View style={styles.kpiRow}>
           <Kpi label="Réponse mentors" value={`${mentorStats?.response_rate_pct ?? 0}%`} />
           <Kpi label="Réponse mentorés" value={`${mentoreStats?.response_rate_pct ?? 0}%`} />
@@ -105,10 +111,28 @@ export default function ReviewReportPdf({ report, summaryOverride }) {
         </View>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Recommandations</Text>
-          {(analysis.recommendations || []).map((r, i) => (
-            <Text key={i} style={styles.paragraph}>• {r}</Text>
-          ))}
+          <Text style={styles.sectionTitle}>Enseignements clés</Text>
+          {(analysis.key_learnings || []).length === 0 ? (
+            <Text style={styles.itemBody}>Aucun enseignement extrait pour cette période.</Text>
+          ) : (
+            (analysis.key_learnings || []).map((l, i) => (
+              <Text key={i} style={styles.paragraph}>• {l}</Text>
+            ))
+          )}
+        </View>
+
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Recommandations pour la prochaine cohorte</Text>
+          {(analysis.recommendations || []).map((r, i) => {
+            // Compatibilité rapports générés avant l'ajout de priorité/responsable.
+            const row = typeof r === 'string' ? { text: r, priority: null, owner: null } : r;
+            return (
+              <View key={i} style={styles.item}>
+                <Text style={styles.itemTitle}>{row.text}{row.priority ? ` (${row.priority})` : ''}</Text>
+                {row.owner && <Text style={styles.itemBody}>Responsable suggéré : {row.owner}</Text>}
+              </View>
+            );
+          })}
         </View>
 
         <Text style={styles.footer}>Document confidentiel — usage interne Ma Belle Promo</Text>

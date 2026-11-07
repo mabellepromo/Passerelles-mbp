@@ -364,6 +364,11 @@ export default function RapportBilan() {
               <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-2">
                 Analyse générée automatiquement, à relire avant diffusion.
               </p>
+              {analysis?.sample_warning && (
+                <p className="text-xs text-red-700 bg-red-50 border border-red-100 rounded-lg p-2 flex items-center gap-2">
+                  <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" /> {analysis.sample_warning}
+                </p>
+              )}
               <Textarea
                 value={summaryText}
                 onChange={(e) => setEditedSummary(e.target.value)}
@@ -456,13 +461,52 @@ export default function RapportBilan() {
             </CardContent>
           </Card>
 
+          {/* Enseignements clés */}
+          <Card className="border-0 shadow-md">
+            <CardHeader><CardTitle className="text-base">Enseignements clés</CardTitle></CardHeader>
+            <CardContent>
+              {(analysis?.key_learnings || []).length === 0 ? (
+                <p className="text-sm text-gray-400">Aucun enseignement extrait pour cette période.</p>
+              ) : (
+                <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+                  {analysis.key_learnings.map((l, i) => <li key={i}>{l}</li>)}
+                </ul>
+              )}
+            </CardContent>
+          </Card>
+
           {/* Recommandations */}
           <Card className="border-0 shadow-md">
-            <CardHeader><CardTitle className="text-base">Recommandations</CardTitle></CardHeader>
+            <CardHeader><CardTitle className="text-base">Recommandations pour la prochaine cohorte</CardTitle></CardHeader>
             <CardContent>
-              <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
-                {(analysis?.recommendations || []).map((r, i) => <li key={i}>{r}</li>)}
-              </ul>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="text-left text-xs text-gray-400 uppercase tracking-wide border-b border-gray-100">
+                      <th className="py-2 pr-4">Action</th>
+                      <th className="py-2 pr-4">Priorité</th>
+                      <th className="py-2 pr-4">Responsable suggéré</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(analysis?.recommendations || []).map((r, i) => {
+                      // Compatibilité rapports générés avant l'ajout de priorité/responsable.
+                      const row = typeof r === 'string' ? { text: r, priority: null, owner: null } : r;
+                      return (
+                        <tr key={i} className="border-b border-gray-50">
+                          <td className="py-2.5 pr-4 text-gray-700">{row.text}</td>
+                          <td className="py-2.5 pr-4">
+                            {row.priority ? (
+                              <Badge variant="outline" className="text-[10px]">{PRIORITY_LABEL[row.priority] || row.priority}</Badge>
+                            ) : '—'}
+                          </td>
+                          <td className="py-2.5 pr-4 text-xs text-gray-500">{row.owner || '—'}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </CardContent>
           </Card>
         </>
