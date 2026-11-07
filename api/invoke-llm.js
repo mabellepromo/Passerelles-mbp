@@ -20,7 +20,13 @@ const supabaseService = SUPABASE_SERVICE_ROLE_KEY
   : null;
 
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
-const ANTHROPIC_REPORT_MODEL = process.env.ANTHROPIC_REPORT_MODEL || 'claude-sonnet-4-5-20250929';
+// Haiku plutôt que Sonnet : la génération de ~4096 tokens de sortie en Sonnet
+// dépassait systématiquement les 57s disponibles (plan Vercel Hobby, plafond
+// dur de 60s de maxDuration) avant même d'avoir reçu de réponse — voir logs
+// "Anthropic call aborted after 57003ms". Une tâche de synthèse structurée en
+// JSON contraint par un schéma strict (listes plafonnées, pas de raisonnement
+// ouvert) ne justifie pas Sonnet ici ; Haiku est nettement plus rapide.
+const ANTHROPIC_REPORT_MODEL = process.env.ANTHROPIC_REPORT_MODEL || 'claude-haiku-4-5-20251001';
 const MIN_RESPONSES = Number(process.env.REVIEW_REPORT_MIN_RESPONSES || 1);
 
 const ALLOWED_ORIGINS = [
@@ -282,7 +288,7 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
           // max 5, recommendations max 6...) : 4096 tokens suffisent largement et
           // réduisent la latence par rapport à 8192, pour rester sous le délai
           // d'attente côté client (58s) et le maxDuration Vercel (60s, vercel.json).
-          max_tokens: 4096,
+          max_tokens: 2560,
           system: "Tu es un assistant d'analyse de données pour un programme de mentorat associatif. Réponds UNIQUEMENT en JSON valide, sans aucun texte avant ou après, sans balises markdown ni backticks (pas de ```json). Ta réponse doit commencer directement par '{' et se terminer par '}'. N'invente jamais de donnée absente des informations fournies.",
           messages: [{ role: 'user', content: prompt }],
         }),
