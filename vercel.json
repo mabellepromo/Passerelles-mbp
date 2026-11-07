@@ -1,7 +1,8 @@
 {
   "functions": {
     "api/send-mentore-notification.js": { "maxDuration": 30 },
-    "api/send-binome-email.js": { "maxDuration": 30 }
+    "api/send-binome-email.js": { "maxDuration": 30 },
+    "api/invoke-llm.js": { "maxDuration": 60 }
   },
   "rewrites": [
     { "source": "/(.*)", "destination": "/index.html" }
