@@ -224,12 +224,18 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
   if (!supabaseService) return res.status(503).json({ error: 'SUPABASE_SERVICE_ROLE_KEY manquant côté serveur' });
 
   const { cohorte = null } = req.body || {};
+  const t0 = Date.now();
+  // Budget total aligné sur maxDuration=60s (vercel.json) : on réserve le temps
+  // déjà consommé par les étapes SQL avant de lancer l'appel IA, au lieu d'un
+  // délai fixe de 58s qui suppose à tort que l'IA démarre à t=0.
+  const HARD_BUDGET_MS = 57000;
 
   try {
     // 1. Métriques agrégées — calculées en SQL, jamais par l'IA.
     const { data: metrics, error: metricsError } = await supabaseService
       .rpc('build_review_report_metrics', { p_cohorte: cohorte });
     if (metricsError) throw new Error(`Agrégation SQL : ${metricsError.message}`);
+    console.log(`generate_review_report: metrics RPC ok (${Date.now() - t0}ms)`);
 
     const totalResponses = metrics?.total_responses ?? 0;
     if (totalResponses < MIN_RESPONSES) {
@@ -243,15 +249,22 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
     if (cohorte) query = query.eq('cohorte', cohorte);
     const { data: responses, error: responsesError } = await query;
     if (responsesError) throw new Error(`Lecture des réponses : ${responsesError.message}`);
+    console.log(`generate_review_report: responses fetched, n=${responses?.length ?? 0} (${Date.now() - t0}ms)`);
 
     const { participantMap, binomeMap } = buildPseudonymMaps(responses || []);
     const verbatims = buildPseudonymizedVerbatims(responses || [], participantMap, binomeMap);
 
     // 3. Appel Claude — uniquement sur données pseudonymisées.
     const prompt = buildAnalysisPrompt({ cohorte, metrics, verbatims });
+    console.log(`generate_review_report: prompt built, length=${prompt.length} chars (${Date.now() - t0}ms)`);
+
+    const remainingBudget = HARD_BUDGET_MS - (Date.now() - t0);
+    if (remainingBudget < 5000) {
+      return res.status(504).json({ error: "Préparation des données trop longue, l'appel IA n'a pas pu démarrer à temps." });
+    }
 
     const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 58000);
+    const timeout = setTimeout(() => controller.abort(), remainingBudget);
 
     let anthropicRes;
     try {
@@ -276,12 +289,15 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
       });
     } catch (fetchErr) {
       if (fetchErr.name === 'AbortError') {
+        console.error(`generate_review_report: Anthropic call aborted after ${Date.now() - t0}ms (budget restant était ${remainingBudget}ms)`);
         return res.status(504).json({ error: "Délai d'attente dépassé lors de l'appel à l'IA" });
       }
+      console.error('generate_review_report: fetch Anthropic a échoué', fetchErr.message);
       throw fetchErr;
     } finally {
       clearTimeout(timeout);
     }
+    console.log(`generate_review_report: réponse Anthropic reçue (${Date.now() - t0}ms)`);
 
     if (!anthropicRes.ok) {
       const err = await anthropicRes.json().catch(() => ({}));
