@@ -284,11 +284,11 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
         },
         body: JSON.stringify({
           model: ANTHROPIC_REPORT_MODEL,
-          // Les champs de sortie sont plafonnés par le schéma (strengths/improvements
-          // max 5, recommendations max 6...) : 4096 tokens suffisent largement et
-          // réduisent la latence par rapport à 8192, pour rester sous le délai
-          // d'attente côté client (58s) et le maxDuration Vercel (60s, vercel.json).
-          max_tokens: 2560,
+          // Avec Haiku, la réponse arrive en ~26s (large marge sous le budget de
+          // 57s) : le goulot n'est plus la vitesse mais la coupure en plein JSON
+          // quand max_tokens était trop bas (2560 tronquait la sortie avant la fin
+          // du schéma). On remonte à 4096 pour laisser le JSON se terminer.
+          max_tokens: 4096,
           system: "Tu es un assistant d'analyse de données pour un programme de mentorat associatif. Réponds UNIQUEMENT en JSON valide, sans aucun texte avant ou après, sans balises markdown ni backticks (pas de ```json). Ta réponse doit commencer directement par '{' et se terminer par '}'. N'invente jamais de donnée absente des informations fournies.",
           messages: [{ role: 'user', content: prompt }],
         }),
