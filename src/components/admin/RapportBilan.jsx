@@ -20,7 +20,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { PRIORITY_LABEL } from '@/lib/reviewReportSchema';
 import { EXPECTED_BINOME_COUNT, getBinomeCountWarning } from '@/lib/programData';
-import { isReportUsable, buildKeyFigures, buildMethodology, VIGILANCE_LABEL, VERBATIM_FIELD_LABEL } from '@/lib/reportContent';
+import { isReportUsable, buildKeyFigures, buildMethodology, VIGILANCE_LABEL, VERBATIM_FIELD_LABEL, PAIR_STATUS_LABEL, countPairStatus } from '@/lib/reportContent';
 import { WarningBanner, Loader } from '@/components/admin/donnees/shared';
 import ReviewReportPdf from './ReviewReportPdf';
 
@@ -249,9 +249,48 @@ export default function RapportBilan() {
         </CardContent>
       </Card>
 
+      {(analysis.pair_status || []).length > 0 && (
+        <Card className="border-0 shadow-md">
+          <CardHeader><CardTitle className="text-base">État des relations au sein des binômes</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex flex-wrap gap-3">
+              {countPairStatus(report).map((ps) => (
+                <span key={ps.status} className="text-sm text-gray-700 rounded-lg border border-gray-100 px-3 py-1.5">
+                  {ps.label} : <strong>{ps.count}/{ps.total}</strong>
+                </span>
+              ))}
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs text-gray-500 uppercase tracking-wide border-b border-gray-100">
+                    <th className="py-2 pr-4">Binôme</th>
+                    <th className="py-2 pr-4">État</th>
+                    <th className="py-2 pr-4">Constat</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {analysis.pair_status.map((p) => (
+                    <tr key={p.binome_id} className="border-b border-gray-50 align-top">
+                      <td className="py-2.5 pr-4">
+                        <p className="font-medium text-gray-800">{p.mentor_name}</p>
+                        <p className="text-xs text-gray-500">{p.mentore_name}</p>
+                      </td>
+                      <td className="py-2.5 pr-4 whitespace-nowrap">{PAIR_STATUS_LABEL[p.status]}</td>
+                      <td className="py-2.5 pr-4 text-xs text-gray-600">{p.basis}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+            <p className="text-xs text-gray-500">Classement qualitatif d'après le sondage. Le détail nominatif ne figure que dans la version interne.</p>
+          </CardContent>
+        </Card>
+      )}
+
       <div className="grid md:grid-cols-2 gap-4">
         <Card className="border-0 shadow-md">
-          <CardHeader><CardTitle className="text-base">Points forts</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">Ce qui a fonctionné</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {(analysis.strengths || []).map((s, i) => (
               <div key={i} className="border-b border-gray-50 pb-2 last:border-0">
@@ -262,7 +301,7 @@ export default function RapportBilan() {
           </CardContent>
         </Card>
         <Card className="border-0 shadow-md">
-          <CardHeader><CardTitle className="text-base">Difficultés</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">Ce qui n'a pas fonctionné</CardTitle></CardHeader>
           <CardContent className="space-y-3">
             {(analysis.improvements || []).map((imp, i) => (
               <div key={i} className="border-b border-gray-50 pb-2 last:border-0">

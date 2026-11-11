@@ -182,6 +182,10 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
       vigilance: b.vigilance,
       mentor_nps: b.mentor_nps,
       mentore_nps: b.mentore_nps,
+      mentor_responded: b.mentor_responded,
+      mentore_responded: b.mentore_responded,
+      sessions_declared_mentor: b.sessions_declared_mentor,
+      sessions_declared_mentore: b.sessions_declared_mentore,
     }));
 
     const prompt = buildAnalysisPrompt({

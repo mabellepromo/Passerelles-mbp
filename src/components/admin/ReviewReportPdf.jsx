@@ -13,7 +13,7 @@ import { Document, Page, Text, View, Image, StyleSheet } from '@react-pdf/render
 import {
   PROGRAM, NOT_AVAILABLE, formatDateFr, share, num,
   buildPresentation, buildMethodology, buildKeyFigures, countVigilance,
-  VIGILANCE_LABEL, VERBATIM_FIELD_LABEL,
+  VIGILANCE_LABEL, VERBATIM_FIELD_LABEL, PAIR_STATUS_LABEL, countPairStatus,
 } from '@/lib/reportContent';
 import { INDICATOR_DEFINITIONS } from '@/lib/indicatorDefinitions';
 import { mentorQuestions, mentoreQuestions, interpolateLabel } from '@/config/reviewQuestions';
@@ -41,7 +41,9 @@ const CONTINUATION_LABELS = {
 };
 
 const styles = StyleSheet.create({
-  page: { paddingTop: 54, paddingBottom: 48, paddingHorizontal: 42, fontSize: 9.5, fontFamily: 'Helvetica', color: INK, lineHeight: 1.45 },
+  page: { paddingTop: 54, paddingBottom: 48, paddingHorizontal: 42, fontSize: 9.5, fontFamily: 'Helvetica', color: INK },
+  // Pas d'interligne (lineHeight) sur la page : il empêche react-pdf de
+  // dessiner le numéro de page. L'interligne par défaut est utilisé.
   // Page de garde
   cover: { padding: 0, fontFamily: 'Helvetica', color: '#ffffff', backgroundColor: DARK_GREEN },
   coverInner: { flex: 1, padding: 56, justifyContent: 'space-between' },
@@ -54,7 +56,10 @@ const styles = StyleSheet.create({
   coverBadge: { alignSelf: 'flex-start', fontSize: 9, color: DARK_GREEN, backgroundColor: GOLD, paddingVertical: 4, paddingHorizontal: 8, marginTop: 14 },
   // En-tête et pied de page
   header: { position: 'absolute', top: 22, left: 42, right: 42, flexDirection: 'row', justifyContent: 'space-between', fontSize: 7.5, color: MUTED, borderBottomWidth: 1, borderBottomColor: LINE, paddingBottom: 5 },
-  footer: { position: 'absolute', bottom: 22, left: 42, right: 42, flexDirection: 'row', justifyContent: 'space-between', fontSize: 7.5, color: MUTED },
+  footerLeft: { position: 'absolute', bottom: 22, left: 42, fontSize: 7.5, color: MUTED },
+  // AUCUN interligne (lineHeight) sur ce texte, ni hérité de la page : avec un
+  // interligne, react-pdf ne dessine pas le numéro de page calculé.
+  footerRight: { position: 'absolute', bottom: 22, left: 42, right: 42, textAlign: 'right', fontSize: 7.5, color: MUTED },
   // Titres et textes
   h1: { fontSize: 15, fontFamily: 'Helvetica-Bold', color: GREEN, marginBottom: 8, paddingBottom: 4, borderBottomWidth: 2, borderBottomColor: GOLD },
   h2: { fontSize: 10.5, fontFamily: 'Helvetica-Bold', color: DARK_GREEN, marginTop: 10, marginBottom: 4 },
@@ -199,10 +204,10 @@ function PageFrame({ variant, isDraft }) {
         <Text>Rapport de bilan — Programme {PROGRAM.name} — {PROGRAM.cohort}</Text>
         <Text>{isDraft ? 'BROUILLON NON VALIDÉ' : variant === 'internal' ? 'Version interne' : 'Version externe'}</Text>
       </View>
-      <View style={styles.footer} fixed>
-        <Text>{confidentiality}</Text>
-        <Text render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
-      </View>
+      {/* Pied de page : deux textes positionnés séparément (un conteneur
+          commun ne s'affiche pas avec react-pdf en bas de page). */}
+      <Text style={styles.footerLeft} fixed>{confidentiality}</Text>
+      <Text style={styles.footerRight} fixed render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
     </>
   );
 }
@@ -224,6 +229,8 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
   const methodology = buildMethodology(report);
   const keyFigures = buildKeyFigures(report);
   const vigilance = countVigilance(report);
+  const pairStatus = countPairStatus(report);
+  const hasPairStatus = (a.pair_status || []).length > 0;
 
   const likert = m.likert_by_question || [];
   const likertStat = (role, id) => likert.find((l) => l.role === role && l.question_id === id);
@@ -451,14 +458,47 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
         {/* 8. Analyse */}
         <View style={styles.section}>
           <Text style={styles.h1}>8. Analyse</Text>
-          <Text style={styles.h2}>Points forts</Text>
+          {hasPairStatus && (
+            <>
+              <Text style={styles.h2}>État des relations au sein des binômes</Text>
+              <Text style={styles.p}>
+                Classement qualitatif établi à partir des réponses au sondage (réponses libres et déclarations des
+                participants). Il ne repose pas sur un comptage des séances.
+              </Text>
+              {pairStatus.map((ps) => (
+                <View key={ps.status} style={styles.row} wrap={false}>
+                  <Text style={[styles.td, { width: '60%' }]}>{ps.label}</Text>
+                  <Text style={[styles.td, { width: '40%', textAlign: 'right' }]}>{share(ps.count, ps.total)} binômes</Text>
+                </View>
+              ))}
+              {/* Détail par binôme : VERSION INTERNE UNIQUEMENT */}
+              {isInternal && (
+                <View style={{ marginTop: 6 }}>
+                  <View style={styles.headRow}>
+                    <Text style={[styles.th, { width: '32%' }]}>Binôme (mentor / mentoré)</Text>
+                    <Text style={[styles.th, { width: '18%' }]}>État</Text>
+                    <Text style={[styles.th, { width: '50%' }]}>Constat</Text>
+                  </View>
+                  {a.pair_status.map((p) => (
+                    <View key={p.binome_id} style={styles.row} wrap={false}>
+                      <Text style={[styles.td, { width: '32%', paddingRight: 4 }]}>{p.mentor_name} / {p.mentore_name}</Text>
+                      <Text style={[styles.td, { width: '18%' }]}>{PAIR_STATUS_LABEL[p.status]}</Text>
+                      <Text style={[styles.td, { width: '50%' }]}>{p.basis}</Text>
+                    </View>
+                  ))}
+                </View>
+              )}
+            </>
+          )}
+
+          <Text style={styles.h2}>Ce qui a fonctionné</Text>
           {(a.strengths || []).map((x, i) => (
             <View key={i} style={styles.item} wrap={false}>
               <Text style={styles.itemTitle}>{x.title}</Text>
               <Text style={styles.td}>{x.evidence}</Text>
             </View>
           ))}
-          <Text style={styles.h2}>Difficultés rencontrées</Text>
+          <Text style={styles.h2}>Ce qui n'a pas fonctionné</Text>
           {(a.improvements || []).map((x, i) => (
             <View key={i} style={styles.item} wrap={false}>
               <Text style={styles.itemTitle}>{x.title} (priorité {x.priority})</Text>

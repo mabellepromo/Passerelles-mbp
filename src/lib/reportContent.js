@@ -21,7 +21,9 @@ export const NOT_AVAILABLE = 'donnée non disponible';
 
 export function formatDateFr(value) {
   if (!value) return NOT_AVAILABLE;
-  return new Date(value).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+  // Fuseau du Togo (UTC) : la date limite du sondage (9 nov. 23h59 UTC) ne doit pas
+  // devenir le 10 novembre sur un ordinateur réglé à l'heure de Paris.
+  return new Date(value).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Africa/Lome' });
 }
 
 // « 7/11 (64 %) »
@@ -173,6 +175,23 @@ export function countVigilance(report) {
     label,
     count: binomes.filter((b) => (b.vigilance || 'en_attente') === level).length,
     total: binomes.length,
+  }));
+}
+
+// État des relations (classement qualitatif d'après le sondage).
+export const PAIR_STATUS_LABEL = {
+  active: 'Relation active',
+  limitee: 'Démarrage limité',
+  non_etablie: 'Relation non établie',
+  inconnue: 'Pas de réponse exploitable',
+};
+
+export function countPairStatus(report) {
+  const list = report.ai_analysis?.pair_status || [];
+  const total = report.metrics.snapshot.binomes?.length || 0;
+  return Object.entries(PAIR_STATUS_LABEL).map(([status, label]) => ({
+    status, label, total,
+    count: list.filter((p) => p.status === status).length,
   }));
 }
 

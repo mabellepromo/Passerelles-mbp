@@ -36,6 +36,13 @@ export const NotableQuoteSchema = z.object({
   verbatim_id: z.string(),
 });
 
+// État de la relation d'un binôme, déduit des réponses au sondage.
+export const PairStatusSchema = z.object({
+  binome_ref: z.string(),
+  status: z.enum(['active', 'limitee', 'non_etablie', 'inconnue']),
+  basis: z.string(),
+});
+
 export const RecommendationSchema = z.object({
   text: z.string(),
   priority: z.enum(['haute', 'moyenne', 'basse']),
@@ -49,6 +56,7 @@ export const ReviewReportAnalysisSchema = z.object({
   improvements: z.array(ImprovementSchema).max(5),
   recurring_themes: z.array(RecurringThemeSchema),
   pairs_to_watch: z.array(PairToWatchSchema),
+  pair_status: z.array(PairStatusSchema).default([]),
   key_learnings: z.array(z.string()).max(5),
   recommendations: z.array(RecommendationSchema).max(8),
   notable_quotes: z.array(NotableQuoteSchema),

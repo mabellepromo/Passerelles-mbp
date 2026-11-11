@@ -247,7 +247,7 @@ MÉTRIQUES DU SONDAGE (déjà calculées, chiffres exacts — ne les recalcule j
 ${JSON.stringify(metricsForAi)}
 Notes de lecture : "nps_global" donne la répartition promoteurs / passifs / détracteurs sur l'ensemble des réponses. "sessions_distribution" et la question "sessions_regularity" sont des DÉCLARATIONS des participants, pas un comptage.
 
-BINÔMES (pseudonymisés, B-xx) avec leur niveau de vigilance calculé d'après les notes de recommandation :
+BINÔMES (pseudonymisés, B-xx) : niveau de vigilance calculé d'après les seules notes de recommandation, réponses reçues, et tranche de sessions DÉCLARÉE par chacun (déclaratif) :
 ${JSON.stringify(pairsForAi)}
 
 VERBATIMS du sondage, pseudonymisés (V-xx = identifiant du verbatim, M-xx = mentor, E-xx = mentoré, B-xx = binôme). Champs : strengths = ce qui a le mieux fonctionné ; improvements = ce qui pourrait être amélioré ; objectives_comment = ce qui a aidé ou freiné l'atteinte des objectifs ; suggestions = suggestions libres :
@@ -269,6 +269,8 @@ Règles strictes :
 10. "conclusion" : 4 à 6 phrases, bilan équilibré et perspectives formulées au conditionnel (règle 4).
 11. "sample_warning" : une phrase rappelant que les résultats reposent sur un petit effectif et doivent être lus avec prudence.
 12. N'écris JAMAIS un identifiant technique (M-01, E-02, B-03, V-04...) dans un texte : écris « un mentor », « une mentorée », « un binôme ». Les identifiants ne servent que dans "binome_ref" et "verbatim_id".
+13. "pair_status" : UNE entrée par binôme listé ci-dessus. status = "active" (relation déclarée effective, apports concrets), "limitee" (démarrage difficile ou très peu d'échanges), "non_etablie" (contact jamais établi ou rompu), "inconnue" (aucune réponse exploitable). "basis" = une phrase factuelle tirée des réponses, sans nom.
+14. Distingue clairement ce qui a fonctionné et ce qui n'a pas fonctionné : résultats concrets déclarés (stages, choix d'orientation, mémoire...), relations qui n'ont jamais démarré, et causes citées (contact, disponibilité, outil, distance). Signale si le niveau de vigilance fondé sur la note de recommandation contredit les réponses libres (ex. note élevée mais aucun contact établi).
 
 Réponds UNIQUEMENT en JSON valide (sans markdown, sans balises de code), avec exactement cette forme :
 {
@@ -278,6 +280,7 @@ Réponds UNIQUEMENT en JSON valide (sans markdown, sans balises de code), avec e
   "improvements": [{ "title": "string", "priority": "haute|moyenne|basse", "evidence": "string" }],
   "recurring_themes": [{ "theme": "string", "frequency": number, "field": "strengths|improvements|objectives_comment|suggestions" }],
   "pairs_to_watch": [{ "binome_ref": "string", "reason": "string" }],
+  "pair_status": [{ "binome_ref": "string", "status": "active|limitee|non_etablie|inconnue", "basis": "string" }],
   "key_learnings": ["string"],
   "recommendations": [{ "text": "string", "priority": "haute|moyenne|basse", "owner": "string" }],
   "notable_quotes": [{ "verbatim_id": "string" }],
@@ -346,15 +349,27 @@ function resolveAnalysis(analysis, { verbatims, binomeMap, overview }) {
     })
     .filter(Boolean);
 
+  // État de la relation par binôme : on remet les noms (version interne).
+  const pairStatus = (analysis.pair_status || [])
+    .map((p) => {
+      const binomeId = binomeIdByRef.get(p.binome_ref) || null;
+      const binome = binomeId ? binomeById.get(binomeId) : null;
+      if (!binome) return null;
+      return { ...p, basis: scrubRefs(p.basis), binome_id: binomeId, mentor_name: binome.mentor_name, mentore_name: binome.mentore_name };
+    })
+    .filter(Boolean);
+
   // Les textes rédigés par l'IA sont nettoyés ; les citations (texte exact des
   // participants) et les identités remises ci-dessus ne sont pas touchées.
   const freeText = { ...analysis };
   delete freeText.notable_quotes;
   delete freeText.pairs_to_watch;
+  delete freeText.pair_status;
   return {
     ...scrubRefs(freeText),
     notable_quotes: notableQuotes,
     pairs_to_watch: pairsToWatch.map((p) => ({ ...p, reason: scrubRefs(p.reason) })),
+    pair_status: pairStatus,
   };
 }
 
