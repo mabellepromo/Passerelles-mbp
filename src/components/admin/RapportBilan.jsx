@@ -1,96 +1,57 @@
-import React, { useMemo, useState } from 'react';
+// Onglet « Rapport » de la rubrique « Données & Bilan ».
+//
+// Parcours :
+//   1. Générer  : le serveur lit les données filtrées, fait rédiger la partie
+//                 qualitative par l'IA et enregistre un BROUILLON (status 'draft').
+//   2. Relire   : la synthèse est modifiable tant que le rapport est en brouillon.
+//   3. Valider  : status 'validated' ; le rapport est alors figé.
+//   4. Exporter : PDF en version interne (nominative) ou externe (partenaires).
+//
+// La version externe n'est exportable qu'une fois le rapport validé.
+import React, { useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { pdf } from '@react-pdf/renderer';
+import { Sparkles, Loader2, CheckCircle2, AlertTriangle, Download, MessageSquareQuote, ShieldAlert } from 'lucide-react';
+import { toast } from 'sonner';
 import { supabase } from '@/api/base44Client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select';
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend,
-} from 'recharts';
-import {
-  Sparkles, Loader2, CheckCircle2, AlertTriangle, Download,
-  FileText, MessageSquareQuote, ShieldAlert,
-} from 'lucide-react';
-import { toast } from 'sonner';
 import { PRIORITY_LABEL } from '@/lib/reviewReportSchema';
+import { EXPECTED_BINOME_COUNT, getBinomeCountWarning } from '@/lib/programData';
+import { isReportUsable, buildKeyFigures, buildMethodology, VIGILANCE_LABEL, VERBATIM_FIELD_LABEL } from '@/lib/reportContent';
+import { WarningBanner, Loader } from '@/components/admin/donnees/shared';
 import ReviewReportPdf from './ReviewReportPdf';
-import { pdf } from '@react-pdf/renderer';
 
-const VIGILANCE_STYLE = {
-  vert: { label: 'OK', className: 'bg-emerald-100 text-emerald-700 hover:bg-emerald-100' },
-  orange: { label: 'À surveiller', className: 'bg-amber-100 text-amber-700 hover:bg-amber-100' },
-  rouge: { label: 'Prioritaire', className: 'bg-red-100 text-red-700 hover:bg-red-100' },
-  en_attente: { label: 'En attente', className: 'bg-gray-100 text-gray-500 hover:bg-gray-100' },
+// Le rapport porte sur la cohorte 1.
+const COHORTE = '1';
+
+const CONSENT_LABEL = {
+  first_name: 'citation autorisée avec le prénom',
+  full_name: 'citation autorisée avec le nom complet',
 };
-
-const NPS_COLORS = { promoters: '#059669', passives: '#d97706', detractors: '#dc2626' };
-
-const CONTINUATION_LABEL = {
-  yes_definitely: 'Oui, certainement',
-  yes_probably: 'Oui, probablement',
-  unsure: 'Incertain(e)',
-  probably_not: 'Probablement pas',
-  no: 'Non',
-};
-const CONTINUATION_ORDER = ['yes_definitely', 'yes_probably', 'unsure', 'probably_not', 'no'];
-const CONTINUATION_COLORS = {
-  yes_definitely: '#059669',
-  yes_probably: '#65a30d',
-  unsure: '#d97706',
-  probably_not: '#ea580c',
-  no: '#dc2626',
-};
-
-function KpiCard({ label, value, sub, icon: Icon, color = '#1a7a45' }) {
-  return (
-    <div className="rounded-xl border border-gray-100 p-4 bg-white">
-      <div className="flex items-center justify-between mb-1">
-        <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{label}</p>
-        {Icon && <Icon className="h-4 w-4" style={{ color }} />}
-      </div>
-      <p className="text-2xl font-bold" style={{ color: '#111827' }}>{value}</p>
-      {sub && <p className="text-xs text-gray-400 mt-0.5">{sub}</p>}
-    </div>
-  );
-}
 
 async function getAuthHeader() {
   const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token;
-  return token ? { Authorization: `Bearer ${token}` } : {};
+  return session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {};
 }
 
 export default function RapportBilan() {
   const queryClient = useQueryClient();
-  const [cohorte, setCohorte] = useState('toutes');
   const [generating, setGenerating] = useState(false);
   const [validating, setValidating] = useState(false);
-  const [exportingPdf, setExportingPdf] = useState(false);
+  const [exporting, setExporting] = useState(null); // 'internal' | 'external' | null
   const [editedSummary, setEditedSummary] = useState(null);
 
-  const { data: cohortes = [] } = useQuery({
-    queryKey: ['review_report_cohortes'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('official_binomes').select('cohorte'); // source unique du filtre « hors binôme test »
-      if (error) throw error;
-      return [...new Set((data ?? []).map((b) => b.cohorte).filter(Boolean))].sort();
-    },
-  });
-
-  const periodLabel = cohorte === 'toutes' ? 'toutes_cohortes' : cohorte;
-
-  const { data: report, isLoading: loadingReport } = useQuery({
-    queryKey: ['review_reports_latest', periodLabel],
+  // Dernier rapport généré pour la cohorte (les anciens brouillons restent en base).
+  const { data: report, isLoading } = useQuery({
+    queryKey: ['review_reports_latest', COHORTE],
     queryFn: async () => {
       const { data, error } = await supabase
         .from('review_reports')
         .select('*')
-        .eq('period_label', periodLabel)
+        .eq('period_label', COHORTE)
         .order('generated_at', { ascending: false })
         .limit(1)
         .maybeSingle();
@@ -99,52 +60,12 @@ export default function RapportBilan() {
     },
   });
 
-  const { data: vigilance = [] } = useQuery({
-    queryKey: ['review_pair_vigilance', cohorte],
-    queryFn: async () => {
-      let query = supabase.from('review_pair_vigilance').select('*');
-      if (cohorte !== 'toutes') query = query.eq('cohorte', cohorte);
-      const { data, error } = await query;
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-
-  const metrics = report?.metrics || null;
+  const usable = isReportUsable(report);
   const analysis = report?.ai_analysis || null;
+  const isValidated = report?.status === 'validated';
   const summaryText = editedSummary ?? analysis?.executive_summary ?? '';
-
-  const npsChartData = useMemo(() => {
-    if (!metrics?.nps) return [];
-    return metrics.nps.map((n) => ({
-      role: n.role === 'mentor' ? 'Mentors' : 'Mentorés',
-      promoters: n.promoters,
-      passives: n.passives,
-      detractors: n.detractors,
-    }));
-  }, [metrics]);
-
-  const likertChartData = useMemo(() => {
-    if (!metrics?.likert_by_question) return [];
-    const byQuestion = {};
-    for (const row of metrics.likert_by_question) {
-      byQuestion[row.question_id] = byQuestion[row.question_id] || { question_id: row.question_id };
-      byQuestion[row.question_id][row.role] = row.avg_value;
-    }
-    return Object.values(byQuestion);
-  }, [metrics]);
-
-  const continuationChartData = useMemo(() => {
-    if (!metrics?.continuation_distribution) return [];
-    const byBucket = {};
-    for (const row of metrics.continuation_distribution) {
-      byBucket[row.bucket] = byBucket[row.bucket] || { bucket: row.bucket, mentor: 0, mentore: 0 };
-      byBucket[row.bucket][row.role] = row.n;
-    }
-    return CONTINUATION_ORDER
-      .filter((b) => byBucket[b])
-      .map((b) => ({ ...byBucket[b], label: CONTINUATION_LABEL[b] || b }));
-  }, [metrics]);
+  // GARDE-FOU : le rapport doit porter sur le nombre de binômes attendu.
+  const countWarning = usable ? getBinomeCountWarning(report.metrics.binomes_count) : null;
 
   async function handleGenerate() {
     setGenerating(true);
@@ -153,15 +74,15 @@ export default function RapportBilan() {
       const res = await fetch('/api/invoke-llm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...headers },
-        body: JSON.stringify({ action: 'generate_review_report', cohorte: cohorte === 'toutes' ? null : cohorte }),
+        body: JSON.stringify({ action: 'generate_review_report', cohorte: COHORTE }),
       });
-      const payload = await res.json();
+      const payload = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(payload.error || 'Échec de la génération');
-      toast.success('Rapport généré (brouillon).');
+      toast.success('Rapport généré en brouillon. Relis-le avant de le valider.');
       setEditedSummary(null);
       queryClient.invalidateQueries({ queryKey: ['review_reports_latest'] });
     } catch (err) {
-      toast.error(err.message);
+      toast.error(err.message, { duration: 10000 });
     } finally {
       setGenerating(false);
     }
@@ -172,15 +93,14 @@ export default function RapportBilan() {
     setValidating(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();
-      const updatedAnalysis = editedSummary !== null
-        ? { ...analysis, executive_summary: editedSummary }
-        : analysis;
+      const updatedAnalysis = editedSummary !== null ? { ...analysis, executive_summary: editedSummary } : analysis;
       const { error } = await supabase
         .from('review_reports')
         .update({ status: 'validated', validated_at: new Date().toISOString(), validated_by: user?.id, ai_analysis: updatedAnalysis })
         .eq('id', report.id);
       if (error) throw error;
       toast.success('Rapport validé.');
+      setEditedSummary(null);
       queryClient.invalidateQueries({ queryKey: ['review_reports_latest'] });
     } catch (err) {
       toast.error(err.message);
@@ -189,328 +109,272 @@ export default function RapportBilan() {
     }
   }
 
-  async function handleExportPdf() {
+  async function handleExport(variant) {
     if (!report) return;
-    setExportingPdf(true);
+    setExporting(variant);
     try {
       const blob = await pdf(
-        <ReviewReportPdf report={report} vigilance={vigilance} summaryOverride={editedSummary} />
+        <ReviewReportPdf report={report} variant={variant} summaryOverride={editedSummary} />
       ).toBlob();
       const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `rapport-bilan-passerelles-${periodLabel}.pdf`;
-      a.click();
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `rapport-bilan-passerelles-cohorte-${COHORTE}-${variant === 'internal' ? 'interne' : 'externe'}${isValidated ? '' : '-brouillon'}.pdf`;
+      link.click();
       URL.revokeObjectURL(url);
     } catch (err) {
-      toast.error("Échec de l'export PDF : " + err.message);
+      toast.error(`Échec de l'export PDF : ${err.message}`);
     } finally {
-      setExportingPdf(false);
+      setExporting(null);
     }
   }
 
-  const mentorStats = metrics?.response_rate?.find((r) => r.role === 'mentor');
-  const mentoreStats = metrics?.response_rate?.find((r) => r.role === 'mentore');
-  const avgNps = metrics?.nps?.length
-    ? (metrics.nps.reduce((sum, n) => sum + (n.avg_nps || 0), 0) / metrics.nps.length).toFixed(1)
-    : '—';
+  if (isLoading) return <Loader />;
+
+  const generateButton = (
+    <Button onClick={handleGenerate} disabled={generating}>
+      {generating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+      {generating ? 'Génération en cours (jusqu\'à 1 minute)...' : report ? 'Régénérer le rapport' : 'Générer le rapport'}
+    </Button>
+  );
+
+  // Aucun rapport, ou rapport d'un ancien format : on propose seulement de générer.
+  if (!usable) {
+    return (
+      <Card className="border-0 shadow-md">
+        <CardContent className="py-10 text-center space-y-4">
+          <p className="text-sm text-gray-600">
+            {report
+              ? 'Le dernier rapport enregistré a été produit avec l\'ancien format : il est périmé et doit être régénéré.'
+              : `Aucun rapport n'a encore été généré pour la cohorte ${COHORTE}.`}
+          </p>
+          {generateButton}
+          <p className="text-xs text-gray-500">
+            La génération lit les données des {EXPECTED_BINOME_COUNT} binômes officiels. Elle est refusée, avec un message, si ce nombre n'est pas retrouvé.
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const keyFigures = buildKeyFigures(report);
+  const methodology = buildMethodology(report);
+  const exportBlocked = Boolean(countWarning);
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div>
-          <h2 className="text-base font-bold text-gray-900">Rapport de bilan</h2>
-          <p className="text-xs text-gray-500 mt-0.5">
-            Agrégats calculés automatiquement, analyse IA à relire avant diffusion.
-          </p>
+      {countWarning && (
+        <WarningBanner title="Export bloqué : contrôle du nombre de binômes" tone="red">{countWarning}</WarningBanner>
+      )}
+
+      {/* État du rapport et actions */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border border-gray-100 bg-white">
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge variant="outline" className="text-gray-600">Cohorte {COHORTE}</Badge>
+          <span className="text-xs text-gray-500">Généré le {new Date(report.generated_at).toLocaleString('fr-FR')}</span>
+          {isValidated ? (
+            <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 gap-1"><CheckCircle2 className="h-3 w-3" /> Validé</Badge>
+          ) : (
+            <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 gap-1"><AlertTriangle className="h-3 w-3" /> Brouillon</Badge>
+          )}
         </div>
-        <div className="flex items-center gap-2">
-          <Select value={cohorte} onValueChange={setCohorte}>
-            <SelectTrigger className="w-40">
-              <SelectValue placeholder="Période" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="toutes">Toutes cohortes</SelectItem>
-              {cohortes.map((c) => (
-                <SelectItem key={c} value={c}>Cohorte {c}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Button onClick={handleGenerate} disabled={generating}>
-            {generating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
-            Générer le rapport
-          </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          {generateButton}
+          {!isValidated && (
+            <Button variant="outline" onClick={handleValidate} disabled={validating || exportBlocked}>
+              {validating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-2" />}
+              Valider le rapport
+            </Button>
+          )}
         </div>
       </div>
 
-      {loadingReport ? (
-        <div className="flex items-center justify-center py-16">
-          <div className="w-8 h-8 rounded-full border-4 border-emerald-200 border-t-emerald-600 animate-spin" />
-        </div>
-      ) : !report ? (
+      {/* Export */}
+      <Card className="border-0 shadow-md">
+        <CardHeader><CardTitle className="text-base">Export PDF</CardTitle></CardHeader>
+        <CardContent className="grid md:grid-cols-2 gap-4">
+          <div className="rounded-xl border border-gray-100 p-4 space-y-2">
+            <p className="text-sm font-semibold text-gray-800">Version interne</p>
+            <p className="text-xs text-gray-500">Nominative, avec les binômes à surveiller. Réservée au bureau de Ma Belle Promo.</p>
+            <Button variant="outline" onClick={() => handleExport('internal')} disabled={exporting !== null || exportBlocked}>
+              {exporting === 'internal' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+              Exporter la version interne{isValidated ? '' : ' (brouillon)'}
+            </Button>
+          </div>
+          <div className="rounded-xl border border-gray-100 p-4 space-y-2">
+            <p className="text-sm font-semibold text-gray-800">Version externe</p>
+            <p className="text-xs text-gray-500">Partenaires et bailleurs. Aucun nom, sauf les citations autorisées par leur auteur.</p>
+            <Button variant="outline" onClick={() => handleExport('external')} disabled={exporting !== null || exportBlocked || !isValidated}>
+              {exporting === 'external' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+              Exporter la version externe
+            </Button>
+            {!isValidated && <p className="text-xs text-amber-700">Disponible une fois le rapport validé.</p>}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Chiffres clés (calculés en SQL) */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        {keyFigures.map((k) => (
+          <div key={k.label} className="rounded-xl border border-gray-100 p-4 bg-white" title={`Source : ${k.source}`}>
+            <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">{k.label}</p>
+            <p className="text-xl font-bold text-gray-900 mt-1">{k.value}</p>
+            <p className="text-xs text-gray-500 mt-0.5">{k.detail}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* Synthèse, modifiable en brouillon */}
+      <Card className="border-0 shadow-md">
+        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><Sparkles className="h-4 w-4 text-amber-500" /> Résumé exécutif</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-lg p-2">
+            Texte rédigé par l'IA à partir de données pseudonymisées. À relire avant validation ; modifiable tant que le rapport est en brouillon.
+          </p>
+          <Textarea value={summaryText} onChange={(e) => setEditedSummary(e.target.value)} disabled={isValidated} rows={7} />
+          {(analysis.key_findings || []).length > 0 && (
+            <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+              {analysis.key_findings.map((f, i) => <li key={i}>{f}</li>)}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="border-0 shadow-md">
+        <CardHeader><CardTitle className="text-base">Limites écrites dans le rapport</CardTitle></CardHeader>
+        <CardContent>
+          <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+            {methodology.limits.map((l, i) => <li key={i}>{l}</li>)}
+          </ul>
+        </CardContent>
+      </Card>
+
+      <div className="grid md:grid-cols-2 gap-4">
         <Card className="border-0 shadow-md">
-          <CardContent className="py-12 text-center text-sm text-gray-400">
-            Aucun rapport généré pour cette période. Clique sur « Générer le rapport ».
+          <CardHeader><CardTitle className="text-base">Points forts</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            {(analysis.strengths || []).map((s, i) => (
+              <div key={i} className="border-b border-gray-50 pb-2 last:border-0">
+                <p className="text-sm font-semibold text-gray-800">{s.title}</p>
+                <p className="text-xs text-gray-600">{s.evidence}</p>
+              </div>
+            ))}
           </CardContent>
         </Card>
-      ) : (
-        <>
-          {/* En-tête statut */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border border-gray-100 bg-white">
-            <div className="flex items-center gap-3">
-              <Badge variant="outline" className="text-gray-500">{periodLabel === 'toutes_cohortes' ? 'Toutes cohortes' : `Cohorte ${cohorte}`}</Badge>
-              <span className="text-xs text-gray-400">
-                Généré le {new Date(report.generated_at).toLocaleString('fr-FR')}
-              </span>
-              {report.status === 'validated' ? (
-                <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 gap-1">
-                  <CheckCircle2 className="h-3 w-3" /> Validé
-                </Badge>
-              ) : (
-                <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100 gap-1">
-                  <AlertTriangle className="h-3 w-3" /> Brouillon
-                </Badge>
-              )}
-            </div>
-            <div className="flex items-center gap-2">
-              <Button variant="outline" onClick={handleExportPdf} disabled={exportingPdf}>
-                {exportingPdf ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
-                Export PDF
-              </Button>
-              {report.status !== 'validated' && (
-                <Button onClick={handleValidate} disabled={validating}>
-                  {validating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <CheckCircle2 className="h-4 w-4 mr-2" />}
-                  Valider le rapport
-                </Button>
-              )}
-            </div>
-          </div>
-
-          {/* KPI */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-            <KpiCard label="Taux de réponse mentors" value={`${mentorStats?.response_rate_pct ?? 0}%`} sub={`${mentorStats?.total_responses ?? 0}/${mentorStats?.total_tokens ?? 0}`} icon={FileText} />
-            <KpiCard label="Taux de réponse mentorés" value={`${mentoreStats?.response_rate_pct ?? 0}%`} sub={`${mentoreStats?.total_responses ?? 0}/${mentoreStats?.total_tokens ?? 0}`} icon={FileText} color="#7c3aed" />
-            <KpiCard label="NPS moyen" value={avgNps} icon={Sparkles} color="#d97706" />
-            <KpiCard label="Réponses totales" value={metrics?.total_responses ?? 0} icon={CheckCircle2} />
-          </div>
-
-          {/* Graphiques */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <Card className="border-0 shadow-md">
-              <CardHeader><CardTitle className="text-base">Répartition NPS</CardTitle></CardHeader>
-              <CardContent style={{ height: 260 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={npsChartData}>
-                    <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                    <XAxis dataKey="role" tick={{ fontSize: 12 }} />
-                    <YAxis tick={{ fontSize: 12 }} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="promoters" name="Promoteurs" fill={NPS_COLORS.promoters} stackId="nps" />
-                    <Bar dataKey="passives" name="Passifs" fill={NPS_COLORS.passives} stackId="nps" />
-                    <Bar dataKey="detractors" name="Détracteurs" fill={NPS_COLORS.detractors} stackId="nps" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-md">
-              <CardHeader><CardTitle className="text-base">Moyennes par question (mentors vs mentorés)</CardTitle></CardHeader>
-              <CardContent style={{ height: 260 }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={likertChartData} layout="vertical" margin={{ left: 24 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={false} />
-                    <XAxis type="number" domain={[0, 5]} tick={{ fontSize: 12 }} />
-                    <YAxis type="category" dataKey="question_id" tick={{ fontSize: 10 }} width={140} />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="mentor" name="Mentors" fill="#1a7a45" />
-                    <Bar dataKey="mentore" name="Mentorés" fill="#7c3aed" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            <Card className="border-0 shadow-md md:col-span-2">
-              <CardHeader><CardTitle className="text-base">Disposition hypothétique à continuer le programme</CardTitle></CardHeader>
-              <CardContent style={{ height: 260 }}>
-                {continuationChartData.length === 0 ? (
-                  <p className="text-sm text-gray-400 text-center py-16">Aucune réponse pour cette période.</p>
-                ) : (
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={continuationChartData}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                      <XAxis dataKey="label" tick={{ fontSize: 11 }} interval={0} />
-                      <YAxis tick={{ fontSize: 12 }} allowDecimals={false} />
-                      <Tooltip />
-                      <Legend formatter={(v) => (v === 'mentor' ? 'Mentors' : 'Mentorés')} />
-                      <Bar dataKey="mentor" name="Mentors" fill="#1a7a45" radius={[3, 3, 0, 0]} />
-                      <Bar dataKey="mentore" name="Mentorés" fill="#7c3aed" radius={[3, 3, 0, 0]} />
-                    </BarChart>
-                  </ResponsiveContainer>
-                )}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Synthèse IA */}
-          <Card className="border-0 shadow-md">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2 text-base">
-                <Sparkles className="h-4 w-4 text-amber-500" /> Synthèse exécutive
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <p className="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-2">
-                Analyse générée automatiquement, à relire avant diffusion.
-              </p>
-              {analysis?.sample_warning && (
-                <p className="text-xs text-red-700 bg-red-50 border border-red-100 rounded-lg p-2 flex items-center gap-2">
-                  <AlertTriangle className="h-3.5 w-3.5 flex-shrink-0" /> {analysis.sample_warning}
-                </p>
-              )}
-              <Textarea
-                value={summaryText}
-                onChange={(e) => setEditedSummary(e.target.value)}
-                disabled={report.status === 'validated'}
-                rows={5}
-              />
-            </CardContent>
-          </Card>
-
-          {/* Points forts / amélioration */}
-          <div className="grid md:grid-cols-2 gap-4">
-            <Card className="border-0 shadow-md">
-              <CardHeader><CardTitle className="text-base">Points forts</CardTitle></CardHeader>
-              <CardContent className="space-y-3">
-                {(analysis?.strengths || []).map((s, i) => (
-                  <div key={i} className="border-b border-gray-50 pb-2 last:border-0">
-                    <p className="text-sm font-semibold text-gray-800">{s.title}</p>
-                    <p className="text-xs text-gray-500">{s.evidence}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-            <Card className="border-0 shadow-md">
-              <CardHeader><CardTitle className="text-base">Points d'amélioration</CardTitle></CardHeader>
-              <CardContent className="space-y-3">
-                {(analysis?.improvements || []).map((imp, i) => (
-                  <div key={i} className="border-b border-gray-50 pb-2 last:border-0">
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm font-semibold text-gray-800">{imp.title}</p>
-                      <Badge variant="outline" className="text-[10px]">{PRIORITY_LABEL[imp.priority] || imp.priority}</Badge>
-                    </div>
-                    <p className="text-xs text-gray-500">{imp.evidence}</p>
-                  </div>
-                ))}
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Binômes à vigilance */}
-          <Card className="border-0 shadow-md">
-            <CardHeader><CardTitle className="flex items-center gap-2 text-base"><ShieldAlert className="h-4 w-4 text-red-500" /> Binômes à surveiller</CardTitle></CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-xs text-gray-400 uppercase tracking-wide border-b border-gray-100">
-                      <th className="py-2 pr-4">Binôme</th>
-                      <th className="py-2 pr-4">NPS mentor</th>
-                      <th className="py-2 pr-4">NPS mentoré</th>
-                      <th className="py-2 pr-4">Raison (IA)</th>
-                      <th className="py-2 pr-4">Vigilance</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {vigilance.map((pair) => {
-                      const aiNote = (analysis?.pairs_to_watch || []).find((p) => p.binome_id === pair.binome_id);
-                      const style = VIGILANCE_STYLE[pair.vigilance] || VIGILANCE_STYLE.en_attente;
-                      return (
-                        <tr key={pair.binome_id} className="border-b border-gray-50">
-                          <td className="py-2.5 pr-4">
-                            <p className="font-medium text-gray-800">{pair.mentor_name}</p>
-                            <p className="text-xs text-gray-400">{pair.mentore_name}</p>
-                          </td>
-                          <td className="py-2.5 pr-4">{pair.mentor_nps ?? '—'}</td>
-                          <td className="py-2.5 pr-4">{pair.mentore_nps ?? '—'}</td>
-                          <td className="py-2.5 pr-4 text-xs text-gray-500 max-w-xs">{aiNote?.reason || '—'}</td>
-                          <td className="py-2.5 pr-4"><Badge className={style.className}>{style.label}</Badge></td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
+        <Card className="border-0 shadow-md">
+          <CardHeader><CardTitle className="text-base">Difficultés</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            {(analysis.improvements || []).map((imp, i) => (
+              <div key={i} className="border-b border-gray-50 pb-2 last:border-0">
+                <div className="flex items-center gap-2">
+                  <p className="text-sm font-semibold text-gray-800">{imp.title}</p>
+                  <Badge variant="outline" className="text-[10px]">{PRIORITY_LABEL[imp.priority] || imp.priority}</Badge>
+                </div>
+                <p className="text-xs text-gray-600">{imp.evidence}</p>
               </div>
-            </CardContent>
-          </Card>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
 
-          {/* Citations */}
-          <Card className="border-0 shadow-md">
-            <CardHeader><CardTitle className="flex items-center gap-2 text-base"><MessageSquareQuote className="h-4 w-4 text-amber-500" /> Citations marquantes</CardTitle></CardHeader>
-            <CardContent className="space-y-2">
-              {(analysis?.notable_quotes || []).length === 0 ? (
-                <p className="text-sm text-gray-400">Aucune citation autorisée pour cette période.</p>
-              ) : (
-                (analysis?.notable_quotes || []).map((q, i) => (
-                  <blockquote key={i} className="border-l-2 border-amber-300 pl-3 text-sm text-gray-700 italic">
-                    « {q.text} » <span className="text-xs text-gray-400 not-italic">— {q.role === 'mentor' ? 'Mentor' : 'Mentoré'}</span>
-                  </blockquote>
-                ))
-              )}
-            </CardContent>
-          </Card>
+      <Card className="border-0 shadow-md">
+        <CardHeader><CardTitle className="text-base">Thèmes récurrents</CardTitle></CardHeader>
+        <CardContent>
+          {(analysis.recurring_themes || []).length === 0 ? (
+            <p className="text-sm text-gray-500">Donnée non disponible.</p>
+          ) : (
+            <ul className="space-y-1 text-sm text-gray-700">
+              {analysis.recurring_themes.map((t, i) => (
+                <li key={i} className="flex justify-between gap-4 border-b border-gray-50 py-1">
+                  <span>{t.theme} <span className="text-xs text-gray-500">— {VERBATIM_FIELD_LABEL[t.field] || 'réponses libres'}</span></span>
+                  <span className="text-xs text-gray-500 whitespace-nowrap">{t.frequency} mention(s)</span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </CardContent>
+      </Card>
 
-          {/* Enseignements clés */}
-          <Card className="border-0 shadow-md">
-            <CardHeader><CardTitle className="text-base">Enseignements clés</CardTitle></CardHeader>
-            <CardContent>
-              {(analysis?.key_learnings || []).length === 0 ? (
-                <p className="text-sm text-gray-400">Aucun enseignement extrait pour cette période.</p>
-              ) : (
-                <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
-                  {analysis.key_learnings.map((l, i) => <li key={i}>{l}</li>)}
-                </ul>
-              )}
-            </CardContent>
-          </Card>
+      <Card className="border-0 shadow-md">
+        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><MessageSquareQuote className="h-4 w-4 text-amber-500" /> Verbatims retenus</CardTitle></CardHeader>
+        <CardContent className="space-y-3">
+          {(analysis.notable_quotes || []).length === 0 ? (
+            <p className="text-sm text-gray-500">Aucune citation autorisée par les participants.</p>
+          ) : analysis.notable_quotes.map((q) => (
+            <blockquote key={q.verbatim_id} className="border-l-2 border-amber-300 pl-3">
+              <p className="text-sm text-gray-700 italic">« {q.text} »</p>
+              <p className="text-xs text-gray-500 mt-0.5">— {q.attribution} · {CONSENT_LABEL[q.quote_consent]}</p>
+            </blockquote>
+          ))}
+          <p className="text-xs text-gray-500">
+            Les réponses dont l'auteur a refusé la citation ne peuvent pas apparaître ici : le serveur les écarte avant l'enregistrement.
+          </p>
+        </CardContent>
+      </Card>
 
-          {/* Recommandations */}
-          <Card className="border-0 shadow-md">
-            <CardHeader><CardTitle className="text-base">Recommandations pour la prochaine cohorte</CardTitle></CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="text-left text-xs text-gray-400 uppercase tracking-wide border-b border-gray-100">
-                      <th className="py-2 pr-4">Action</th>
-                      <th className="py-2 pr-4">Priorité</th>
-                      <th className="py-2 pr-4">Responsable suggéré</th>
+      <Card className="border-0 shadow-md">
+        <CardHeader><CardTitle className="flex items-center gap-2 text-base"><ShieldAlert className="h-4 w-4 text-red-500" /> Binômes à surveiller (version interne uniquement)</CardTitle></CardHeader>
+        <CardContent>
+          {(analysis.pairs_to_watch || []).length === 0 ? (
+            <p className="text-sm text-gray-500">Aucun binôme signalé par l'analyse.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-left text-xs text-gray-500 uppercase tracking-wide border-b border-gray-100">
+                    <th className="py-2 pr-4">Binôme</th>
+                    <th className="py-2 pr-4">Niveau</th>
+                    <th className="py-2 pr-4">Raison</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {analysis.pairs_to_watch.map((p) => (
+                    <tr key={p.binome_id} className="border-b border-gray-50 align-top">
+                      <td className="py-2.5 pr-4">
+                        <p className="font-medium text-gray-800">{p.mentor_name}</p>
+                        <p className="text-xs text-gray-500">{p.mentore_name}</p>
+                      </td>
+                      <td className="py-2.5 pr-4 whitespace-nowrap">{VIGILANCE_LABEL[p.vigilance] || '—'}</td>
+                      <td className="py-2.5 pr-4 text-xs text-gray-600">{p.reason}</td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {(analysis?.recommendations || []).map((r, i) => {
-                      // Compatibilité rapports générés avant l'ajout de priorité/responsable.
-                      const row = typeof r === 'string' ? { text: r, priority: null, owner: null } : r;
-                      return (
-                        <tr key={i} className="border-b border-gray-50">
-                          <td className="py-2.5 pr-4 text-gray-700">{row.text}</td>
-                          <td className="py-2.5 pr-4">
-                            {row.priority ? (
-                              <Badge variant="outline" className="text-[10px]">{PRIORITY_LABEL[row.priority] || row.priority}</Badge>
-                            ) : '—'}
-                          </td>
-                          <td className="py-2.5 pr-4 text-xs text-gray-500">{row.owner || '—'}</td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </>
-      )}
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card className="border-0 shadow-md">
+        <CardHeader><CardTitle className="text-base">Recommandations (dans l'hypothèse d'une cohorte 2)</CardTitle></CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="text-left text-xs text-gray-500 uppercase tracking-wide border-b border-gray-100">
+                  <th className="py-2 pr-4">Action</th>
+                  <th className="py-2 pr-4">Priorité</th>
+                  <th className="py-2 pr-4">Responsable suggéré</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(analysis.recommendations || []).map((r, i) => (
+                  <tr key={i} className="border-b border-gray-50">
+                    <td className="py-2.5 pr-4 text-gray-700">{r.text}</td>
+                    <td className="py-2.5 pr-4"><Badge variant="outline" className="text-[10px]">{PRIORITY_LABEL[r.priority] || r.priority}</Badge></td>
+                    <td className="py-2.5 pr-4 text-xs text-gray-600">{r.owner}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card className="border-0 shadow-md">
+        <CardHeader><CardTitle className="text-base">Conclusion et perspectives</CardTitle></CardHeader>
+        <CardContent><p className="text-sm text-gray-700 leading-relaxed">{analysis.conclusion}</p></CardContent>
+      </Card>
     </div>
   );
 }

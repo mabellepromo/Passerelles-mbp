@@ -55,7 +55,7 @@ export const INDICATOR_DEFINITIONS = {
   },
   vigilance: {
     label: 'Niveau de vigilance d\'un binôme',
-    formula: 'Rouge : une note de recommandation ≤ 6, ou un écart ≥ 4 points entre mentor et mentoré. Orange : une note de 7 ou 8. Vert : sinon. En attente : aucune réponse.',
+    formula: 'Rouge : une note de recommandation inférieure ou égale à 6, ou un écart de 4 points ou plus entre mentor et mentoré. Orange : une note de 7 ou 8. Vert : sinon. En attente : aucune réponse.',
     source: 'review_pair_vigilance.vigilance (repris dans official_binome_overview)',
     period: SURVEY_PERIOD,
   },

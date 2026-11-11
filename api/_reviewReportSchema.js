@@ -21,6 +21,7 @@ const ImprovementSchema = z.object({
 const RecurringThemeSchema = z.object({
   theme: z.string(),
   frequency: z.number().int().nonnegative(),
+  field: z.string().optional(),
 });
 
 const PairToWatchSchema = z.object({
@@ -29,9 +30,9 @@ const PairToWatchSchema = z.object({
 });
 
 const NotableQuoteSchema = z.object({
-  participant_ref: z.string(),
-  role: z.enum(['mentor', 'mentore']),
-  text: z.string(),
+  // L'IA renvoie seulement l'identifiant du verbatim (V-xx). Le texte exact
+  // et la signature sont remis côté serveur selon quote_consent.
+  verbatim_id: z.string(),
 });
 
 const RecommendationSchema = z.object({
@@ -42,13 +43,15 @@ const RecommendationSchema = z.object({
 
 const ReviewReportAnalysisSchema = z.object({
   executive_summary: z.string().min(1),
+  key_findings: z.array(z.string()).max(5),
   strengths: z.array(StrengthSchema).max(5),
   improvements: z.array(ImprovementSchema).max(5),
   recurring_themes: z.array(RecurringThemeSchema),
   pairs_to_watch: z.array(PairToWatchSchema),
   key_learnings: z.array(z.string()).max(5),
-  recommendations: z.array(RecommendationSchema).max(6),
+  recommendations: z.array(RecommendationSchema).max(8),
   notable_quotes: z.array(NotableQuoteSchema),
+  conclusion: z.string().min(1),
   sample_warning: z.string().nullable(),
 });
 
