@@ -76,7 +76,7 @@ export default function RapportBilan() {
   const { data: cohortes = [] } = useQuery({
     queryKey: ['review_report_cohortes'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('binome').select('cohorte').eq('is_test', false);
+      const { data, error } = await supabase.from('official_binomes').select('cohorte'); // source unique du filtre « hors binôme test »
       if (error) throw error;
       return [...new Set((data ?? []).map((b) => b.cohorte).filter(Boolean))].sort();
     },

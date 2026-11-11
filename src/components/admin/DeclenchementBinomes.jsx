@@ -19,10 +19,10 @@ export default function DeclenchementBinomes() {
     queryKey: ['binomes-declenchement'],
     queryFn: async () => {
       const { data } = await supabase
-        .from('binome')
+        // Vue official_binomes : source unique du filtre « hors binôme test »
+        .from('official_binomes')
         .select('*')
         .eq('status', 'active')
-        .eq('is_test', false)
         .order('mentor_name');
       return data ?? [];
     }

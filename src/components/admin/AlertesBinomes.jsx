@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
+// Source unique filtrée (binôme test exclu) : voir src/lib/programData.js
+import { fetchOfficialBinomes, fetchOfficialSuivis, fetchOfficialMessages } from '@/lib/programData';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -66,17 +68,17 @@ export default function AlertesBinomes() {
 
   const { data: binomes = [] } = useQuery({
     queryKey: ['binomes-alertes'],
-    queryFn: () => base44.entities.Binome.filter({ status: 'active' })
+    queryFn: async () => (await fetchOfficialBinomes()).filter(b => b.status === 'active')
   });
 
   const { data: suivis = [] } = useQuery({
     queryKey: ['suivis-alertes'],
-    queryFn: () => base44.entities.SuiviMensuel.list('-meeting_date', 500)
+    queryFn: () => fetchOfficialSuivis('-meeting_date')
   });
 
   const { data: messages = [] } = useQuery({
     queryKey: ['messages-alertes'],
-    queryFn: () => base44.entities.Message.list('-created_date', 200)
+    queryFn: () => fetchOfficialMessages('-created_date')
   });
 
   // Calcul des alertes pour chaque binôme

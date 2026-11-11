@@ -30,6 +30,8 @@ import RenvoiLien from '@/components/admin/RenvoiLien.jsx';
 import BilanReview from '@/components/admin/BilanReview.jsx';
 import RapportBilan from '@/components/admin/RapportBilan.jsx';
 import CampagneBilan from '@/components/admin/CampagneBilan.jsx';
+// Source unique filtrée (binôme test exclu) : voir src/lib/programData.js
+import { fetchOfficialBinomes, fetchOfficialSuivis, ficheSatisfaction } from '@/lib/programData';
 
 const NAV = [
   { id: 'overview',      label: 'Vue d\'ensemble', icon: BarChart3,      group: 'Principal' },
@@ -464,8 +466,8 @@ export default function AdminDashboard() {
 
   const { data: mentors = [] }        = useQuery({ queryKey: ['mentors'],        queryFn: () => base44.entities.Mentor.list('-created_date'),                          enabled: !isLoading });
   const { data: mentores = [] }       = useQuery({ queryKey: ['mentores'],       queryFn: () => base44.entities.Mentore.list('-created_date'),                         enabled: !isLoading });
-  const { data: binomes = [] }        = useQuery({ queryKey: ['binomes'],        queryFn: () => base44.entities.Binome.list('-created_date'),                          enabled: !isLoading });
-  const { data: suivis = [] }         = useQuery({ queryKey: ['suivis'],         queryFn: () => base44.entities.SuiviMensuel.list('-created_date'),                    enabled: !isLoading });
+  const { data: binomes = [] }        = useQuery({ queryKey: ['binomes'],        queryFn: () => fetchOfficialBinomes('-created_date'),                          enabled: !isLoading });
+  const { data: suivis = [] }         = useQuery({ queryKey: ['suivis'],         queryFn: () => fetchOfficialSuivis('-created_date'),                    enabled: !isLoading });
   const { data: contactMsgs = [], refetch: refetchContacts } = useQuery({
     queryKey: ['contact_messages'],
     queryFn: async () => {
@@ -505,7 +507,7 @@ export default function AdminDashboard() {
     issuesReported:  suivis.filter(s => s.issues_reported).length,
     unreadContacts:  contactMsgs.filter(m => !m.read).length,
     avgSatisfaction: suivis.length > 0
-      ? (suivis.reduce((acc, s) => acc + ((s.satisfaction_mentor || 0) + (s.satisfaction_mentore || 0)) / 2, 0) / suivis.length).toFixed(1)
+      ? (suivis.reduce((acc, s) => acc + ficheSatisfaction(s), 0) / suivis.length).toFixed(1)
       : 0
   };
 

@@ -26,6 +26,8 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
+// Note de satisfaction d'une fiche = note de son auteur (voir src/lib/programData.js)
+import { ficheSatisfaction } from '@/lib/programData';
 
 export default function SuivisList({ suivis }) {
   const [search, setSearch] = useState('');
@@ -93,7 +95,7 @@ export default function SuivisList({ suivis }) {
                     {suivi.duration_hours}h
                   </TableCell>
                   <TableCell>
-                    <StarRating value={Math.round(((suivi.satisfaction_mentor || 0) + (suivi.satisfaction_mentore || 0)) / 2)} />
+                    <StarRating value={ficheSatisfaction(suivi)} />
                   </TableCell>
                   <TableCell>
                     <StarRating value={suivi.progress_rating} />

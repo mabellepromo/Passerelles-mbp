@@ -5,6 +5,7 @@ import {
   BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Legend, PieChart, Pie, Cell
 } from 'recharts';
+import { ficheSatisfaction } from '@/lib/programData';
 import { TrendingUp, CheckCircle2, AlertTriangle, Clock, Star, Users, Target, Activity } from 'lucide-react';
 
 const MONTHS_FR = ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'];
@@ -37,7 +38,7 @@ function getEngagementParBinome(binomes, suivis) {
     .map(b => {
       const bs = suivis.filter(s => s.binome_id === b.id);
       const avgSat = bs.length
-        ? (bs.reduce((a, s) => a + ((s.satisfaction_mentor || 0) + (s.satisfaction_mentore || 0)) / 2, 0) / bs.length).toFixed(1)
+        ? (bs.reduce((a, s) => a + ficheSatisfaction(s), 0) / bs.length).toFixed(1)
         : 0;
       const avgProg = bs.length
         ? (bs.reduce((a, s) => a + (s.progress_rating || 0), 0) / bs.length).toFixed(1)
@@ -60,7 +61,7 @@ function getProgressionMensuelle(suivis) {
     if (!s.meeting_date) return;
     const key = s.meeting_date.slice(0, 7);
     if (!grouped[key]) grouped[key] = { satisfaction: [], progression: [], heures: 0 };
-    grouped[key].satisfaction.push(((s.satisfaction_mentor || 0) + (s.satisfaction_mentore || 0)) / 2);
+    grouped[key].satisfaction.push(ficheSatisfaction(s));
     grouped[key].progression.push(s.progress_rating || 0);
     grouped[key].heures += s.duration_hours || 0;
   });
@@ -115,7 +116,7 @@ export default function AnalytiqueDashboard({ binomes, suivis }) {
   const activeBinomes = binomes.filter(b => b.status === 'active').length;
   const totalHeures = suivis.reduce((a, s) => a + (s.duration_hours || 0), 0);
   const avgSat = suivis.length
-    ? (suivis.reduce((a, s) => a + ((s.satisfaction_mentor || 0) + (s.satisfaction_mentore || 0)) / 2, 0) / suivis.length).toFixed(1)
+    ? (suivis.reduce((a, s) => a + ficheSatisfaction(s), 0) / suivis.length).toFixed(1)
     : '–';
   const tauxMoyenCompletion = tauxCompletion.length
     ? Math.round(tauxCompletion.reduce((a, t) => a + t.taux, 0) / tauxCompletion.length)
