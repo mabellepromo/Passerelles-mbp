@@ -137,6 +137,50 @@ function extractJson(rawText) {
   }
 }
 
+// Un appel à l'IA pour une partie du rapport. On pré-remplit la réponse avec
+// "{" : le modèle ne peut alors ni ajouter de balises markdown ni de texte
+// avant le JSON. Une réponse coupée (max_tokens atteint) est signalée clairement.
+async function callReportPart(prompt, signal, part) {
+  const anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    signal,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: ANTHROPIC_REPORT_MODEL,
+      max_tokens: 4096,
+      system: "Tu es un assistant d'analyse de données pour un programme de mentorat associatif. Réponds UNIQUEMENT en JSON valide, sans aucun texte avant ou après, sans balises markdown. N'invente jamais de donnée absente des informations fournies.",
+      messages: [
+        { role: 'user', content: prompt },
+        { role: 'assistant', content: '{' },
+      ],
+    }),
+  });
+
+  if (!anthropicRes.ok) {
+    const err = await anthropicRes.json().catch(() => ({}));
+    const error = new Error(err.error?.message || `Erreur Anthropic (${anthropicRes.status})`);
+    error.httpStatus = anthropicRes.status === 429 ? 429 : 502;
+    throw error;
+  }
+
+  const anthropicJson = await anthropicRes.json();
+  const rawText = '{' + (anthropicJson.content?.[0]?.text || '');
+  if (anthropicJson.stop_reason === 'max_tokens') {
+    console.error(`generate_review_report: partie "${part}" coupée (max_tokens)`);
+    throw new Error('Réponse IA trop longue (coupée). Relance la génération.');
+  }
+  const parsed = extractJson(rawText);
+  if (parsed === null) {
+    console.error(`generate_review_report: partie "${part}" non lisible (début) :`, rawText.slice(0, 500));
+    throw new Error('Réponse IA invalide : JSON non lisible. Relance la génération.');
+  }
+  return parsed;
+}
+
 async function handleGenerateReviewReport(req, res, adminUserId) {
   if (!ANTHROPIC_API_KEY) return res.status(503).json({ error: 'Service IA non configuré (ANTHROPIC_API_KEY manquant)' });
   if (!supabaseService) return res.status(503).json({ error: 'SUPABASE_SERVICE_ROLE_KEY manquant côté serveur' });
@@ -188,63 +232,39 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
       sessions_declared_mentore: b.sessions_declared_mentore,
     }));
 
-    const prompt = buildAnalysisPrompt({
+    const promptData = {
       metrics,
       verbatims: verbatims.map(toAiVerbatim),
       ficheNotes,
       pairsForAi,
-    });
+    };
 
     const remainingBudget = HARD_BUDGET_MS - (Date.now() - t0);
     if (remainingBudget < 5000) {
       return res.status(504).json({ error: "Préparation des données trop longue, l'appel IA n'a pas pu démarrer à temps." });
     }
 
+    // Deux appels EN PARALLÈLE, chacun rédigeant la moitié du rapport : une
+    // réponse unique était trop longue (JSON coupé) et trop lente (> 60 s).
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), remainingBudget);
-
-    let anthropicRes;
+    let parts;
     try {
-      anthropicRes = await fetch('https://api.anthropic.com/v1/messages', {
-        method: 'POST',
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': ANTHROPIC_API_KEY,
-          'anthropic-version': '2023-06-01',
-        },
-        body: JSON.stringify({
-          model: ANTHROPIC_REPORT_MODEL,
-          max_tokens: 4096,
-          system: "Tu es un assistant d'analyse de données pour un programme de mentorat associatif. Réponds UNIQUEMENT en JSON valide, sans aucun texte avant ou après, sans balises markdown ni backticks. Ta réponse doit commencer directement par '{' et se terminer par '}'. N'invente jamais de donnée absente des informations fournies.",
-          messages: [{ role: 'user', content: prompt }],
-        }),
-      });
-    } catch (fetchErr) {
-      if (fetchErr.name === 'AbortError') {
+      parts = await Promise.all(['constats', 'binomes'].map((part) => callReportPart(
+        buildAnalysisPrompt(promptData, part), controller.signal, part,
+      )));
+    } catch (callErr) {
+      if (callErr.name === 'AbortError') {
         console.error(`generate_review_report: appel IA interrompu après ${Date.now() - t0}ms`);
         return res.status(504).json({ error: "Délai d'attente dépassé lors de l'appel à l'IA. Relance la génération." });
       }
-      throw fetchErr;
+      console.error('generate_review_report:', callErr.message);
+      return res.status(callErr.httpStatus || 502).json({ error: callErr.message });
     } finally {
       clearTimeout(timeout);
     }
-    console.log(`generate_review_report: réponse IA reçue (${Date.now() - t0}ms)`);
-
-    if (!anthropicRes.ok) {
-      const err = await anthropicRes.json().catch(() => ({}));
-      const status = anthropicRes.status === 429 ? 429 : 502;
-      return res.status(status).json({ error: err.error?.message || `Erreur Anthropic (${anthropicRes.status})` });
-    }
-
-    const anthropicJson = await anthropicRes.json();
-    const rawText = anthropicJson.content?.[0]?.text?.trim() || '';
-
-    const parsedAnalysis = extractJson(rawText);
-    if (parsedAnalysis === null) {
-      console.error('generate_review_report: réponse IA non lisible (début) :', rawText.slice(0, 500));
-      return res.status(502).json({ error: 'Réponse IA invalide : JSON non lisible. Relance la génération.' });
-    }
+    console.log(`generate_review_report: réponses IA reçues (${Date.now() - t0}ms)`);
+    const parsedAnalysis = { ...parts[0], ...parts[1] };
 
     // 5. Validation stricte du schéma avant toute écriture.
     const validation = ReviewReportAnalysisSchema.safeParse(parsedAnalysis);

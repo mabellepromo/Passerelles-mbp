@@ -236,7 +236,8 @@ function buildSnapshot(sources) {
 // Consigne envoyée à l'IA
 // ----------------------------------------------------------------------------
 
-function buildAnalysisPrompt({ metrics, verbatims, ficheNotes, pairsForAi }) {
+// part : 'constats' ou 'binomes' (voir PART_INSTRUCTIONS plus bas).
+function buildAnalysisPrompt({ metrics, verbatims, ficheNotes, pairsForAi }, part) {
   // On retire des métriques ce qui ne doit pas être analysé comme un comptage.
   const metricsForAi = { ...metrics };
   delete metricsForAi.snapshot;
@@ -272,22 +273,36 @@ Règles strictes :
 13. "pair_status" : UNE entrée par binôme listé ci-dessus. status = "active" (relation déclarée effective, apports concrets), "limitee" (démarrage difficile ou très peu d'échanges), "non_etablie" (contact jamais établi ou rompu), "inconnue" (aucune réponse exploitable). "basis" = une phrase factuelle tirée des réponses, sans nom.
 14. Distingue clairement ce qui a fonctionné et ce qui n'a pas fonctionné : résultats concrets déclarés (stages, choix d'orientation, mémoire...), relations qui n'ont jamais démarré, et causes citées (contact, disponibilité, outil, distance). Signale si le niveau de vigilance fondé sur la note de recommandation contredit les réponses libres (ex. note élevée mais aucun contact établi).
 
+${PART_INSTRUCTIONS[part]}`;
+}
+
+// La rédaction est découpée en DEUX appels à l'IA lancés en parallèle : une
+// seule réponse complète dépassait la longueur maximale et le délai de 60 s
+// de Vercel (JSON coupé en plein milieu). Chaque partie ne produit que ses clés.
+const PART_INSTRUCTIONS = {
+  constats: `CETTE RÉPONSE NE CONTIENT QUE les clés ci-dessous (les autres rubriques sont rédigées à part). Sois concis : chaque "evidence" tient en 2 phrases au plus.
 Réponds UNIQUEMENT en JSON valide (sans markdown, sans balises de code), avec exactement cette forme :
 {
-  "executive_summary": "string, 5 à 8 phrases",
-  "key_findings": ["string"],
+  "executive_summary": "string, 5 à 7 phrases",
+  "key_findings": ["string, 3 à 5 constats courts"],
   "strengths": [{ "title": "string", "evidence": "string avec effectifs" }],
   "improvements": [{ "title": "string", "priority": "haute|moyenne|basse", "evidence": "string" }],
   "recurring_themes": [{ "theme": "string", "frequency": number, "field": "strengths|improvements|objectives_comment|suggestions" }],
-  "pairs_to_watch": [{ "binome_ref": "string", "reason": "string" }],
+  "notable_quotes": [{ "verbatim_id": "string" }],
+  "sample_warning": "string"
+}
+Limites : 3 à 5 strengths, 3 à 5 improvements, 4 à 8 recurring_themes, 4 à 8 notable_quotes.`,
+  binomes: `CETTE RÉPONSE NE CONTIENT QUE les clés ci-dessous (les autres rubriques sont rédigées à part). Sois concis : chaque "basis" et chaque "reason" tient en une phrase.
+Réponds UNIQUEMENT en JSON valide (sans markdown, sans balises de code), avec exactement cette forme :
+{
   "pair_status": [{ "binome_ref": "string", "status": "active|limitee|non_etablie|inconnue", "basis": "string" }],
+  "pairs_to_watch": [{ "binome_ref": "string", "reason": "string" }],
   "key_learnings": ["string"],
   "recommendations": [{ "text": "string", "priority": "haute|moyenne|basse", "owner": "string" }],
-  "notable_quotes": [{ "verbatim_id": "string" }],
-  "conclusion": "string",
-  "sample_warning": "string"
-}`;
+  "conclusion": "string, 4 à 6 phrases"
 }
+Limites : une entrée pair_status par binôme, 6 pairs_to_watch au plus, 3 à 5 key_learnings, 4 à 7 recommendations.`,
+};
 
 // ----------------------------------------------------------------------------
 // Après la réponse de l'IA : on remet les vraies identités, côté serveur.
