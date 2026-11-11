@@ -4,6 +4,8 @@ import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis
 } from 'recharts';
+// Note de satisfaction d'une fiche = note de son auteur (voir src/lib/programData.js)
+import { ficheSatisfaction } from '@/lib/programData';
 import { TrendingUp, Users, Star, Activity, Target, Calendar } from 'lucide-react';
 
 const COLORS = ['#1e5631', '#2d7a47', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6'];
@@ -42,7 +44,7 @@ export default function ProgrammeCharts({ mentors, mentores, binomes, suivis }) 
       const d = s.meeting_date?.slice(0, 7);
       if (!d) return;
       if (!map[d]) map[d] = { mois: d, total: 0, count: 0 };
-      const avg = ((s.satisfaction_mentor || 0) + (s.satisfaction_mentore || 0)) / 2;
+      const avg = ficheSatisfaction(s);
       if (avg > 0) { map[d].total += avg; map[d].count++; }
     });
     return Object.values(map).sort((a, b) => a.mois.localeCompare(b.mois)).slice(-12)
@@ -99,7 +101,7 @@ export default function ProgrammeCharts({ mentors, mentores, binomes, suivis }) 
   const activeBinomes = binomes.filter(b => b.status === 'active').length;
   const tauxActivite = binomes.length > 0 ? Math.round(activeBinomes / binomes.length * 100) : 0;
   const avgSatisfaction = suivis.length > 0
-    ? (suivis.reduce((acc, s) => acc + ((s.satisfaction_mentor || 0) + (s.satisfaction_mentore || 0)) / 2, 0) / suivis.length).toFixed(1)
+    ? (suivis.reduce((acc, s) => acc + ficheSatisfaction(s), 0) / suivis.length).toFixed(1)
     : '–';
   const totalHeures = suivis.reduce((s, r) => s + (r.duration_hours || 0), 0).toFixed(0);
   const issuesCount = suivis.filter(s => s.issues_reported).length;

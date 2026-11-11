@@ -9,6 +9,10 @@
 const { createClient } = require('@supabase/supabase-js');
 const { ADMIN_EMAILS, isUserAdmin } = require('./_admin');
 const { ReviewReportAnalysisSchema } = require('./_reviewReportSchema');
+const {
+  EXPECTED_BINOME_COUNT, loadReportSources, buildSnapshot, buildPseudonymMaps,
+  buildVerbatims, toAiVerbatim, buildFicheNotes, buildAnalysisPrompt, resolveAnalysis,
+} = require('./_reviewReportData');
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -39,6 +43,14 @@ const getAllowedOrigin = (origin) => {
   if (!origin) return null;
   const siteUrl = process.env.SITE_URL || 'https://passerelles.vercel.app';
   if (ALLOWED_ORIGINS.includes(origin) || origin === siteUrl) return origin;
+  // Déploiement de preview Vercel : on accepte uniquement l'adresse du
+  // déploiement lui-même (VERCEL_URL) et celle de sa branche, pour pouvoir
+  // tester la génération du rapport avant la mise en production.
+  if (process.env.VERCEL_ENV === 'preview') {
+    const previewOrigins = [process.env.VERCEL_URL, process.env.VERCEL_BRANCH_URL]
+      .filter(Boolean).map((host) => `https://${host}`);
+    if (previewOrigins.includes(origin)) return origin;
+  }
   return null;
 };
 
@@ -89,96 +101,15 @@ async function handleGenericInvoke(req, res) {
 
 // ----------------------------------------------------------------------------
 // Action generate_review_report : rapport de bilan PASSERELLES
+//
+// Étapes :
+//   1. Lecture des données par les vues filtrées (binôme test exclu).
+//   2. Garde-fou : refus si le nombre de binômes n'est pas celui attendu.
+//   3. Pseudonymisation, puis appel à l'IA pour la seule partie qualitative.
+//   4. Validation du JSON, remise des identités et des verbatims côté serveur.
+//   5. Enregistrement en brouillon (status = 'draft').
+// Les fonctions d'aide sont dans api/_reviewReportData.js.
 // ----------------------------------------------------------------------------
-
-const OPEN_TEXT_FIELDS = ['strengths', 'improvements', 'objectives_comment'];
-
-// Pseudonymisation : table de correspondance en mémoire pour cette seule
-// requête, jamais persistée ni renvoyée au front.
-function buildPseudonymMaps(responses) {
-  const participantMap = new Map(); // participant_email -> "M-01" / "E-01"
-  const binomeMap = new Map(); // binome_id -> "B-01"
-  let mentorCount = 0;
-  let mentoreCount = 0;
-  let binomeCount = 0;
-
-  for (const r of responses) {
-    if (!binomeMap.has(r.binome_id)) {
-      binomeCount += 1;
-      binomeMap.set(r.binome_id, `B-${String(binomeCount).padStart(2, '0')}`);
-    }
-    if (!participantMap.has(r.participant_email)) {
-      if (r.role === 'mentor') {
-        mentorCount += 1;
-        participantMap.set(r.participant_email, `M-${String(mentorCount).padStart(2, '0')}`);
-      } else {
-        mentoreCount += 1;
-        participantMap.set(r.participant_email, `E-${String(mentoreCount).padStart(2, '0')}`);
-      }
-    }
-  }
-
-  return { participantMap, binomeMap };
-}
-
-function buildPseudonymizedVerbatims(responses, participantMap, binomeMap) {
-  return responses.flatMap((r) => {
-    const participantRef = participantMap.get(r.participant_email);
-    const binomeRef = binomeMap.get(r.binome_id);
-    return OPEN_TEXT_FIELDS
-      .filter((field) => r.answers?.[field])
-      .map((field) => ({
-        participant_ref: participantRef,
-        binome_ref: binomeRef,
-        role: r.role,
-        field,
-        text: String(r.answers[field]),
-        nps_score: r.nps_score,
-        quotable: r.quote_consent !== 'none',
-      }));
-  });
-}
-
-const LOW_SAMPLE_THRESHOLD = 10;
-
-function buildAnalysisPrompt({ cohorte, metrics, verbatims }) {
-  const totalResponses = metrics?.total_responses ?? 0;
-  const lowSample = totalResponses < LOW_SAMPLE_THRESHOLD;
-
-  return `Tu rédiges la synthèse d'un bilan de mentorat (programme PASSERELLES, association Ma Belle Promo), en français soutenu, neutre et factuel, sans superlatif gratuit. Ce texte est destiné à un rapport institutionnel homogène d'une cohorte à l'autre : respecte strictement le format demandé.
-Période analysée : ${cohorte || 'toutes cohortes confondues'}.
-Nombre total de réponses reçues : ${totalResponses}${lowSample ? ' — ÉCHANTILLON FAIBLE (moins de 10 réponses) : tu dois le signaler dans "sample_warning" et formuler toute conclusion avec prudence.' : ''}
-
-MÉTRIQUES (déjà calculées, chiffres exacts — ne les recalcule jamais, utilise-les tels quels) :
-${JSON.stringify(metrics)}
-Note : "contribution_distribution" recense ce que les mentors ont apporté / ce que les mentorés ont reçu (compétences juridiques, réseau, orientation, opportunités, soutien moral...) ; "platform_impact_distribution" indique si la plateforme a gêné le bon fonctionnement du binôme. Exploite ces deux clés dans "strengths", "improvements" et "key_learnings" au même titre que le NPS et les moyennes likert — ne te limite pas aux seuls verbatims libres.
-
-VERBATIMS pseudonymisés (M-xx = mentor, E-xx = mentoré, B-xx = binôme ; ce sont des identifiants opaques, ne tente jamais de deviner de vrais noms à partir d'eux) :
-${JSON.stringify(verbatims)}
-
-Règles strictes, à respecter impérativement :
-1. N'invente AUCUN chiffre, nom, binôme ou citation absent des données ci-dessus. Si une rubrique ne peut pas être remplie à partir des données fournies, renvoie un tableau vide (ou null pour "sample_warning") plutôt que d'inventer du contenu.
-2. Chaque affirmation de ta synthèse doit être traçable dans les métriques ou les verbatims fournis. Distingue clairement un constat chiffré ("le NPS moyen mentor est de 7,2") d'une interprétation ("cela traduit une satisfaction correcte mais perfectible").
-3. Tout chiffre cité dans "executive_summary", "strengths", "improvements" ou "key_learnings" doit être accompagné de sa base quand elle est connue (ex. « 78 % (7/9 répondants) »).
-4. "notable_quotes" : ne reprends QUE des verbatims dont "quotable" vaut true, en recopiant exactement leur "participant_ref".
-5. "pairs_to_watch" : utilise uniquement des "binome_ref" présents dans les données (pair_gaps ou verbatims).
-6. "key_learnings" : 3 à 5 enseignements courts, formulés comme des leçons réutilisables pour la prochaine cohorte (pas une redite des points forts/faibles).
-7. "recommendations" : 3 à 6 actions concrètes et priorisées ("haute", "moyenne" ou "basse"), chacune avec un "owner" plausible au regard du contexte associatif (ex. "Coordination PASSERELLES", "Équipe mentorat", "Pôle communication") — jamais un nom de personne réelle.
-8. "sample_warning" : si l'échantillon est inférieur à 10 réponses, une phrase expliquant que les résultats doivent être interprétés avec prudence ; sinon null.
-
-Réponds UNIQUEMENT en JSON valide (sans markdown, sans balises de code), avec exactement cette forme :
-{
-  "executive_summary": "string, 5 à 8 phrases : ce qui s'est passé, 3 chiffres clés, appréciation globale, principale recommandation",
-  "strengths": [{ "title": "string", "evidence": "string avec chiffres et/ou verbatims" }],
-  "improvements": [{ "title": "string", "priority": "haute|moyenne|basse", "evidence": "string" }],
-  "recurring_themes": [{ "theme": "string", "frequency": number }],
-  "pairs_to_watch": [{ "binome_ref": "string", "reason": "string" }],
-  "key_learnings": ["string"],
-  "recommendations": [{ "text": "string", "priority": "haute|moyenne|basse", "owner": "string" }],
-  "notable_quotes": [{ "participant_ref": "string", "role": "mentor|mentore", "text": "string" }],
-  "sample_warning": "string ou null"
-}`;
-}
 
 // Extraction tolérante du JSON renvoyé par le modèle : certains modèles
 // ajoutent des balises markdown (```json ... ```) ou du texte autour du JSON
@@ -206,42 +137,29 @@ function extractJson(rawText) {
   }
 }
 
-// Ré-association des pseudonymes aux vraies identités, uniquement côté
-// serveur, juste avant l'enregistrement du rapport en base.
-function reassociateRefs(analysis, participantMap, binomeMap) {
-  const emailByRef = new Map([...participantMap.entries()].map(([email, ref]) => [ref, email]));
-  const binomeIdByRef = new Map([...binomeMap.entries()].map(([id, ref]) => [ref, id]));
-
-  return {
-    ...analysis,
-    pairs_to_watch: analysis.pairs_to_watch.map((p) => ({
-      ...p,
-      binome_id: binomeIdByRef.get(p.binome_ref) || null,
-    })),
-    notable_quotes: analysis.notable_quotes.map((q) => ({
-      ...q,
-      participant_email: emailByRef.get(q.participant_ref) || null,
-    })),
-  };
-}
-
 async function handleGenerateReviewReport(req, res, adminUserId) {
   if (!ANTHROPIC_API_KEY) return res.status(503).json({ error: 'Service IA non configuré (ANTHROPIC_API_KEY manquant)' });
   if (!supabaseService) return res.status(503).json({ error: 'SUPABASE_SERVICE_ROLE_KEY manquant côté serveur' });
 
   const { cohorte = null } = req.body || {};
   const t0 = Date.now();
-  // Budget total aligné sur maxDuration=60s (vercel.json) : on réserve le temps
-  // déjà consommé par les étapes SQL avant de lancer l'appel IA, au lieu d'un
-  // délai fixe de 58s qui suppose à tort que l'IA démarre à t=0.
+  // Budget total aligné sur maxDuration=60s (vercel.json).
   const HARD_BUDGET_MS = 57000;
 
   try {
-    // 1. Métriques agrégées — calculées en SQL, jamais par l'IA.
+    // 1. Métriques du sondage — calculées en SQL, jamais par l'IA.
     const { data: metrics, error: metricsError } = await supabaseService
       .rpc('build_review_report_metrics', { p_cohorte: cohorte });
     if (metricsError) throw new Error(`Agrégation SQL : ${metricsError.message}`);
-    console.log(`generate_review_report: metrics RPC ok (${Date.now() - t0}ms)`);
+
+    // 2. GARDE-FOU : on ne produit pas un rapport en silence si le nombre de
+    //    binômes analysés n'est pas celui attendu.
+    const binomesCount = metrics?.binomes_count ?? 0;
+    if (binomesCount !== EXPECTED_BINOME_COUNT) {
+      return res.status(409).json({
+        error: `Rapport non généré : ${binomesCount} binôme(s) analysé(s) au lieu de ${EXPECTED_BINOME_COUNT} attendus. Vérifie la colonne is_test de la table binome avant de relancer.`,
+      });
+    }
 
     const totalResponses = metrics?.total_responses ?? 0;
     if (totalResponses < MIN_RESPONSES) {
@@ -250,19 +168,32 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
       });
     }
 
-    // 2. Réponses détaillées, pour les verbatims et la pseudonymisation.
-    let query = supabaseService.from('review_by_participant').select('*');
-    if (cohorte) query = query.eq('cohorte', cohorte);
-    const { data: responses, error: responsesError } = await query;
-    if (responsesError) throw new Error(`Lecture des réponses : ${responsesError.message}`);
-    console.log(`generate_review_report: responses fetched, n=${responses?.length ?? 0} (${Date.now() - t0}ms)`);
+    // 3. Autres données du rapport, toutes lues par les vues filtrées.
+    const sources = await loadReportSources(supabaseService);
+    const snapshot = buildSnapshot(sources);
+    console.log(`generate_review_report: données lues, ${sources.responses.length} réponses (${Date.now() - t0}ms)`);
 
-    const { participantMap, binomeMap } = buildPseudonymMaps(responses || []);
-    const verbatims = buildPseudonymizedVerbatims(responses || [], participantMap, binomeMap);
+    // 4. Pseudonymisation : l'IA ne voit ni nom ni email.
+    const { binomeMap, participantMap } = buildPseudonymMaps(sources.overview, sources.responses);
+    const verbatims = buildVerbatims(sources.responses, participantMap, binomeMap);
+    const ficheNotes = buildFicheNotes(sources.fiches, binomeMap);
+    const pairsForAi = sources.overview.map((b) => ({
+      binome_ref: binomeMap.get(b.binome_id),
+      vigilance: b.vigilance,
+      mentor_nps: b.mentor_nps,
+      mentore_nps: b.mentore_nps,
+      mentor_responded: b.mentor_responded,
+      mentore_responded: b.mentore_responded,
+      sessions_declared_mentor: b.sessions_declared_mentor,
+      sessions_declared_mentore: b.sessions_declared_mentore,
+    }));
 
-    // 3. Appel Claude — uniquement sur données pseudonymisées.
-    const prompt = buildAnalysisPrompt({ cohorte, metrics, verbatims });
-    console.log(`generate_review_report: prompt built, length=${prompt.length} chars (${Date.now() - t0}ms)`);
+    const prompt = buildAnalysisPrompt({
+      metrics,
+      verbatims: verbatims.map(toAiVerbatim),
+      ficheNotes,
+      pairsForAi,
+    });
 
     const remainingBudget = HARD_BUDGET_MS - (Date.now() - t0);
     if (remainingBudget < 5000) {
@@ -284,26 +215,21 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
         },
         body: JSON.stringify({
           model: ANTHROPIC_REPORT_MODEL,
-          // Avec Haiku, la réponse arrive en ~26s (large marge sous le budget de
-          // 57s) : le goulot n'est plus la vitesse mais la coupure en plein JSON
-          // quand max_tokens était trop bas (2560 tronquait la sortie avant la fin
-          // du schéma). On remonte à 4096 pour laisser le JSON se terminer.
           max_tokens: 4096,
-          system: "Tu es un assistant d'analyse de données pour un programme de mentorat associatif. Réponds UNIQUEMENT en JSON valide, sans aucun texte avant ou après, sans balises markdown ni backticks (pas de ```json). Ta réponse doit commencer directement par '{' et se terminer par '}'. N'invente jamais de donnée absente des informations fournies.",
+          system: "Tu es un assistant d'analyse de données pour un programme de mentorat associatif. Réponds UNIQUEMENT en JSON valide, sans aucun texte avant ou après, sans balises markdown ni backticks. Ta réponse doit commencer directement par '{' et se terminer par '}'. N'invente jamais de donnée absente des informations fournies.",
           messages: [{ role: 'user', content: prompt }],
         }),
       });
     } catch (fetchErr) {
       if (fetchErr.name === 'AbortError') {
-        console.error(`generate_review_report: Anthropic call aborted after ${Date.now() - t0}ms (budget restant était ${remainingBudget}ms)`);
-        return res.status(504).json({ error: "Délai d'attente dépassé lors de l'appel à l'IA" });
+        console.error(`generate_review_report: appel IA interrompu après ${Date.now() - t0}ms`);
+        return res.status(504).json({ error: "Délai d'attente dépassé lors de l'appel à l'IA. Relance la génération." });
       }
-      console.error('generate_review_report: fetch Anthropic a échoué', fetchErr.message);
       throw fetchErr;
     } finally {
       clearTimeout(timeout);
     }
-    console.log(`generate_review_report: réponse Anthropic reçue (${Date.now() - t0}ms)`);
+    console.log(`generate_review_report: réponse IA reçue (${Date.now() - t0}ms)`);
 
     if (!anthropicRes.ok) {
       const err = await anthropicRes.json().catch(() => ({}));
@@ -316,27 +242,28 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
 
     const parsedAnalysis = extractJson(rawText);
     if (parsedAnalysis === null) {
-      console.error('generate_review_report: unparsable AI response (truncated):', rawText.slice(0, 500));
-      return res.status(502).json({ error: "Réponse IA invalide : JSON non parsable" });
+      console.error('generate_review_report: réponse IA non lisible (début) :', rawText.slice(0, 500));
+      return res.status(502).json({ error: 'Réponse IA invalide : JSON non lisible. Relance la génération.' });
     }
 
-    // 4. Validation stricte du schéma avant toute ré-association/écriture.
+    // 5. Validation stricte du schéma avant toute écriture.
     const validation = ReviewReportAnalysisSchema.safeParse(parsedAnalysis);
     if (!validation.success) {
-      console.error('generate_review_report: schema validation failed', validation.error.flatten());
-      return res.status(502).json({ error: 'Réponse IA invalide : schéma non respecté' });
+      console.error('generate_review_report: schéma non respecté', validation.error.flatten());
+      return res.status(502).json({ error: 'Réponse IA invalide : schéma non respecté. Relance la génération.' });
     }
 
-    // 5. Ré-association des pseudonymes aux vraies identités, côté serveur.
-    const analysis = reassociateRefs(validation.data, participantMap, binomeMap);
+    // 6. Remise des identités et des verbatims exacts, côté serveur.
+    const analysis = resolveAnalysis(validation.data, { verbatims, binomeMap, overview: sources.overview });
 
-    // 6. Enregistrement du rapport en brouillon.
+    // 7. Enregistrement en brouillon. La photographie des données (snapshot)
+    //    est rangée dans metrics : le rapport validé ne bougera plus.
     const { data: inserted, error: insertError } = await supabaseService
       .from('review_reports')
       .insert({
         generated_by: adminUserId,
         period_label: cohorte || 'toutes_cohortes',
-        metrics,
+        metrics: { ...metrics, snapshot },
         ai_analysis: analysis,
         status: 'draft',
       })

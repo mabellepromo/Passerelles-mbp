@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
+// Tous les exports liés aux binômes passent par la source filtrée (binôme test
+// exclu), jamais par les tables brutes : voir src/lib/programData.js.
+// Les exports mentors et mentorés (candidatures) restent lus tels quels.
+import {
+  fetchOfficialBinomes, fetchOfficialSuivis, fetchOfficialJournal, fetchOfficialBilansFinaux,
+} from '@/lib/programData';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -52,7 +58,7 @@ const EXPORTS = [
     label: 'Binômes',
     icon: '🤝',
     description: 'Tous les binômes formés avec statistiques de rencontres',
-    fetch: () => base44.entities.Binome.list('-created_date', 500),
+    fetch: () => fetchOfficialBinomes('-created_date'),
     filename: 'passerelles_binomes',
     fields: ['mentor_name','mentor_email','mentore_name','mentore_email','match_date','status','meeting_frequency','total_meetings','last_meeting_date','match_score','created_date'],
   },
@@ -61,7 +67,7 @@ const EXPORTS = [
     label: 'Suivis Mensuels',
     icon: '📋',
     description: 'Toutes les fiches de suivi mensuel avec évaluations et satisfaction',
-    fetch: () => base44.entities.SuiviMensuel.list('-meeting_date', 1000),
+    fetch: () => fetchOfficialSuivis('-meeting_date'),
     filename: 'passerelles_suivis_mensuels',
     fields: ['mentor_name','mentor_email','mentore_name','mentore_email','meeting_date','meeting_number','duration_hours','format','objectives_discussed','successes','challenges','advice_given','action_items_mentore','action_items_mentor','next_meeting_date','satisfaction_mentor','satisfaction_mentore','progress_rating','issues_reported','issue_description','submitted_by','created_date'],
   },
@@ -70,7 +76,7 @@ const EXPORTS = [
     label: 'Journal de Bord',
     icon: '📓',
     description: 'Toutes les entrées du journal de bord',
-    fetch: () => base44.entities.JournalDeBord.list('-date_entree', 1000),
+    fetch: () => fetchOfficialJournal('-date_entree'),
     filename: 'passerelles_journal',
     fields: ['binome_id','mentor_name','mentore_name','type','titre','date_entree','auteur_role','objectif_statut','objectif_progression','objectif_echeance','visible_par','tags','created_date'],
   },
@@ -79,7 +85,7 @@ const EXPORTS = [
     label: 'Bilans Finaux',
     icon: '🏆',
     description: 'Tous les bilans de fin de programme avec témoignages',
-    fetch: () => base44.entities.BilanFinal.list('-created_date', 500),
+    fetch: () => fetchOfficialBilansFinaux('-created_date'),
     filename: 'passerelles_bilans_finaux',
     fields: ['mentor_name','mentor_email','mentore_name','mentore_email','role_evaluateur','objectifs_atteints','qualite_accompagnement','satisfaction_globale','competences_developpees','points_forts','axes_amelioration','recommanderait_programme','temoignage','certificat_eligible','created_date'],
   },

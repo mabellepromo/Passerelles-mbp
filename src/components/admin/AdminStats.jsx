@@ -25,7 +25,10 @@ function StatCard({ label, value, sub, color, icon: Icon }) {
   );
 }
 
-export default function AdminStats({ stats }) {
+// Page d'accueil de l'admin, volontairement allégée : candidatures et messages
+// non lus uniquement. Les indicateurs du programme (binômes, sondage,
+// satisfaction...) vivent dans la rubrique « Données & Bilan ».
+export default function AdminStats({ stats, onOpenDonnees }) {
   const candidatureRows = [
     {
       label: 'Mentors',
@@ -47,13 +50,20 @@ export default function AdminStats({ stats }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
         <StatCard label="Mentors" value={stats.totalMentors} sub={`${stats.pendingMentors} en attente`} icon={UserCheck} color="#2563eb" />
         <StatCard label="Mentorés" value={stats.totalMentores} sub={`${stats.pendingMentores} en attente`} icon={GraduationCap} color="#7c3aed" />
-        <StatCard label="Binômes actifs" value={stats.activeBinomes} sub={`sur ${stats.totalBinomes} total`} icon={Link2} color="#059669" />
-        <StatCard label="Suivis mensuels" value={stats.totalSuivis} sub="Fiches soumises" icon={ClipboardList} color="#d97706" />
-        <StatCard label="Satisfaction moyenne" value={`${stats.avgSatisfaction}/5`} sub="Note globale" icon={Star} color="#ca8a04" />
-        <StatCard label="Signalements" value={stats.issuesReported} sub="Problèmes signalés" icon={AlertTriangle} color={stats.issuesReported > 0 ? '#dc2626' : '#6b7280'} />
         <StatCard label="Messages non lus" value={stats.unreadContacts} sub="Formulaire de contact" icon={Mail} color={stats.unreadContacts > 0 ? '#dc2626' : '#6b7280'} />
-        <StatCard label="Total participants" value={stats.totalMentors + stats.totalMentores} sub="Mentors + mentorés" icon={Users} color="#1a7a45" />
+        <StatCard label="Total candidatures" value={stats.totalMentors + stats.totalMentores} sub="Mentors + mentorés" icon={Users} color="#1a7a45" />
       </div>
+
+      {/* Renvoi vers la rubrique des indicateurs du programme */}
+      <button
+        onClick={onOpenDonnees}
+        className="w-full text-left rounded-xl border border-emerald-100 bg-emerald-50 p-4 hover:bg-emerald-100 transition-colors"
+      >
+        <p className="text-sm font-semibold text-emerald-900">Indicateurs du programme et bilan</p>
+        <p className="text-xs text-emerald-800 mt-0.5">
+          Binômes, sondage, rapport de bilan : tout est regroupé dans la rubrique « Données & Bilan ».
+        </p>
+      </button>
 
       {/* Candidatures */}
       <Card className="border-0 shadow-md">

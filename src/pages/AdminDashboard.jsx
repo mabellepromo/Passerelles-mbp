@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
@@ -23,17 +23,16 @@ import ImportCSV from '@/components/admin/ImportCSV.jsx';
 import AlertesBinomes from '@/components/admin/AlertesBinomes.jsx';
 import ExportCSV from '@/components/admin/ExportCSV.jsx';
 import ProgrammeCharts from '@/components/admin/ProgrammeCharts.jsx';
-import AnalytiqueDashboard from '@/components/admin/AnalytiqueDashboard.jsx';
 import DeclenchementBinomes from '@/components/admin/DeclenchementBinomes.jsx';
 import EnvoiEmailLibre from '@/components/admin/EnvoiEmailLibre.jsx';
 import RenvoiLien from '@/components/admin/RenvoiLien.jsx';
-import BilanReview from '@/components/admin/BilanReview.jsx';
-import RapportBilan from '@/components/admin/RapportBilan.jsx';
-import CampagneBilan from '@/components/admin/CampagneBilan.jsx';
+import DonneesBilan from '@/components/admin/donnees/DonneesBilan.jsx';
+// Source unique filtrée (binôme test exclu) : voir src/lib/programData.js
+import { fetchOfficialBinomes, fetchOfficialSuivis } from '@/lib/programData';
 
 const NAV = [
   { id: 'overview',      label: 'Vue d\'ensemble', icon: BarChart3,      group: 'Principal' },
-  { id: 'analytique',    label: 'Analytique',       icon: Activity,       group: 'Principal' },
+  { id: 'donnees',       label: 'Données & Bilan',  icon: Activity,       group: 'Principal' },
   { id: 'charts',        label: 'Graphiques',        icon: TrendingUp,     group: 'Principal' },
   { id: 'mentors',       label: 'Mentors',           icon: UserCheck,      group: 'Participants', count: 'totalMentors' },
   { id: 'mentores',      label: 'Mentorés',          icon: GraduationCap,  group: 'Participants', count: 'totalMentores' },
@@ -44,9 +43,6 @@ const NAV = [
   { id: 'renvoi-lien',  label: 'Lien d\'accès',     icon: Link2,          group: 'Outils' },
   { id: 'alertes',       label: 'Alertes',           icon: AlertTriangle,  group: 'Outils', count: 'issuesReported', alert: true },
   { id: 'suivis',        label: 'Suivis',            icon: ClipboardList,  group: 'Données', count: 'totalSuivis' },
-  { id: 'bilan',         label: 'Bilan', icon: Star,           group: 'Données' },
-  { id: 'rapport-bilan', label: 'Rapport de bilan', icon: Sparkles, group: 'Données' },
-  { id: 'campagne-bilan', label: 'Sondage & liens', icon: Send, group: 'Outils' },
   { id: 'contacts',      label: 'Messages Contact',  icon: Inbox,          group: 'Données', count: 'unreadContacts', alert: true },
   { id: 'export',        label: 'Export CSV',        icon: Download,       group: 'Données' },
   { id: 'import',        label: 'Import CSV',        icon: FileSpreadsheet,group: 'Données' },
@@ -54,6 +50,16 @@ const NAV = [
 ];
 
 const GROUPS = ['Principal', 'Participants', 'Outils', 'Données'];
+
+// Anciennes rubriques, remplacées par « Données & Bilan ».
+// Un ancien identifiant dans l'adresse (?tab=bilan, ...) est redirigé vers
+// l'onglet correspondant de la nouvelle rubrique.
+const LEGACY_TABS = {
+  analytique: 'activite',
+  bilan: 'sondage',
+  'campagne-bilan': 'sondage',
+  'rapport-bilan': 'rapport',
+};
 
 const DEFAULT_SIG = "L'équipe Ma Belle Promo";
 
@@ -445,7 +451,18 @@ function ContactMessagesView({ messages, onMarkRead, onDelete }) {
 }
 
 export default function AdminDashboard() {
-  const [activeTab, setActiveTab] = useState('overview');
+  // La rubrique ouverte est lue dans l'adresse (?tab=...), pour pouvoir
+  // partager un lien direct et rediriger les anciennes rubriques.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const requestedTab = searchParams.get('tab') || 'overview';
+  const activeTab = NAV.some(n => n.id === requestedTab) ? requestedTab : 'overview';
+  const setActiveTab = (id) => setSearchParams(id === 'overview' ? {} : { tab: id });
+
+  useEffect(() => {
+    const legacyTarget = LEGACY_TABS[requestedTab];
+    if (legacyTarget) setSearchParams({ tab: 'donnees', onglet: legacyTarget }, { replace: true });
+  }, [requestedTab, setSearchParams]);
+
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -464,8 +481,8 @@ export default function AdminDashboard() {
 
   const { data: mentors = [] }        = useQuery({ queryKey: ['mentors'],        queryFn: () => base44.entities.Mentor.list('-created_date'),                          enabled: !isLoading });
   const { data: mentores = [] }       = useQuery({ queryKey: ['mentores'],       queryFn: () => base44.entities.Mentore.list('-created_date'),                         enabled: !isLoading });
-  const { data: binomes = [] }        = useQuery({ queryKey: ['binomes'],        queryFn: () => base44.entities.Binome.list('-created_date'),                          enabled: !isLoading });
-  const { data: suivis = [] }         = useQuery({ queryKey: ['suivis'],         queryFn: () => base44.entities.SuiviMensuel.list('-created_date'),                    enabled: !isLoading });
+  const { data: binomes = [] }        = useQuery({ queryKey: ['binomes'],        queryFn: () => fetchOfficialBinomes('-created_date'),                          enabled: !isLoading });
+  const { data: suivis = [] }         = useQuery({ queryKey: ['suivis'],         queryFn: () => fetchOfficialSuivis('-created_date'),                    enabled: !isLoading });
   const { data: contactMsgs = [], refetch: refetchContacts } = useQuery({
     queryKey: ['contact_messages'],
     queryFn: async () => {
@@ -504,9 +521,6 @@ export default function AdminDashboard() {
     totalSuivis:     suivis.length,
     issuesReported:  suivis.filter(s => s.issues_reported).length,
     unreadContacts:  contactMsgs.filter(m => !m.read).length,
-    avgSatisfaction: suivis.length > 0
-      ? (suivis.reduce((acc, s) => acc + ((s.satisfaction_mentor || 0) + (s.satisfaction_mentore || 0)) / 2, 0) / suivis.length).toFixed(1)
-      : 0
   };
 
   const currentNav = NAV.find(n => n.id === activeTab);
@@ -686,16 +700,13 @@ export default function AdminDashboard() {
         {/* Content */}
         <main className="flex-1 px-5 py-4 pb-10">
           <div className={activeTab !== 'overview' ? 'bg-white rounded-2xl shadow-sm border border-gray-100 p-5' : ''}>
-            {activeTab === 'overview'      && <AdminStats stats={stats} />}
+            {activeTab === 'overview'      && <AdminStats stats={stats} onOpenDonnees={() => setActiveTab('donnees')} />}
+            {activeTab === 'donnees'       && <DonneesBilan />}
             {activeTab === 'mentors'       && <MentorsList mentors={mentors} />}
             {activeTab === 'mentores'      && <MentoresList mentores={mentores} />}
             {activeTab === 'matching'      && <MatchingTool mentors={mentors.filter(m => m.status === 'approved')} mentores={mentores.filter(m => m.status === 'approved')} />}
             {activeTab === 'binomes'       && <BinomesList binomes={binomes} />}
             {activeTab === 'suivis'        && <SuivisList suivis={suivis} />}
-            {activeTab === 'bilan'         && <BilanReview />}
-            {activeTab === 'rapport-bilan' && <RapportBilan />}
-            {activeTab === 'campagne-bilan' && <CampagneBilan />}
-            {activeTab === 'analytique'    && <AnalytiqueDashboard binomes={binomes} suivis={suivis} />}
             {activeTab === 'charts'        && <ProgrammeCharts mentors={mentors} mentores={mentores} binomes={binomes} suivis={suivis} />}
             {activeTab === 'export'        && <ExportCSV />}
             {activeTab === 'import'        && <ImportCSV />}
