@@ -103,3 +103,14 @@ export function getBinomeCountWarning(binomeCount) {
 export function ficheSatisfaction(suivi) {
   return suivi?.author_satisfaction || 0;
 }
+
+// ----------------------------------------------------------------------------
+// Métriques détaillées du sondage (questions notées par rôle, écarts au sein
+// des binômes, répartitions). Calculées en SQL par la fonction
+// build_review_report_metrics, qui lit elle aussi la source filtrée.
+// ----------------------------------------------------------------------------
+export async function fetchSurveyMetrics(cohorte = null) {
+  const { data, error } = await supabase.rpc('build_review_report_metrics', { p_cohorte: cohorte });
+  if (error) throw error;
+  return data;
+}

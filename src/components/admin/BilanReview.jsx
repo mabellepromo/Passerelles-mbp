@@ -24,6 +24,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Search, AlertTriangle, TrendingUp, Users, MessageSquareQuote, Eye, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { VigilanceBadge } from '@/components/admin/donnees/shared';
 
 const QUOTE_CONSENT_LABEL = {
   none: 'Pas de citation',
@@ -50,16 +51,6 @@ function NpsBadge({ score }) {
   return <span className="text-sm font-bold" style={{ color }}>{score}/10</span>;
 }
 
-// Un binôme est "à risque" si un des deux NPS est bas, ou si l'écart de
-// perception entre mentor et mentoré est important.
-function isPairAtRisk(pair) {
-  const { mentor_nps, mentore_nps } = pair;
-  if (mentor_nps !== null && mentor_nps <= 6) return true;
-  if (mentore_nps !== null && mentore_nps <= 6) return true;
-  if (mentor_nps !== null && mentore_nps !== null && Math.abs(mentor_nps - mentore_nps) >= 4) return true;
-  return false;
-}
-
 export default function BilanReview() {
   const [search, setSearch] = useState('');
   const [selectedResponse, setSelectedResponse] = useState(null);
@@ -83,19 +74,10 @@ export default function BilanReview() {
     }
   };
 
-  const { data: globalStats = [], isLoading: loadingStats } = useQuery({
-    queryKey: ['review_global_stats'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('review_global_stats').select('*');
-      if (error) throw error;
-      return data ?? [];
-    },
-  });
-
   const { data: pairs = [], isLoading: loadingPairs } = useQuery({
     queryKey: ['review_pair_comparison'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('review_pair_comparison').select('*');
+      const { data, error } = await supabase.from('review_pair_vigilance').select('*');
       if (error) throw error;
       return data ?? [];
     },
@@ -110,9 +92,9 @@ export default function BilanReview() {
     },
   });
 
-  const mentorStats = globalStats.find(s => s.role === 'mentor');
-  const mentoreStats = globalStats.find(s => s.role === 'mentore');
-  const pairsAtRisk = pairs.filter(isPairAtRisk);
+  // Binômes prioritaires : niveau « rouge » de la vue SQL review_pair_vigilance
+  // (règle unique, plus de calcul recopié dans ce composant).
+  const pairsAtRisk = pairs.filter(pair => pair.vigilance === 'rouge');
 
   const filteredResponses = responses.filter(r =>
     (r.participant_name || '').toLowerCase().includes(search.toLowerCase()) ||
@@ -120,7 +102,7 @@ export default function BilanReview() {
     (r.mentore_name || '').toLowerCase().includes(search.toLowerCase())
   );
 
-  const isLoading = loadingStats || loadingPairs || loadingResponses;
+  const isLoading = loadingPairs || loadingResponses;
 
   if (isLoading) {
     return (
@@ -132,48 +114,17 @@ export default function BilanReview() {
 
   return (
     <div className="space-y-6">
-      {/* Stats globales */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard
-          label="Taux de réponse mentors"
-          value={`${mentorStats?.response_rate_pct ?? 0}%`}
-          sub={`${mentorStats?.total_responses ?? 0} / ${mentorStats?.total_tokens ?? 0}`}
-          icon={Users}
-        />
-        <StatCard
-          label="Taux de réponse mentorés"
-          value={`${mentoreStats?.response_rate_pct ?? 0}%`}
-          sub={`${mentoreStats?.total_responses ?? 0} / ${mentoreStats?.total_tokens ?? 0}`}
-          icon={Users}
-          color="#7c3aed"
-        />
-        <StatCard
-          label="NPS moyen mentors"
-          value={mentorStats?.avg_nps ?? '—'}
-          sub={`NPS score ${mentorStats?.nps_score_pct ?? 0}%`}
-          icon={TrendingUp}
-          color="#d97706"
-        />
-        <StatCard
-          label="NPS moyen mentorés"
-          value={mentoreStats?.avg_nps ?? '—'}
-          sub={`NPS score ${mentoreStats?.nps_score_pct ?? 0}%`}
-          icon={TrendingUp}
-          color="#d97706"
-        />
-      </div>
-
       {/* Binômes à risque */}
       <Card className="border-0 shadow-md">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-base">
             <AlertTriangle className="h-4 w-4 text-red-500" />
-            Binômes à surveiller ({pairsAtRisk.length})
+            Binômes prioritaires ({pairsAtRisk.length})
           </CardTitle>
         </CardHeader>
         <CardContent>
           {pairsAtRisk.length === 0 ? (
-            <p className="text-sm text-gray-400">Aucun binôme signalé à risque pour le moment.</p>
+            <p className="text-sm text-gray-400">Aucun binôme prioritaire.</p>
           ) : (
             <div className="space-y-2">
               {pairsAtRisk.map(pair => (
@@ -227,13 +178,7 @@ export default function BilanReview() {
                     <td className="py-2.5 pr-4"><NpsBadge score={pair.mentor_nps} /></td>
                     <td className="py-2.5 pr-4"><NpsBadge score={pair.mentore_nps} /></td>
                     <td className="py-2.5 pr-4">
-                      {pair.mentor_nps === null && pair.mentore_nps === null ? (
-                        <Badge variant="outline" className="text-gray-400 border-gray-200">En attente</Badge>
-                      ) : isPairAtRisk(pair) ? (
-                        <Badge className="bg-red-100 text-red-700 hover:bg-red-100">À surveiller</Badge>
-                      ) : (
-                        <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">OK</Badge>
-                      )}
+                      <VigilanceBadge level={pair.vigilance} />
                     </td>
                   </tr>
                 ))}
