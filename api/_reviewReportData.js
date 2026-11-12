@@ -241,6 +241,9 @@ function buildAnalysisPrompt({ metrics, verbatims, ficheNotes, pairsForAi }, par
   // On retire des métriques ce qui ne doit pas être analysé comme un comptage.
   const metricsForAi = { ...metrics };
   delete metricsForAi.snapshot;
+  // Notes par binôme : elles portent l'identifiant réel du binôme (non
+  // pseudonymisé) et ne servent qu'à la figure interne des regards croisés.
+  delete metricsForAi.pair_scores;
 
   return `Tu rédiges la partie qualitative du rapport de bilan d'un programme de mentorat (programme PASSERELLES, association Ma Belle Promo, cohorte 1, lancée le 5 mai 2026), en français soutenu, neutre et factuel, sans superlatif gratuit. Le rapport est lu par le bureau de l'association, puis par des partenaires et bailleurs.
 
