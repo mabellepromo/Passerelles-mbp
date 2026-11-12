@@ -5,6 +5,13 @@
 //   'external' : partenaires et bailleurs, SANS donnée nominative, à la seule
 //                exception des verbatims dont l'auteur a accepté la citation.
 //
+// Deux étendues, choisies par la propriété `scope` :
+//   'full'    : le rapport complet ;
+//   'summary' : la page de garde et le résumé exécutif seulement.
+//
+// Les figures viennent de buildReportFigures (src/lib/reportFigures.js), la
+// même fonction que l'onglet « Rapport » du dashboard.
+//
 // Les chiffres viennent de report.metrics (calculés en SQL) et les textes
 // d'analyse de report.ai_analysis (IA, relus et validés). Aucun chiffre sur le
 // nombre de séances n'apparaît dans ce document.
@@ -20,6 +27,9 @@ import { mentorQuestions, mentoreQuestions, interpolateLabel } from '@/config/re
 import {
   QUESTION_LABELS, COMMON_QUESTIONS, MENTOR_ONLY_QUESTIONS, MENTORE_ONLY_QUESTIONS,
 } from '@/lib/surveyLabels';
+import { buildReportFigures, figureRef, SECTION_LABEL } from '@/lib/reportFigures';
+import ReportChart, { CHART_WIDTH } from '@/components/charts/ReportChart';
+import { PDF_PRIMITIVES } from '@/components/charts/pdfPrimitives';
 
 // Couleurs de Passerelles.
 const GREEN = '#1a7a45';
@@ -194,6 +204,22 @@ function DistributionTable({ rows, options, labels = {} }) {
   );
 }
 
+// Une figure : numéro et titre (le constat), graphique vectoriel, source et
+// phrase de lecture. wrap={false} : jamais coupée entre deux pages.
+function FigurePdf({ figure }) {
+  if (!figure) return null;
+  return (
+    <View wrap={false} style={{ marginTop: 8, marginBottom: 10 }}>
+      <Text style={{ fontSize: 9, fontFamily: 'Helvetica-Bold', color: INK, marginBottom: 5 }}>
+        Figure {figure.number} — {figure.title}
+      </Text>
+      <ReportChart figure={figure} P={PDF_PRIMITIVES} width={CHART_WIDTH} />
+      <Text style={{ fontSize: 7, color: MUTED, marginTop: 4 }}>{figure.source}.</Text>
+      <Text style={{ fontSize: 8, color: '#374151', marginTop: 2, fontFamily: 'Helvetica-Oblique' }}>Lecture : {figure.reading}</Text>
+    </View>
+  );
+}
+
 function PageFrame({ variant, isDraft }) {
   const confidentiality = variant === 'internal'
     ? 'Confidentiel — usage interne Ma Belle Promo (document nominatif)'
@@ -217,8 +243,9 @@ function PageFrame({ variant, isDraft }) {
 // ----------------------------------------------------------------------------
 
 // logoSrc : adresse du logo. La valeur par défaut convient au navigateur.
-export default function ReviewReportPdf({ report, variant = 'internal', summaryOverride = null, logoSrc = '/logo-mbp.png' }) {
+export default function ReviewReportPdf({ report, variant = 'internal', scope = 'full', summaryOverride = null, logoSrc = '/logo-mbp.png' }) {
   const isInternal = variant === 'internal';
+  const isSummaryOnly = scope === 'summary';
   const isDraft = report.status !== 'validated';
   const m = report.metrics;
   const a = report.ai_analysis;
@@ -246,8 +273,18 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
   const summaryText = summaryOverride ?? a.executive_summary;
   const editionDate = formatDateFr(report.validated_at || report.generated_at);
 
+  // Figures : même calcul que l'onglet du dashboard. Une figure dont la
+  // donnée manque n'existe pas : F() ne dessine rien et ref() ne la cite pas.
+  const figures = buildReportFigures(report, variant);
+  const fig = (id) => figures.find((f) => f.id === id);
+  const F = (id) => <FigurePdf figure={fig(id)} />;
+  const ref = (...ids) => {
+    const r = figureRef(figures, ...ids);
+    return r ? ` (${r})` : '';
+  };
+
   return (
-    <Document title={`Rapport de bilan ${PROGRAM.name} — ${PROGRAM.cohort}`} author="Ma Belle Promo">
+    <Document title={`${isSummaryOnly ? 'Résumé exécutif' : 'Rapport de bilan'} ${PROGRAM.name} — ${PROGRAM.cohort}`} author="Ma Belle Promo">
       {/* ------------------------------------------------ 1. Page de garde */}
       <Page size="A4" style={styles.cover}>
         <View style={styles.coverInner}>
@@ -255,7 +292,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
           <View>
             <Text style={styles.coverKicker}>Programme de mentorat</Text>
             <Text style={styles.coverTitle}>{PROGRAM.name}</Text>
-            <Text style={styles.coverSubtitle}>Rapport de bilan — {PROGRAM.cohort}</Text>
+            <Text style={styles.coverSubtitle}>{isSummaryOnly ? 'Résumé exécutif du rapport de bilan' : 'Rapport de bilan'} — {PROGRAM.cohort}</Text>
             <View style={styles.coverRule} />
             <Text style={styles.coverMeta}>{PROGRAM.association}</Text>
             <Text style={styles.coverMeta}>Période couverte : du {PROGRAM.startDateLabel} au {formatDateFr(report.generated_at)}</Text>
@@ -275,7 +312,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
       {/* ------------------------------------------------ 2. Résumé exécutif (une page) */}
       <Page size="A4" style={styles.page}>
         <PageFrame variant={variant} isDraft={isDraft} />
-        <Text style={styles.h1}>2. Résumé exécutif</Text>
+        <Text style={styles.h1}>{isSummaryOnly ? 'Résumé exécutif' : '2. Résumé exécutif'}</Text>
         <View style={styles.kpiGrid}>
           {keyFigures.slice(0, 6).map((k) => (
             <View key={k.label} style={styles.kpiBox}>
@@ -293,7 +330,15 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
         <Text style={styles.h2}>Recommandations principales</Text>
         <Bullets items={recommendations.slice(0, 3).map((r) => `${r.text} (priorité ${r.priority})`)} />
         {a.sample_warning && <Text style={styles.note}>{a.sample_warning}</Text>}
+        {isSummaryOnly && (
+          <Text style={[styles.source, { marginTop: 10 }]}>
+            Extrait du rapport de bilan {PROGRAM.name} — {PROGRAM.cohort}. Méthodologie, limites, figures et détail des résultats : voir le rapport complet.
+          </Text>
+        )}
       </Page>
+
+      {/* Tout ce qui suit n'est pas imprimé dans l'export « résumé exécutif seul ». */}
+      {!isSummaryOnly && (<>
 
       {/* ------------------------------------------------ Corps du rapport */}
       <Page size="A4" style={styles.page}>
@@ -308,9 +353,19 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
           <Bullets items={presentation.objectives} />
           <Text style={styles.h2}>Public</Text>
           <Bullets items={presentation.audience} />
-          <Text style={styles.h2}>Pays et ville de résidence des mentors</Text>
-          <Bullets items={presentation.mentorPlaces} />
-          <Source>pages « Programme complet » et « À propos » du site ; tables mentor et mentore (candidatures) ; lieu déclaré par les mentors à l'inscription.</Source>
+          <Source>pages « Programme complet » et « À propos » du site ; tables mentor et mentore (candidatures).</Source>
+          <Text style={styles.h2}>Profil de la cohorte</Text>
+          <Text style={styles.p}>
+            Sexe des participants, niveau d'études des mentorés et pays de résidence des mentors, déclarés à l'inscription{ref('profile_sexe', 'profile_level', 'profile_country')}.
+          </Text>
+          {F('profile_sexe')}
+          {F('profile_level')}
+          {fig('profile_country') ? F('profile_country') : (
+            <>
+              <Text style={styles.h2}>Pays et ville de résidence des mentors</Text>
+              <Bullets items={presentation.mentorPlaces} />
+            </>
+          )}
         </View>
 
         {/* 4. Méthodologie */}
@@ -322,6 +377,9 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
           <Bullets items={methodology.period} />
           <Text style={styles.h2}>Taux de réponse au sondage</Text>
           <Bullets items={methodology.responseRate} />
+          {ref('response_rate', 'pair_coverage') ? <Text style={styles.p}>Détail par rôle et par binôme{ref('response_rate', 'pair_coverage')}.</Text> : null}
+          {F('response_rate')}
+          {F('pair_coverage')}
           <Text style={styles.h2}>Exclusion du binôme de test</Text>
           <Text style={styles.p}>{methodology.exclusion}</Text>
           <Text style={styles.h2}>Limites</Text>
@@ -362,16 +420,46 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
           <Text style={styles.h1}>6. Résultats quantitatifs du sondage</Text>
 
           <Text style={styles.h2}>Recommandation du programme (note de 0 à 10)</Text>
-          <NpsChart title="Ensemble des répondants" promoters={s.nps_promoters} passives={s.nps_passives} detractors={s.nps_detractors} />
-          <NpsChart title="Mentors" promoters={npsRole('mentor').promoters} passives={npsRole('mentor').passives} detractors={npsRole('mentor').detractors} />
-          <NpsChart title="Mentorés" promoters={npsRole('mentore').promoters} passives={npsRole('mentore').passives} detractors={npsRole('mentore').detractors} />
           <Text style={styles.p}>
             NPS (part des promoteurs moins part des détracteurs) : {s.nps_score > 0 ? '+' : ''}{s.nps_score}, sur {s.nps_answers} réponses.
-            Note moyenne : {num(npsRole('mentor').avg_nps)}/10 pour les mentors, {num(npsRole('mentore').avg_nps)}/10 pour les mentorés.
+            Note moyenne : {num(npsRole('mentor').avg_nps)}/10 pour les mentors, {num(npsRole('mentore').avg_nps)}/10 pour les mentorés{ref('nps', 'nps_histogram')}.
           </Text>
-          <Source>official_survey_summary (nps_*) ; build_review_report_metrics, clé nps.</Source>
+          {fig('nps') ? F('nps') : (
+            <>
+              <NpsChart title="Ensemble des répondants" promoters={s.nps_promoters} passives={s.nps_passives} detractors={s.nps_detractors} />
+              <NpsChart title="Mentors" promoters={npsRole('mentor').promoters} passives={npsRole('mentor').passives} detractors={npsRole('mentor').detractors} />
+              <NpsChart title="Mentorés" promoters={npsRole('mentore').promoters} passives={npsRole('mentore').passives} detractors={npsRole('mentore').detractors} />
+            </>
+          )}
+          {F('nps_histogram')}
+          {!fig('nps') && <Source>official_survey_summary (nps_*) ; build_review_report_metrics, clé nps.</Source>}
 
           <Text style={styles.h2}>Questions notées de 1 à 5, par rôle</Text>
+          {fig('likert_common') ? (
+            <>
+              <Text style={styles.p}>
+                Répartition des notes, de 1 (Pas du tout) à 5 (Totalement), pour les questions posées aux deux rôles puis pour celles propres à chaque rôle{ref('likert_common', 'likert_mentor', 'likert_mentore')}.
+                La régularité des sessions, appréciation déclarée et formulée différemment selon le rôle, figure seulement dans le tableau de l'annexe B.
+              </Text>
+              {F('likert_common')}
+              {F('likert_mentor')}
+              {F('likert_mentore')}
+              <Text style={styles.h2}>Écart entre mentor et mentoré d'un même binôme</Text>
+              <View style={styles.headRow}>
+                <Text style={[styles.th, { width: '60%' }]}>Question</Text>
+                <Text style={[styles.th, { width: '40%', textAlign: 'right' }]}>Écart moyen (binômes)</Text>
+              </View>
+              {COMMON_QUESTIONS.filter((id) => gapStat(id)).map((id) => (
+                <View key={id} style={styles.row} wrap={false}>
+                  <Text style={[styles.td, { width: '60%' }]}>{QUESTION_LABELS[id] || id}</Text>
+                  <Text style={[styles.td, { width: '40%', textAlign: 'right' }]}>{num(gapStat(id).avg_gap)} point ({gapStat(id).n_pairs} binômes)</Text>
+                </View>
+              ))}
+              <Text style={styles.source}>
+                Écart moyen : différence, question par question, entre la note du mentor et celle du mentoré d'un même binôme, sur les {s.pairs_with_both_responses} binômes où les deux ont répondu.
+              </Text>
+            </>
+          ) : (<>
           <Legend items={[{ label: 'Mentors', color: GREEN }, { label: 'Mentorés', color: PURPLE }]} />
           <View style={styles.headRow}>
             <Text style={[styles.th, { width: '34%' }]}>Question</Text>
@@ -387,6 +475,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
             appréciation déclarée par les participants.
           </Text>
           <Source>build_review_report_metrics, clés likert_by_question et pair_gaps.</Source>
+          </>)}
 
           <Text style={styles.h2}>Atteinte des objectifs</Text>
           <Text style={styles.p}>
@@ -403,14 +492,30 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
           </Text>
 
           <Text style={styles.h2}>Apports du mentorat (plusieurs réponses possibles)</Text>
-          <DistributionTable rows={m.contribution_distribution} options={contributionOptions} />
-          <Text style={styles.source}>Mentors : ce qu'ils disent avoir apporté. Mentorés : ce qu'ils disent avoir reçu.</Text>
+          {fig('contributions') ? (
+            <>
+              <Text style={styles.p}>Mentors : ce qu'ils disent avoir apporté. Mentorés : ce qu'ils disent avoir reçu{ref('contributions')}.</Text>
+              {F('contributions')}
+            </>
+          ) : (
+            <>
+              <DistributionTable rows={m.contribution_distribution} options={contributionOptions} />
+              <Text style={styles.source}>Mentors : ce qu'ils disent avoir apporté. Mentorés : ce qu'ils disent avoir reçu.</Text>
+            </>
+          )}
 
           <Text style={styles.h2}>La plateforme a-t-elle gêné le fonctionnement du binôme ? (question facultative)</Text>
           <DistributionTable rows={m.platform_impact_distribution} options={['Oui', 'Partiellement', 'Non', 'Non concerné(e)']} />
 
           <Text style={styles.h2}>Intérêt pour une nouvelle expérience de mentorat (question générale et hypothétique)</Text>
-          <DistributionTable rows={m.continuation_distribution} options={Object.keys(CONTINUATION_LABELS)} labels={CONTINUATION_LABELS} />
+          {fig('continuation') ? (
+            <>
+              <Text style={styles.p}>Réponses par rôle{ref('continuation')}.</Text>
+              {F('continuation')}
+            </>
+          ) : (
+            <DistributionTable rows={m.continuation_distribution} options={Object.keys(CONTINUATION_LABELS)} labels={CONTINUATION_LABELS} />
+          )}
           <Source>build_review_report_metrics, clés sessions_distribution, contribution_distribution, platform_impact_distribution, continuation_distribution.</Source>
         </View>
 
@@ -506,18 +611,30 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
             </View>
           ))}
 
+          {/* Regards croisés par binôme : VERSION INTERNE UNIQUEMENT */}
+          {isInternal && fig('pair_views') && (
+            <>
+              <Text style={styles.h2}>Regards croisés au sein des binômes</Text>
+              <Text style={styles.p}>
+                Pour les binômes où les deux ont répondu, note du mentor et note du mentoré côte à côte{ref('pair_views')}.
+              </Text>
+              {F('pair_views')}
+            </>
+          )}
+
           <Text style={styles.h2}>Binômes à surveiller</Text>
           <Text style={styles.p}>
             Niveau de vigilance calculé d'après la note de recommandation du sondage : prioritaire si une note est
-            inférieure ou égale à 6 ou si l'écart entre mentor et mentoré atteint 4 points ; à surveiller si une note vaut 7 ou 8.
+            inférieure ou égale à 6 ou si l'écart entre mentor et mentoré atteint 4 points ; à surveiller si une note vaut 7 ou 8{isInternal ? ref('vigilance') : ''}.
           </Text>
-          {vigilance.map((v) => (
+          {isInternal && F('vigilance')}
+          {!(isInternal && fig('vigilance')) && vigilance.map((v) => (
             <View key={v.level} style={styles.row} wrap={false}>
               <Text style={[styles.td, { width: '60%' }]}>{v.label}</Text>
               <Text style={[styles.td, { width: '40%', textAlign: 'right' }]}>{share(v.count, v.total)} binômes</Text>
             </View>
           ))}
-          <Source>review_pair_vigilance.</Source>
+          {!(isInternal && fig('vigilance')) && <Source>review_pair_vigilance.</Source>}
 
           {/* Détail nominatif : VERSION INTERNE UNIQUEMENT */}
           {isInternal && (
@@ -659,6 +776,33 @@ export default function ReviewReportPdf({ report, variant = 'internal', summaryO
             ))}
         </View>
       </Page>
+
+      {/* ------------------------------------------------ Table des figures */}
+      {figures.length > 0 && (
+        <Page size="A4" style={styles.page}>
+          <PageFrame variant={variant} isDraft={isDraft} />
+          <View style={styles.section}>
+            <Text style={styles.h1}>11. Annexes — D. Table des figures</Text>
+            <View style={styles.headRow}>
+              <Text style={[styles.th, { width: '10%' }]}>Figure</Text>
+              <Text style={[styles.th, { width: '62%' }]}>Titre</Text>
+              <Text style={[styles.th, { width: '28%' }]}>Section</Text>
+            </View>
+            {figures.map((f) => (
+              <View key={f.id} style={styles.row} wrap={false}>
+                <Text style={[styles.td, { width: '10%' }]}>{f.number}</Text>
+                <Text style={[styles.td, { width: '62%', paddingRight: 6 }]}>{f.title}</Text>
+                <Text style={[styles.td, { width: '28%' }]}>{SECTION_LABEL[f.section]}</Text>
+              </View>
+            ))}
+            <Text style={styles.source}>
+              Toutes les figures sont calculées sur les binômes officiels (binôme de test exclu), effectifs affichés sur chaque figure.
+              {isInternal ? '' : ' Les figures par binôme sont réservées à la version interne.'}
+            </Text>
+          </View>
+        </Page>
+      )}
+      </>)}
     </Document>
   );
 }

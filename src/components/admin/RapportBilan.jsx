@@ -5,7 +5,8 @@
 //                 qualitative par l'IA et enregistre un BROUILLON (status 'draft').
 //   2. Relire   : la synthèse est modifiable tant que le rapport est en brouillon.
 //   3. Valider  : status 'validated' ; le rapport est alors figé.
-//   4. Exporter : PDF en version interne (nominative) ou externe (partenaires).
+//   4. Exporter : PDF en version interne (nominative) ou externe (partenaires),
+//                 complet ou réduit au résumé exécutif.
 //
 // La version externe n'est exportable qu'une fois le rapport validé.
 import React, { useState } from 'react';
@@ -23,6 +24,7 @@ import { EXPECTED_BINOME_COUNT, getBinomeCountWarning } from '@/lib/programData'
 import { isReportUsable, buildKeyFigures, buildMethodology, VIGILANCE_LABEL, VERBATIM_FIELD_LABEL, PAIR_STATUS_LABEL, countPairStatus } from '@/lib/reportContent';
 import { WarningBanner, Loader } from '@/components/admin/donnees/shared';
 import ReviewReportPdf from './ReviewReportPdf';
+import ReportFigures from '@/components/charts/ReportFigures';
 
 // Le rapport porte sur la cohorte 1.
 const COHORTE = '1';
@@ -41,7 +43,7 @@ export default function RapportBilan() {
   const queryClient = useQueryClient();
   const [generating, setGenerating] = useState(false);
   const [validating, setValidating] = useState(false);
-  const [exporting, setExporting] = useState(null); // 'internal' | 'external' | null
+  const [exporting, setExporting] = useState(null); // ex. 'internal-full', 'external-summary' ou null
   const [editedSummary, setEditedSummary] = useState(null);
 
   // Dernier rapport généré pour la cohorte (les anciens brouillons restent en base).
@@ -109,17 +111,19 @@ export default function RapportBilan() {
     }
   }
 
-  async function handleExport(variant) {
+  // scope : 'full' (rapport complet) ou 'summary' (page de garde + résumé exécutif).
+  async function handleExport(variant, scope = 'full') {
     if (!report) return;
-    setExporting(variant);
+    setExporting(`${variant}-${scope}`);
     try {
       const blob = await pdf(
-        <ReviewReportPdf report={report} variant={variant} summaryOverride={editedSummary} />
+        <ReviewReportPdf report={report} variant={variant} scope={scope} summaryOverride={editedSummary} />
       ).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `rapport-bilan-passerelles-cohorte-${COHORTE}-${variant === 'internal' ? 'interne' : 'externe'}${isValidated ? '' : '-brouillon'}.pdf`;
+      const base = scope === 'summary' ? 'resume-executif' : 'rapport-bilan';
+      link.download = `${base}-passerelles-cohorte-${COHORTE}-${variant === 'internal' ? 'interne' : 'externe'}${isValidated ? '' : '-brouillon'}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
     } catch (err) {
@@ -196,21 +200,39 @@ export default function RapportBilan() {
           <div className="rounded-xl border border-gray-100 p-4 space-y-2">
             <p className="text-sm font-semibold text-gray-800">Version interne</p>
             <p className="text-xs text-gray-500">Nominative, avec les binômes à surveiller. Réservée au bureau de Ma Belle Promo.</p>
-            <Button variant="outline" onClick={() => handleExport('internal')} disabled={exporting !== null || exportBlocked}>
-              {exporting === 'internal' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
-              Exporter la version interne{isValidated ? '' : ' (brouillon)'}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={() => handleExport('internal')} disabled={exporting !== null || exportBlocked}>
+                {exporting === 'internal-full' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                Rapport complet{isValidated ? '' : ' (brouillon)'}
+              </Button>
+              <Button variant="ghost" onClick={() => handleExport('internal', 'summary')} disabled={exporting !== null || exportBlocked}>
+                {exporting === 'internal-summary' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                Résumé exécutif seul
+              </Button>
+            </div>
           </div>
           <div className="rounded-xl border border-gray-100 p-4 space-y-2">
             <p className="text-sm font-semibold text-gray-800">Version externe</p>
             <p className="text-xs text-gray-500">Partenaires et bailleurs. Aucun nom, sauf les citations autorisées par leur auteur.</p>
-            <Button variant="outline" onClick={() => handleExport('external')} disabled={exporting !== null || exportBlocked || !isValidated}>
-              {exporting === 'external' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
-              Exporter la version externe
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={() => handleExport('external')} disabled={exporting !== null || exportBlocked || !isValidated}>
+                {exporting === 'external-full' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                Rapport complet
+              </Button>
+              <Button variant="ghost" onClick={() => handleExport('external', 'summary')} disabled={exporting !== null || exportBlocked || !isValidated}>
+                {exporting === 'external-summary' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
+                Résumé exécutif seul
+              </Button>
+            </div>
             {!isValidated && <p className="text-xs text-amber-700">Disponible une fois le rapport validé.</p>}
           </div>
         </CardContent>
+      </Card>
+
+      {/* Figures du rapport : mêmes composants et mêmes calculs que le PDF */}
+      <Card className="border-0 shadow-md">
+        <CardHeader><CardTitle className="text-base">Figures du rapport</CardTitle></CardHeader>
+        <CardContent><ReportFigures report={report} /></CardContent>
       </Card>
 
       {/* Chiffres clés (calculés en SQL) */}
