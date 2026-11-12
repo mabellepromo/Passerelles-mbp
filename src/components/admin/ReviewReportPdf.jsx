@@ -42,6 +42,8 @@ const LINE = '#e5e7eb';
 const NPS_COLORS = { promoters: '#059669', passives: '#d97706', detractors: '#dc2626' };
 
 const PRIORITY_ORDER = { haute: 0, moyenne: 1, basse: 2 };
+// Signature des citations dans la version externe (aucun nom).
+const QUOTE_ROLE_LABEL = { mentor: 'Un mentor', mentore: 'Un(e) mentoré(e)' };
 const CONTINUATION_LABELS = {
   yes_definitely: 'Oui, certainement',
   yes_probably: 'Oui, probablement',
@@ -304,7 +306,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
           <Text style={{ fontSize: 8.5, color: '#a7f3d0' }}>
             {isInternal
               ? 'Document confidentiel. Il contient des données nominatives et ne doit pas être diffusé hors du bureau de Ma Belle Promo.'
-              : 'Document sans donnée nominative, à l\'exception des citations dont l\'auteur a accepté la publication.'}
+              : 'Document sans donnée nominative : aucun participant n\'y est nommé, citations comprises.'}
           </Text>
         </View>
       </Page>
@@ -552,11 +554,14 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
           ) : a.notable_quotes.map((q) => (
             <View key={q.verbatim_id} style={styles.quote} wrap={false}>
               <Text style={styles.quoteText}>« {q.text} »</Text>
-              <Text style={styles.quoteBy}>— {q.attribution} · {VERBATIM_FIELD_LABEL[q.field] || ''}</Text>
+              {/* Version externe : citation signée par le rôle seul, jamais par un nom. */}
+              <Text style={styles.quoteBy}>— {isInternal ? q.attribution : QUOTE_ROLE_LABEL[q.role] || 'Un participant'} · {VERBATIM_FIELD_LABEL[q.field] || ''}</Text>
             </View>
           ))}
           <Text style={styles.source}>
-            Seules les réponses dont l'auteur a accepté la citation sont reproduites, signées du prénom seul ou du nom complet selon son choix.
+            {isInternal
+              ? 'Seules les réponses dont l\'auteur a accepté la citation sont reproduites, signées du prénom seul ou du nom complet selon son choix.'
+              : 'Seules les réponses dont l\'auteur a accepté la citation sont reproduites ; dans cette version, elles sont signées du seul rôle de leur auteur.'}
           </Text>
         </View>
 

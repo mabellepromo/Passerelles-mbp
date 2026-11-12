@@ -213,7 +213,7 @@ export default function RapportBilan() {
           </div>
           <div className="rounded-xl border border-gray-100 p-4 space-y-2">
             <p className="text-sm font-semibold text-gray-800">Version externe</p>
-            <p className="text-xs text-gray-500">Partenaires et bailleurs. Aucun nom, sauf les citations autorisées par leur auteur.</p>
+            <p className="text-xs text-gray-500">Partenaires et bailleurs. Aucun nom de participant, citations comprises (signées par le rôle).</p>
             <div className="flex flex-wrap gap-2">
               <Button variant="outline" onClick={() => handleExport('external')} disabled={exporting !== null || exportBlocked || !isValidated}>
                 {exporting === 'external-full' ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Download className="h-4 w-4 mr-2" />}
