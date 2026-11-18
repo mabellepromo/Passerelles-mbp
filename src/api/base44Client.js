@@ -67,11 +67,13 @@ const makeEntity = (tableName) => ({
 // Liste des emails admin
 const ADMIN_EMAILS = ['contact@mabellepromo.org', 'senayhola@gmail.com', 'mabellepromo@gmail.com'];
 
+// Même règle que la fonction SQL is_admin_user() : liste d'emails ou
+// app_metadata.role (écrit par le serveur seulement). user_metadata n'est
+// PAS pris en compte : chaque utilisateur peut le modifier lui-même.
 const isUserAdmin = (user) => {
   if (!user) return false;
   if (ADMIN_EMAILS.includes(user.email)) return true;
-  const role = user.user_metadata?.role || user.app_metadata?.role;
-  return role === 'admin';
+  return user.app_metadata?.role === 'admin';
 };
 
 const auth = {
@@ -127,12 +129,11 @@ const auth = {
 const functions = {
   invoke: async (name) => {
     if (name === 'getCohorte1Binomes') {
-      const [binomes, mentors, mentores] = await Promise.all([
-        supabase.from('binome').select('*').eq('cohorte', '1').eq('status', 'active').eq('is_test', false).order('match_date'),
-        supabase.from('mentor').select('*').eq('status', 'matched'),
-        supabase.from('mentore').select('*').eq('status', 'matched'),
-      ]);
-      return { data: { binomes: binomes.data ?? [], mentors: mentors.data ?? [], mentores: mentores.data ?? [] } };
+      // Fonction SQL get_cohort1_directory : coordonnées et dossiers renvoyés
+      // seulement à l'admin et aux deux membres du binôme (champ can_view).
+      const { data, error } = await supabase.rpc('get_cohort1_directory');
+      if (error) throw error;
+      return { data: { binomes: data?.binomes ?? [], mentors: data?.mentors ?? [], mentores: data?.mentores ?? [] } };
     } else if (name === 'getMyBinomes') {
       const { data: { session } } = await supabase.auth.getSession();
       const user = session?.user;

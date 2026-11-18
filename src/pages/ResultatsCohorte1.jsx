@@ -413,7 +413,10 @@ export default function ResultatsCohorte1() {
   }, []);
 
   // Détermine si l'utilisateur courant peut ouvrir la fiche d'un binôme
+  // can_view est calculé par le serveur (get_cohort1_directory) : sans lui,
+  // les coordonnées ne sont de toute façon pas renvoyées.
   const canView = (b) =>
+    b.can_view === true ||
     isAdmin ||
     (userEmail && (userEmail === b.mentor_email || userEmail === b.mentore_email));
 

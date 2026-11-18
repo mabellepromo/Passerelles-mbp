@@ -8,18 +8,15 @@ export default function HomeProgramStats() {
   const [avgSatisfaction, setAvgSatisfaction] = useState('–');
 
   useEffect(() => {
+    // Agrégats seulement (fonction SQL get_public_program_stats) : le visiteur
+    // ne reçoit plus le contenu des fiches, seulement les deux chiffres.
     supabase
-      .from('suivi_mensuel')
-      .select('satisfaction_mentor, satisfaction_mentore', { count: 'exact' })
-      .then(({ data, count, error }) => {
+      .rpc('get_public_program_stats')
+      .then(({ data, error }) => {
         if (error || !data) return;
-        setSeancesCount(count ?? data.length);
-        if (data.length > 0) {
-          const avg = data.reduce(
-            (acc, s) => acc + ((s.satisfaction_mentor || 0) + (s.satisfaction_mentore || 0)) / 2,
-            0
-          ) / data.length;
-          setAvgSatisfaction(`${avg.toFixed(1)}/5`);
+        setSeancesCount(data.fiches_count ?? 0);
+        if (data.fiches_count > 0 && data.avg_satisfaction !== null) {
+          setAvgSatisfaction(`${Number(data.avg_satisfaction).toFixed(1)}/5`);
         }
       });
   }, []);
