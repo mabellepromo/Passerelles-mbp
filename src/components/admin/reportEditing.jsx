@@ -66,7 +66,8 @@ export function cleanAnalysis(a) {
     strengths: (a.strengths || []).map((s) => ({ ...s, title: t(s.title), evidence: t(s.evidence) })).filter((s) => s.title || s.evidence),
     improvements: (a.improvements || []).map((s) => ({ ...s, title: t(s.title), evidence: t(s.evidence) })).filter((s) => s.title || s.evidence),
     recurring_themes: (a.recurring_themes || []).map((r) => ({ ...r, theme: t(r.theme) })).filter((r) => r.theme),
-    recommendations: (a.recommendations || []).map((r) => ({ ...r, text: t(r.text), owner: t(r.owner) })).filter((r) => r.text),
+    recommendations: (a.recommendations || []).map((r) => ({ ...r, text: t(r.text), owner: t(r.owner), basis: t(r.basis) || undefined })).filter((r) => r.text),
+    follow_up_summary: t(a.follow_up_summary) || undefined,
     pair_status: (a.pair_status || []).map((p) => ({ ...p, basis: t(p.basis) })),
     pairs_to_watch: (a.pairs_to_watch || []).map((p) => ({ ...p, reason: t(p.reason) })),
   };

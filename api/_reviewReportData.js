@@ -145,7 +145,11 @@ async function readAll(supabase, viewName) {
 }
 
 async function loadReportSources(supabase) {
-  const [summaryRows, overview, responses, fiches, binomes, campaigns] = await Promise.all([
+  // Lecture de quelques colonnes seulement (jamais le contenu des messages).
+  const pick = (viewName, columns) => supabase.from(viewName).select(columns)
+    .then(({ data, error }) => { if (error) throw new Error(`Lecture de ${viewName} : ${error.message}`); return data ?? []; });
+
+  const [summaryRows, overview, responses, fiches, binomes, campaigns, messages, surveyLinks, surveyEmails, finalReviews] = await Promise.all([
     readAll(supabase, 'official_survey_summary'),
     readAll(supabase, 'official_binome_overview'),
     readAll(supabase, 'review_by_participant'),
@@ -154,6 +158,10 @@ async function loadReportSources(supabase) {
     supabase.from('review_campaigns').select('name, status, deadline, launched_at')
       .order('created_at', { ascending: false }).limit(1)
       .then(({ data, error }) => { if (error) throw new Error(error.message); return data ?? []; }),
+    pick('official_messages', 'binome_id, created_date'),
+    pick('official_review_tokens', 'id, used_at'),
+    pick('official_review_email_log', 'email_type, status, sent_at'),
+    pick('official_bilans_finaux', 'binome_id'),
   ]);
 
   // Lieu de résidence déclaré par les mentors des binômes officiels.
@@ -181,6 +189,60 @@ async function loadReportSources(supabase) {
     mentors: mentors ?? [],
     mentorApplications: mentorApplications ?? null,
     mentoreApplications: mentoreApplications ?? null,
+    messages,
+    surveyLinks,
+    surveyEmails,
+    finalReviews,
+  };
+}
+
+// ----------------------------------------------------------------------------
+// Le suivi entre les séances (section « Analyse »)
+// Faits vérifiables sur les outils de suivi de la cohorte 1. Aucun nombre de
+// séances n'est calculé ni enregistré ici : la tranche déclarée au sondage sert
+// seulement à repérer les binômes qui décrivent des échanges (tranche autre
+// que « 0-1 ») alors qu'ils ont laissé une fiche au plus.
+// ----------------------------------------------------------------------------
+const day = (value) => (value ? String(value).slice(0, 10) : null);
+
+function buildFollowUp(sources) {
+  const binomeIds = sources.overview.map((b) => b.binome_id);
+  const fichesByBinome = new Map(binomeIds.map((id) => [id, 0]));
+  for (const f of sources.fiches) {
+    if (fichesByBinome.has(f.binome_id)) fichesByBinome.set(f.binome_id, fichesByBinome.get(f.binome_id) + 1);
+  }
+  const describesExchanges = new Set(
+    sources.responses
+      .filter((r) => r.answers?.sessions_count && r.answers.sessions_count !== '0-1')
+      .map((r) => r.binome_id),
+  );
+
+  const messageDays = sources.messages.map((m) => day(m.created_date)).filter(Boolean).sort();
+  const reminderDays = [...new Set(
+    sources.surveyEmails.filter((e) => e.email_type === 'reminder' && e.status === 'sent').map((e) => day(e.sent_at)),
+  )].filter(Boolean).sort();
+  const responseDays = sources.responses.map((r) => day(r.submitted_at)).filter(Boolean);
+
+  return {
+    binomes_total: binomeIds.length,
+    binomes_with_fiche: [...fichesByBinome.values()].filter((n) => n > 0).length,
+    // Binômes qui décrivent des échanges mais n'ont laissé aucune fiche ou une seule.
+    binomes_exchanges_few_fiches: binomeIds.filter((id) => describesExchanges.has(id) && fichesByBinome.get(id) <= 1).length,
+    platform_messages: {
+      count: messageDays.length,
+      first_day: messageDays[0] ?? null,
+      last_day: messageDays[messageDays.length - 1] ?? null,
+    },
+    platform_final_reviews: sources.finalReviews.length,
+    survey_links: {
+      sent: sources.surveyLinks.length,
+      answered: sources.surveyLinks.filter((t) => t.used_at).length,
+      invitations: sources.surveyEmails.filter((e) => e.email_type === 'invitation' && e.status === 'sent').length,
+      reminders: sources.surveyEmails.filter((e) => e.email_type === 'reminder' && e.status === 'sent').length,
+      reminder_days: reminderDays,
+      responses_before_first_reminder: reminderDays.length ? responseDays.filter((d) => d < reminderDays[0]).length : null,
+      responses_from_last_reminder: reminderDays.length ? responseDays.filter((d) => d >= reminderDays[reminderDays.length - 1]).length : null,
+    },
   };
 }
 
@@ -229,6 +291,7 @@ function buildSnapshot(sources) {
       all_notes_identical: fichesRated.length > 0 && satisfactionValues.length === 1,
       single_value: satisfactionValues.length === 1 ? satisfactionValues[0] : null,
     },
+    follow_up: buildFollowUp(sources),
   };
 }
 
@@ -268,7 +331,7 @@ Règles strictes :
 5. "recurring_themes" : thèmes qui reviennent dans les verbatims (strengths, improvements, objectives_comment). "frequency" = nombre de verbatims différents qui l'évoquent. "field" = le champ dominant.
 6. "notable_quotes" : 4 à 8 identifiants de verbatims (V-xx) dont "quotable" vaut true, représentatifs des thèmes, mêlant points forts et points à améliorer. Ne recopie pas le texte : renvoie uniquement l'identifiant.
 7. "pairs_to_watch" : uniquement des "binome_ref" de niveau "rouge" ou "orange" présents ci-dessus, avec une raison factuelle (notes, écart mentor / mentoré, verbatims), sans jugement sur les personnes.
-8. "recommendations" : 4 à 6 actions concrètes et priorisées ("haute", "moyenne", "basse"), chacune avec un "owner" associatif plausible (ex. « Coordination PASSERELLES », « Bureau de Ma Belle Promo ») — jamais un nom de personne. Tu DOIS inclure l'enregistrement systématique des séances sur la plateforme comme point d'amélioration.
+8. "recommendations" : 4 à 8 actions concrètes et priorisées ("haute", "moyenne", "basse"), chacune avec un "owner" associatif plausible (ex. « Coordinateur PASSERELLES », « Bureau de Ma Belle Promo ») — jamais un nom de personne. Chaque recommandation a un "basis" : le constat de la cohorte 1 qui la justifie, avec la donnée et son effectif ; si aucune donnée ne l'appuie, "basis" commence par « Bonne pratique : ». Le suivi entre les séances fait l'objet d'une PISTE À TESTER, à reprendre dans cet ordre et au conditionnel, jamais comme un dispositif existant ou dont l'efficacité est prouvée : (a) un suivi mensuel par lien personnel, sans identifiant ni mot de passe ; (b) un « check-in mensuel » unique de moins d'une minute qui remplacerait la fiche de séance ; (c) un rappel par WhatsApp le 25 du mois et une relance trois jours plus tard aux seuls non-répondants, le coordinateur saisissant les réponses données directement sur WhatsApp ; (d) un bilan de fin de cohorte ouvert avec le même lien et pré-rempli avec l'historique des check-ins ; (e) un test sur 2 ou 3 binômes pendant un mois avant toute généralisation. Ne recommande JAMAIS de renforcer la connexion à la plateforme, ni d'y rendre obligatoire l'enregistrement des séances. N'écris aucun terme technique (token, identifiant technique, base de données).
 9. "key_findings" : 3 à 5 constats courts et chiffrés pour le résumé exécutif.
 10. "conclusion" : 4 à 6 phrases, bilan équilibré et perspectives formulées au conditionnel (règle 4).
 11. "sample_warning" : une phrase rappelant que les résultats reposent sur un petit effectif et doivent être lus avec prudence.
@@ -292,19 +355,23 @@ Réponds UNIQUEMENT en JSON valide (sans markdown, sans balises de code), avec e
   "improvements": [{ "title": "string", "priority": "haute|moyenne|basse", "evidence": "string" }],
   "recurring_themes": [{ "theme": "string", "frequency": number, "field": "strengths|improvements|objectives_comment|suggestions" }],
   "notable_quotes": [{ "verbatim_id": "string" }],
+  "follow_up_summary": "string, 2 à 4 phrases",
+  "follow_up_quotes": [{ "verbatim_id": "string" }],
   "sample_warning": "string"
 }
-Limites : 3 à 5 strengths, 3 à 5 improvements, 4 à 8 recurring_themes, 4 à 8 notable_quotes.`,
+Limites : 3 à 5 strengths, 3 à 5 improvements, 4 à 8 recurring_themes, 4 à 8 notable_quotes, 0 à 4 follow_up_quotes.
+"follow_up_summary" : lecture, en 2 à 4 phrases, de ce que les réponses disent du suivi entre les séances (plateforme, fiches mensuelles, WhatsApp), sans chiffre de séances ; signale un avis contraire s'il existe.
+"follow_up_quotes" : identifiants de verbatims citables ("quotable" vaut true) qui parlent de la plateforme, de la saisie des fiches, de la connexion ou de WhatsApp ; inclure un avis contraire s'il en existe un.`,
   binomes: `CETTE RÉPONSE NE CONTIENT QUE les clés ci-dessous (les autres rubriques sont rédigées à part). Sois concis : chaque "basis" et chaque "reason" tient en une phrase.
 Réponds UNIQUEMENT en JSON valide (sans markdown, sans balises de code), avec exactement cette forme :
 {
   "pair_status": [{ "binome_ref": "string", "status": "active|limitee|non_etablie|inconnue", "basis": "string" }],
   "pairs_to_watch": [{ "binome_ref": "string", "reason": "string" }],
   "key_learnings": ["string"],
-  "recommendations": [{ "text": "string", "priority": "haute|moyenne|basse", "owner": "string" }],
+  "recommendations": [{ "text": "string", "priority": "haute|moyenne|basse", "owner": "string", "basis": "string" }],
   "conclusion": "string, 4 à 6 phrases"
 }
-Limites : une entrée pair_status par binôme, 6 pairs_to_watch au plus, 3 à 5 key_learnings, 4 à 7 recommendations.`,
+Limites : une entrée pair_status par binôme, 6 pairs_to_watch au plus, 3 à 5 key_learnings, 4 à 8 recommendations.`,
 };
 
 // ----------------------------------------------------------------------------
@@ -335,21 +402,26 @@ function resolveAnalysis(analysis, { verbatims, binomeMap, overview }) {
 
   // Citations : texte EXACT du verbatim, signature selon le consentement.
   // Un identifiant inconnu ou non citable ('none') est écarté sans exception.
-  const seen = new Set();
-  const notableQuotes = [];
-  for (const q of analysis.notable_quotes) {
-    const v = verbatimById.get(q.verbatim_id);
-    if (!v || !v.quotable || seen.has(v.id)) continue;
-    seen.add(v.id);
-    notableQuotes.push({
-      verbatim_id: v.id,
-      role: v.role,
-      field: v.field,
-      text: v.text,
-      attribution: v.attribution,
-      quote_consent: v.quote_consent,
-    });
-  }
+  const resolveQuotes = (list) => {
+    const seen = new Set();
+    const quotes = [];
+    for (const q of list || []) {
+      const v = verbatimById.get(q.verbatim_id);
+      if (!v || !v.quotable || seen.has(v.id)) continue;
+      seen.add(v.id);
+      quotes.push({
+        verbatim_id: v.id,
+        role: v.role,
+        field: v.field,
+        text: v.text,
+        attribution: v.attribution,
+        quote_consent: v.quote_consent,
+      });
+    }
+    return quotes;
+  };
+  const notableQuotes = resolveQuotes(analysis.notable_quotes);
+  const followUpQuotes = resolveQuotes(analysis.follow_up_quotes);
 
   const pairsToWatch = analysis.pairs_to_watch
     .map((p) => {
@@ -381,11 +453,13 @@ function resolveAnalysis(analysis, { verbatims, binomeMap, overview }) {
   // participants) et les identités remises ci-dessus ne sont pas touchées.
   const freeText = { ...analysis };
   delete freeText.notable_quotes;
+  delete freeText.follow_up_quotes;
   delete freeText.pairs_to_watch;
   delete freeText.pair_status;
   return {
     ...scrubRefs(freeText),
     notable_quotes: notableQuotes,
+    follow_up_quotes: followUpQuotes,
     pairs_to_watch: pairsToWatch.map((p) => ({ ...p, reason: scrubRefs(p.reason) })),
     pair_status: pairStatus,
   };

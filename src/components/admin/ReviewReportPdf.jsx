@@ -21,6 +21,7 @@ import {
   PROGRAM, NOT_AVAILABLE, formatDateFr, share, num,
   buildPresentation, buildMethodology, buildKeyFigures, countVigilance,
   VIGILANCE_LABEL, VERBATIM_FIELD_LABEL, PAIR_STATUS_LABEL, countPairStatus,
+  buildFollowUp, NEW_METHOD_VIGILANCE,
 } from '@/lib/reportContent';
 import { INDICATOR_DEFINITIONS } from '@/lib/indicatorDefinitions';
 import { mentorQuestions, mentoreQuestions, interpolateLabel } from '@/config/reviewQuestions';
@@ -260,6 +261,8 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
   const vigilance = countVigilance(report);
   const pairStatus = countPairStatus(report);
   const hasPairStatus = (a.pair_status || []).length > 0;
+  const followUp = buildFollowUp(report);
+  const followUpQuotes = a.follow_up_quotes || [];
 
   const likert = m.likert_by_question || [];
   const likertStat = (role, id) => likert.find((l) => l.role === role && l.question_id === id);
@@ -278,6 +281,9 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
   // Figures : même calcul que l'onglet du dashboard. Une figure dont la
   // donnée manque n'existe pas : F() ne dessine rien et ref() ne la cite pas.
   const figures = buildReportFigures(report, variant);
+  // Sources : noms techniques (vues, fonctions) réservés à la version interne ;
+  // la version externe, lue par des partenaires, cite la source en clair.
+  const src = (technical, plain) => (isInternal ? technical : plain);
   const fig = (id) => figures.find((f) => f.id === id);
   const F = (id) => <FigurePdf figure={fig(id)} />;
   const ref = (...ids) => {
@@ -355,7 +361,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
           <Bullets items={presentation.objectives} />
           <Text style={styles.h2}>Public</Text>
           <Bullets items={presentation.audience} />
-          <Source>pages « Programme complet » et « À propos » du site ; tables mentor et mentore (candidatures).</Source>
+          <Source>pages « Programme complet » et « À propos » du site ; formulaires de candidature des mentors et des mentorés.</Source>
           <Text style={styles.h2}>Profil de la cohorte</Text>
           <Text style={styles.p}>
             Sexe des participants, niveau d'études des mentorés et pays de résidence des mentors, déclarés à l'inscription{ref('profile_sexe', 'profile_level', 'profile_country')}.
@@ -402,7 +408,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
               <Text style={[styles.td, { width: '18%' }]}>{k.value}</Text>
               <View style={{ width: '52%' }}>
                 <Text style={styles.td}>{k.detail}</Text>
-                <Text style={{ fontSize: 7, color: MUTED }}>{k.source}</Text>
+                {isInternal && <Text style={{ fontSize: 7, color: MUTED }}>{k.source}</Text>}
               </View>
             </View>
           ))}
@@ -434,7 +440,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
             </>
           )}
           {F('nps_histogram')}
-          {!fig('nps') && <Source>official_survey_summary (nps_*) ; build_review_report_metrics, clé nps.</Source>}
+          {!fig('nps') && <Source>{src('official_survey_summary (nps_*) ; build_review_report_metrics, clé nps.', 'sondage de bilan, note de recommandation de 0 à 10.')}</Source>}
 
           <Text style={styles.h2}>Questions notées de 1 à 5, par rôle</Text>
           {fig('likert_common') ? (
@@ -476,7 +482,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
             calculée sur les {s.pairs_with_both_responses} binômes où les deux ont répondu. « Régularité des sessions » est une
             appréciation déclarée par les participants.
           </Text>
-          <Source>build_review_report_metrics, clés likert_by_question et pair_gaps.</Source>
+          <Source>{src('build_review_report_metrics, clés likert_by_question et pair_gaps.', 'sondage de bilan, questions notées de 1 à 5.')}</Source>
           </>)}
 
           <Text style={styles.h2}>Atteinte des objectifs</Text>
@@ -518,7 +524,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
           ) : (
             <DistributionTable rows={m.continuation_distribution} options={Object.keys(CONTINUATION_LABELS)} labels={CONTINUATION_LABELS} />
           )}
-          <Source>build_review_report_metrics, clés sessions_distribution, contribution_distribution, platform_impact_distribution, continuation_distribution.</Source>
+          <Source>{src('build_review_report_metrics, clés sessions_distribution, contribution_distribution, platform_impact_distribution, continuation_distribution.', 'sondage de bilan, questions à choix.')}</Source>
         </View>
 
         {/* 7. Résultats qualitatifs */}
@@ -616,6 +622,40 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
             </View>
           ))}
 
+          {/* Le suivi entre les séances : plateforme, fiches, WhatsApp */}
+          {followUp && (
+            <>
+              <Text style={styles.h2}>Le suivi entre les séances</Text>
+              {a.follow_up_summary ? <Text style={styles.p}>{a.follow_up_summary}</Text> : null}
+              <Text style={styles.p}>
+                <Text style={{ fontFamily: 'Helvetica-Bold' }}>La plateforme. </Text>
+                {followUp.platform}{ref('likert_common')}
+              </Text>
+              <Text style={styles.p}>
+                <Text style={{ fontFamily: 'Helvetica-Bold' }}>Les fiches de séance. </Text>
+                {followUp.forms}
+              </Text>
+              <Text style={styles.p}>
+                <Text style={{ fontFamily: 'Helvetica-Bold' }}>WhatsApp. </Text>
+                {followUp.whatsapp}
+              </Text>
+              {followUp.personalLink && (
+                <Text style={styles.p}>
+                  <Text style={{ fontFamily: 'Helvetica-Bold' }}>Le lien personnel. </Text>
+                  {followUp.personalLink}
+                </Text>
+              )}
+              {followUpQuotes.map((q) => (
+                <View key={q.verbatim_id} style={styles.quote} wrap={false}>
+                  <Text style={styles.quoteText}>« {q.text} »</Text>
+                  {/* Version externe : citation signée par le rôle seul, jamais par un nom. */}
+                  <Text style={styles.quoteBy}>— {isInternal ? q.attribution : QUOTE_ROLE_LABEL[q.role] || 'Un participant'} · {VERBATIM_FIELD_LABEL[q.field] || ''}</Text>
+                </View>
+              ))}
+              <Source>sondage de bilan (questions « Simplicité de la plateforme », « Charge raisonnable des fiches mensuelles », « WhatsApp adapté aux échanges », question facultative sur la plateforme) ; fiches de séance et messagerie de la plateforme ; campagne du sondage de bilan. Aucun nombre de séances n'est calculé.</Source>
+            </>
+          )}
+
           {/* Regards croisés par binôme : VERSION INTERNE UNIQUEMENT */}
           {isInternal && fig('pair_views') && (
             <>
@@ -639,7 +679,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
               <Text style={[styles.td, { width: '40%', textAlign: 'right' }]}>{share(v.count, v.total)} binômes</Text>
             </View>
           ))}
-          {!(isInternal && fig('vigilance')) && <Source>review_pair_vigilance.</Source>}
+          {!(isInternal && fig('vigilance')) && <Source>{src('review_pair_vigilance.', 'note de recommandation du sondage.')}</Source>}
 
           {/* Détail nominatif : VERSION INTERNE UNIQUEMENT */}
           {isInternal && (
@@ -665,7 +705,11 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
         {/* 9. Recommandations */}
         <View style={styles.section}>
           <Text style={styles.h1}>9. Recommandations</Text>
-          <Text style={styles.p}>Recommandations formulées dans l'hypothèse d'une cohorte 2, classées par priorité.</Text>
+          <Text style={styles.p}>
+            Recommandations formulées dans l'hypothèse d'une cohorte 2, classées par priorité. Sous chaque action figure le constat
+            de la cohorte 1 qui la justifie ; une action qu'aucune donnée n'appuie directement est signalée comme une bonne pratique.
+            Les actions sur le suivi entre les séances sont des pistes à tester, pas un dispositif existant.
+          </Text>
           <View style={styles.headRow}>
             <Text style={[styles.th, { width: '60%' }]}>Action</Text>
             <Text style={[styles.th, { width: '14%' }]}>Priorité</Text>
@@ -673,7 +717,10 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
           </View>
           {recommendations.map((r, i) => (
             <View key={i} style={styles.row} wrap={false}>
-              <Text style={[styles.td, { width: '60%', paddingRight: 6 }]}>{r.text}</Text>
+              <View style={{ width: '60%', paddingRight: 6 }}>
+                <Text style={styles.td}>{r.text}</Text>
+                {r.basis ? <Text style={{ fontSize: 7.5, color: MUTED, marginTop: 2 }}>{/^bonne pratique/i.test(r.basis) ? '' : 'Constat : '}{r.basis}</Text> : null}
+              </View>
               <Text style={[styles.td, { width: '14%' }]}>{r.priority}</Text>
               <Text style={[styles.td, { width: '26%' }]}>{r.owner}</Text>
             </View>
@@ -776,7 +823,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
               <View key={key} style={styles.item} wrap={false}>
                 <Text style={styles.itemTitle}>{def.label}</Text>
                 <Text style={styles.td}>{def.formula}</Text>
-                <Text style={{ fontSize: 7.5, color: MUTED }}>Source : {def.source} — Période : {def.period}</Text>
+                <Text style={{ fontSize: 7.5, color: MUTED }}>{isInternal ? `Source : ${def.source} — ` : ''}Période : {def.period}</Text>
               </View>
             ))}
         </View>
@@ -804,6 +851,23 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
               Toutes les figures sont calculées sur les binômes officiels (binôme de test exclu), effectifs affichés sur chaque figure.
               {isInternal ? '' : ' Les figures par binôme sont réservées à la version interne.'}
             </Text>
+          </View>
+        </Page>
+      )}
+
+      {/* ------------------------------------------------ Annexe E : VERSION INTERNE UNIQUEMENT */}
+      {isInternal && (
+        <Page size="A4" style={styles.page}>
+          <PageFrame variant={variant} isDraft={isDraft} />
+          <View style={styles.section}>
+            <Text style={styles.h1}>11. Annexes — E. Points de vigilance de la nouvelle méthode</Text>
+            <Text style={styles.p}>
+              Points à régler avant de tester la piste de suivi présentée en section 9 (check-in mensuel par lien personnel,
+              rappels par WhatsApp). Repris de la note « Passerelles — Simplifier les échanges entre binômes ».
+            </Text>
+            <View style={styles.note}>
+              {NEW_METHOD_VIGILANCE.map((t, i) => <Text key={i} style={{ marginBottom: 3 }}>• {t}</Text>)}
+            </View>
           </View>
         </Page>
       )}

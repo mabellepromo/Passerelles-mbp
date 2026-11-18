@@ -26,7 +26,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PRIORITY_LABEL } from '@/lib/reviewReportSchema';
 import { EXPECTED_BINOME_COUNT, getBinomeCountWarning } from '@/lib/programData';
-import { isReportUsable, buildKeyFigures, buildMethodology, VIGILANCE_LABEL, VERBATIM_FIELD_LABEL, PAIR_STATUS_LABEL, countPairStatus } from '@/lib/reportContent';
+import { isReportUsable, buildKeyFigures, buildMethodology, VIGILANCE_LABEL, VERBATIM_FIELD_LABEL, PAIR_STATUS_LABEL, countPairStatus, buildFollowUp, NEW_METHOD_VIGILANCE } from '@/lib/reportContent';
 import { WarningBanner, Loader } from '@/components/admin/donnees/shared';
 import ReviewReportPdf from './ReviewReportPdf';
 import ReportFigures from '@/components/charts/ReportFigures';
@@ -231,6 +231,7 @@ export default function RapportBilan() {
 
   const keyFigures = buildKeyFigures(workingReport);
   const methodology = buildMethodology(workingReport);
+  const followUp = buildFollowUp(workingReport);
   const exportBlocked = Boolean(countWarning);
   const spin = (kind, Icon) => (saving === kind ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Icon className="h-4 w-4 mr-2" />);
 
@@ -457,6 +458,35 @@ export default function RapportBilan() {
         </Card>
       </div>
 
+      {/* Le suivi entre les séances (section 8 du PDF) */}
+      {followUp && (
+        <Card className="border-0 shadow-md">
+          <CardHeader><CardTitle className="text-base">Le suivi entre les séances</CardTitle></CardHeader>
+          <CardContent className="space-y-3">
+            <div className="space-y-1">
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide">Lecture des constats (modifiable)</p>
+              <Field value={analysis.follow_up_summary || ''} onChange={(v) => setField('follow_up_summary', v)} editable={editable} multiline rows={4} placeholder="Lecture en 2 à 4 phrases ; laisser vide pour ne garder que les constats chiffrés." className="text-sm text-gray-700 leading-relaxed" />
+            </div>
+            <div className="space-y-2 text-sm text-gray-700">
+              <p><strong>La plateforme.</strong> {followUp.platform}</p>
+              <p><strong>Les fiches de séance.</strong> {followUp.forms}</p>
+              <p><strong>WhatsApp.</strong> {followUp.whatsapp}</p>
+              {followUp.personalLink && <p><strong>Le lien personnel.</strong> {followUp.personalLink}</p>}
+            </div>
+            <p className="text-xs text-gray-500">Constats chiffrés calculés à partir des données enregistrées avec le rapport : ils ne se modifient pas ici.</p>
+            {(analysis.follow_up_quotes || []).map((q, i) => (
+              <div key={q.verbatim_id} className="flex items-start justify-between gap-3">
+                <blockquote className="border-l-2 border-amber-300 pl-3">
+                  <p className="text-sm text-gray-700 italic">« {q.text} »</p>
+                  <p className="text-xs text-gray-500 mt-0.5">— {q.attribution} · {CONSENT_LABEL[q.quote_consent]}</p>
+                </blockquote>
+                {editable && <RemoveButton onClick={() => removeItem('follow_up_quotes', i)} />}
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      )}
+
       <Card className="border-0 shadow-md">
         <CardHeader><CardTitle className="text-base">Thèmes récurrents</CardTitle></CardHeader>
         <CardContent>
@@ -577,8 +607,14 @@ export default function RapportBilan() {
               <tbody>
                 {(analysis.recommendations || []).map((r, i) => (
                   <tr key={i} className="border-b border-gray-50 align-top">
-                    <td className="py-2.5 pr-4 text-gray-700 min-w-[16rem]">
+                    <td className="py-2.5 pr-4 text-gray-700 min-w-[16rem] space-y-1.5">
                       <Field value={r.text} onChange={(v) => setItem('recommendations', i, { text: v })} editable={editable} multiline rows={2} />
+                      {(editable || r.basis) && (
+                        <div className="text-xs text-gray-500">
+                          {!editable && !/^bonne pratique/i.test(r.basis || '') && <span className="font-semibold">Constat : </span>}
+                          <Field value={r.basis || ''} onChange={(v) => setItem('recommendations', i, { basis: v })} editable={editable} multiline rows={2} placeholder="Constat qui la justifie (donnée et effectif), ou « Bonne pratique : … »" className="inline" />
+                        </div>
+                      )}
                     </td>
                     <td className="py-2.5 pr-4">
                       <ChoiceField value={r.priority} onChange={(v) => setItem('recommendations', i, { priority: v })} editable={editable} labels={PRIORITY_LABEL} />
@@ -592,7 +628,17 @@ export default function RapportBilan() {
               </tbody>
             </table>
           </div>
-          {editable && <AddButton onClick={() => addItem('recommendations', { text: '', priority: 'moyenne', owner: '' })} count={(analysis.recommendations || []).length} max={MAX.recommendations} label="Ajouter une recommandation" />}
+          {editable && <AddButton onClick={() => addItem('recommendations', { text: '', priority: 'moyenne', owner: '', basis: '' })} count={(analysis.recommendations || []).length} max={MAX.recommendations} label="Ajouter une recommandation" />}
+        </CardContent>
+      </Card>
+
+      <Card className="border-0 shadow-md">
+        <CardHeader><CardTitle className="text-base">Annexe E — Points de vigilance de la nouvelle méthode (version interne uniquement)</CardTitle></CardHeader>
+        <CardContent>
+          <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
+            {NEW_METHOD_VIGILANCE.map((t, i) => <li key={i}>{t}</li>)}
+          </ul>
+          <p className="text-xs text-gray-500 mt-2">Texte fixe, repris de la note « Passerelles — Simplifier les échanges entre binômes ».</p>
         </CardContent>
       </Card>
 

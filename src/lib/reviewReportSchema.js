@@ -47,6 +47,9 @@ export const RecommendationSchema = z.object({
   text: z.string(),
   priority: z.enum(['haute', 'moyenne', 'basse']),
   owner: z.string(),
+  // Constat de la cohorte 1 qui justifie l'action, avec la donnée et son
+  // effectif ; ou la mention « Bonne pratique » si aucune donnée ne l'appuie.
+  basis: z.string().optional(),
 });
 
 export const ReviewReportAnalysisSchema = z.object({
@@ -60,6 +63,11 @@ export const ReviewReportAnalysisSchema = z.object({
   key_learnings: z.array(z.string()).max(5),
   recommendations: z.array(RecommendationSchema).max(8),
   notable_quotes: z.array(NotableQuoteSchema),
+  // Citations du paragraphe « Le suivi entre les séances » (même règle de
+  // consentement que notable_quotes : texte et signature remis côté serveur).
+  follow_up_quotes: z.array(NotableQuoteSchema).default([]),
+  // Lecture rédigée (modifiable) des constats sur le suivi entre les séances.
+  follow_up_summary: z.string().optional(),
   conclusion: z.string().min(1),
   sample_warning: z.string().nullable(),
 });
