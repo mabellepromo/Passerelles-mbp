@@ -40,6 +40,7 @@ const AideConnexion      = lazy(() => import('./pages/AideConnexion'));
 const Webinaire          = lazy(() => import('./pages/Webinaire'));
 const Bilan              = lazy(() => import('./pages/Bilan'));
 const DesinscriptionBilan = lazy(() => import('./pages/DesinscriptionBilan'));
+const CheckIn            = lazy(() => import('./pages/CheckIn'));
 
 const PageLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -100,6 +101,8 @@ const AuthenticatedApp = () => {
         <Route path="/AideConnexion" element={<AideConnexion />} />
         <Route path="/bilan/:token" element={<Bilan />} />
         <Route path="/desinscription/:token" element={<DesinscriptionBilan />} />
+        {/* Check-in mensuel de la cohorte 2 : lien personnel, sans compte. */}
+        <Route path="/m/:token" element={<CheckIn />} />
         <Route path="/Webinaire" element={<LayoutWrapper currentPageName="Webinaire"><Webinaire /></LayoutWrapper>} />
         <Route path="*" element={<PageNotFound />} />
       </Routes>
