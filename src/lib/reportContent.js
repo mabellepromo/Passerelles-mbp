@@ -231,6 +231,37 @@ export function buildFollowUp(report) {
   };
 }
 
+// ----------------------------------------------------------------------------
+// Binômes cités dans les principaux constats
+// Un constat peut contenir des repères :
+//   [[etat:active]] (ou limitee, non_etablie, inconnue) : la liste des binômes
+//                   classés dans cet état ;
+//   [[binome:<id>]] : un binôme précis.
+// Version interne : remplacés par « Mentor / Mentoré ». Version externe : la
+// liste disparaît et un binôme précis devient « un binôme » (aucun nom).
+// ----------------------------------------------------------------------------
+const pairLabel = (p) => `${p.mentor_name} / ${p.mentore_name}`;
+
+export function renderBinomeMarkers(text, report, variant = 'internal') {
+  if (typeof text !== 'string' || !text.includes('[[')) return text;
+  const isInternal = variant === 'internal';
+  const pairs = report.ai_analysis?.pair_status || [];
+  const binomes = report.metrics?.snapshot?.binomes || [];
+  // Version externe : une parenthèse qui ne contient que des binômes cités
+  // disparaît entière (jamais « (un binôme, un binôme) »).
+  const onlyPairs = /\s*\(\s*(?:\[\[binome:[^\]]+\]\]\s*(?:,|;|et)?\s*)+\)/g;
+  return (isInternal ? text : text.replace(onlyPairs, ''))
+    .replace(/\s*\[\[etat:([a-z_]+)\]\]/g, (_, status) => {
+      if (!isInternal) return '';
+      const names = pairs.filter((p) => p.status === status).map(pairLabel);
+      return names.length ? ` (${names.join(' ; ')})` : '';
+    })
+    .replace(/\[\[binome:([^\]]+)\]\]/g, (_, id) => {
+      const b = binomes.find((x) => x.binome_id === id);
+      return isInternal && b ? pairLabel(b) : 'un binôme';
+    });
+}
+
 // Annexe E — version interne uniquement : points de vigilance repris de la
 // note « Passerelles — Simplifier les échanges entre binômes ».
 export const NEW_METHOD_VIGILANCE = [

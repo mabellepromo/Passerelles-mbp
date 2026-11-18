@@ -21,7 +21,7 @@ import {
   PROGRAM, NOT_AVAILABLE, formatDateFr, share, num,
   buildPresentation, buildMethodology, buildKeyFigures, countVigilance,
   VIGILANCE_LABEL, VERBATIM_FIELD_LABEL, PAIR_STATUS_LABEL, countPairStatus,
-  buildFollowUp, NEW_METHOD_VIGILANCE,
+  buildFollowUp, NEW_METHOD_VIGILANCE, renderBinomeMarkers,
 } from '@/lib/reportContent';
 import { INDICATOR_DEFINITIONS } from '@/lib/indicatorDefinitions';
 import { mentorQuestions, mentoreQuestions, interpolateLabel } from '@/config/reviewQuestions';
@@ -334,7 +334,8 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
         </View>
         <Text style={[styles.p, { marginTop: 8 }]}>{summaryText}</Text>
         <Text style={styles.h2}>Principaux constats</Text>
-        <Bullets items={a.key_findings} />
+        {/* Binômes nommés en version interne, effectifs seuls en version externe. */}
+        <Bullets items={(a.key_findings || []).map((f) => renderBinomeMarkers(f, report, variant))} />
         <Text style={styles.h2}>Recommandations principales</Text>
         <Bullets items={recommendations.slice(0, 3).map((r) => `${r.text} (priorité ${r.priority})`)} />
         {a.sample_warning && <Text style={styles.note}>{a.sample_warning}</Text>}

@@ -335,7 +335,7 @@ Règles strictes :
 9. "key_findings" : 3 à 5 constats courts et chiffrés pour le résumé exécutif.
 10. "conclusion" : 4 à 6 phrases, bilan équilibré et perspectives formulées au conditionnel (règle 4).
 11. "sample_warning" : une phrase rappelant que les résultats reposent sur un petit effectif et doivent être lus avec prudence.
-12. N'écris JAMAIS un identifiant technique (M-01, E-02, B-03, V-04...) dans un texte : écris « un mentor », « une mentorée », « un binôme ». Les identifiants ne servent que dans "binome_ref" et "verbatim_id".
+12. N'écris JAMAIS un identifiant technique (M-01, E-02, B-03, V-04...) dans un texte : écris « un mentor », « une mentorée », « un binôme ». Les identifiants ne servent que dans "binome_ref" et "verbatim_id". Seule exception : dans "key_findings", écris le B-xx du binôme dont tu parles (ex. « 3 binômes au démarrage limité (B-02, B-05, B-07) ») ; il sera remplacé par les noms dans la version interne et par « un binôme » dans la version externe.
 13. "pair_status" : UNE entrée par binôme listé ci-dessus. status = "active" (relation déclarée effective, apports concrets), "limitee" (démarrage difficile ou très peu d'échanges), "non_etablie" (contact jamais établi ou rompu), "inconnue" (aucune réponse exploitable). "basis" = une phrase factuelle tirée des réponses, sans nom.
 14. Distingue clairement ce qui a fonctionné et ce qui n'a pas fonctionné : résultats concrets déclarés (stages, choix d'orientation, mémoire...), relations qui n'ont jamais démarré, et causes citées (contact, disponibilité, outil, distance). Signale si le niveau de vigilance fondé sur la note de recommandation contredit les réponses libres (ex. note élevée mais aucun contact établi).
 
@@ -451,7 +451,14 @@ function resolveAnalysis(analysis, { verbatims, binomeMap, overview }) {
 
   // Les textes rédigés par l'IA sont nettoyés ; les citations (texte exact des
   // participants) et les identités remises ci-dessus ne sont pas touchées.
-  const freeText = { ...analysis };
+  // Principaux constats : un binôme cité (B-xx) devient un repère, nommé en
+  // version interne et anonyme (« un binôme ») en version externe.
+  const keyFindings = (analysis.key_findings || []).map((f) => f.replace(/\bB-\d{2}\b/g, (ref) => {
+    const id = binomeIdByRef.get(ref);
+    return id ? `[[binome:${id}]]` : ref;
+  }));
+
+  const freeText = { ...analysis, key_findings: keyFindings };
   delete freeText.notable_quotes;
   delete freeText.follow_up_quotes;
   delete freeText.pairs_to_watch;

@@ -26,7 +26,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PRIORITY_LABEL } from '@/lib/reviewReportSchema';
 import { EXPECTED_BINOME_COUNT, getBinomeCountWarning } from '@/lib/programData';
-import { isReportUsable, buildKeyFigures, buildMethodology, VIGILANCE_LABEL, VERBATIM_FIELD_LABEL, PAIR_STATUS_LABEL, countPairStatus, buildFollowUp, NEW_METHOD_VIGILANCE } from '@/lib/reportContent';
+import { isReportUsable, buildKeyFigures, buildMethodology, VIGILANCE_LABEL, VERBATIM_FIELD_LABEL, PAIR_STATUS_LABEL, countPairStatus, buildFollowUp, NEW_METHOD_VIGILANCE, renderBinomeMarkers } from '@/lib/reportContent';
 import { WarningBanner, Loader } from '@/components/admin/donnees/shared';
 import ReviewReportPdf from './ReviewReportPdf';
 import ReportFigures from '@/components/charts/ReportFigures';
@@ -351,15 +351,24 @@ export default function RapportBilan() {
               <>
                 {(analysis.key_findings || []).map((f, i) => (
                   <div key={i} className="flex items-start gap-2">
-                    <div className="flex-1"><Field value={f} onChange={(v) => setItem('key_findings', i, v)} editable multiline rows={2} /></div>
+                    <div className="flex-1 space-y-1">
+                      <Field value={f} onChange={(v) => setItem('key_findings', i, v)} editable multiline rows={2} />
+                      {f.includes('[[') && (
+                        <p className="text-xs text-gray-500">Version interne : {renderBinomeMarkers(f, workingReport, 'internal')}</p>
+                      )}
+                    </div>
                     <RemoveButton onClick={() => removeItem('key_findings', i)} />
                   </div>
                 ))}
+                <p className="text-xs text-gray-500">
+                  Pour nommer des binômes dans la seule version interne : [[etat:active]], [[etat:limitee]], [[etat:non_etablie]] (liste des binômes dans cet état).
+                  La version externe n'affiche que les effectifs.
+                </p>
                 <AddButton onClick={() => addItem('key_findings', '')} count={(analysis.key_findings || []).length} max={MAX.key_findings} label="Ajouter un constat" />
               </>
             ) : (
               <ul className="list-disc pl-5 space-y-1 text-sm text-gray-700">
-                {(analysis.key_findings || []).map((f, i) => <li key={i}>{f}</li>)}
+                {(analysis.key_findings || []).map((f, i) => <li key={i}>{renderBinomeMarkers(f, workingReport, 'internal')}</li>)}
               </ul>
             )}
           </div>
