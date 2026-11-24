@@ -134,13 +134,17 @@ function Body({ body, report, values }) {
   });
 }
 
-export default function BureauReportPdf({ report }) {
+// scope : 'full' (rapport complet) ou 'summary' (résumé exécutif seul, sur une
+// page : sans l'avertissement, la confidentialité restant indiquée dans
+// l'en-tête et le pied de page ; texte un peu plus petit).
+export default function BureauReportPdf({ report, scope = 'full' }) {
+  const summaryOnly = scope === 'summary';
   const a = report.ai_analysis;
   const values = buildBureauValues(report);
   const isDraft = report.status !== 'validated';
   return (
     <Document title={a.title} author="Ma Belle Promo" language="fr">
-      <Page size="A4" style={styles.page}>
+      <Page size="A4" style={summaryOnly ? [styles.page, { fontSize: 9 }] : styles.page}>
         <View style={styles.header} fixed>
           <Text>{a.title}</Text>
           <Text>{isDraft ? 'BROUILLON NON VALIDÉ' : 'Version interne'}</Text>
@@ -148,13 +152,13 @@ export default function BureauReportPdf({ report }) {
         <Text style={styles.footerLeft} fixed>{CONFIDENTIALITY}</Text>
         <Text style={styles.footerRight} fixed render={({ pageNumber, totalPages }) => `${pageNumber} / ${totalPages}`} />
 
-        <Text style={styles.title}>{a.title}</Text>
+        <Text style={summaryOnly ? [styles.title, { fontSize: 16 }] : styles.title}>{a.title}</Text>
         <Text style={styles.meta}>
-          {formatDateFr(report.generated_at)} · Document interne{isDraft ? ' · brouillon' : ` · validé le ${formatDateFr(report.validated_at)}`}
+          {summaryOnly ? 'Résumé exécutif · ' : ''}{formatDateFr(report.generated_at)} · Document interne{isDraft ? ' · brouillon' : ` · validé le ${formatDateFr(report.validated_at)}`}
         </Text>
-        {a.sections.map((s) => (
-          <View key={s.key} break={s.key === 'annexe_a'}>
-            {s.title ? <Text style={styles.h1} minPresenceAhead={40}>{s.title}</Text> : null}
+        {a.sections.filter((s) => !summaryOnly || s.key === 'resume').map((s) => (
+          <View key={s.key} break={!summaryOnly && s.key === 'annexe_a'}>
+            {s.title ? <Text style={summaryOnly ? [styles.h1, { marginTop: 4 }] : styles.h1} minPresenceAhead={40}>{summaryOnly ? 'Résumé exécutif' : s.title}</Text> : null}
             <Body body={s.body} report={report} values={values} />
           </View>
         ))}

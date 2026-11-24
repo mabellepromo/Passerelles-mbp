@@ -166,14 +166,15 @@ export default function RapportBureau({ report, cohorte, queryKey }) {
     }
   }
 
-  async function handleExport() {
+  // scope : 'full' (rapport complet) ou 'summary' (résumé exécutif seul).
+  async function handleExport(scope = 'full') {
     setBusy('export');
     try {
-      const blob = await pdf(<BureauReportPdf report={working} />).toBlob();
+      const blob = await pdf(<BureauReportPdf report={working} scope={scope} />).toBlob();
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `bilan-passerelles-cohorte-${cohorte}-bureau-interne${isValidated ? '' : '-brouillon'}.pdf`;
+      link.download = `${scope === 'summary' ? 'resume-executif' : 'bilan'}-passerelles-cohorte-${cohorte}-bureau-interne${isValidated ? '' : '-brouillon'}.pdf`;
       link.click();
       URL.revokeObjectURL(url);
     } catch (err) {
@@ -231,9 +232,14 @@ export default function RapportBureau({ report, cohorte, queryKey }) {
           <div className="rounded-xl border border-gray-100 p-4 space-y-2">
             <p className="text-sm font-semibold text-gray-800">Version interne</p>
             <p className="text-xs text-gray-500">Nominative, réservée au bureau de Ma Belle Promo. Pied de page : « Confidentiel — usage interne Ma Belle Promo (document nominatif) ».</p>
-            <Button variant="outline" onClick={handleExport} disabled={busy !== null || Boolean(countWarning)}>
-              {spin('export', Download)} Rapport complet{isValidated ? '' : ' (brouillon)'}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" onClick={() => handleExport('full')} disabled={busy !== null || Boolean(countWarning)}>
+                {spin('export', Download)} Rapport complet{isValidated ? '' : ' (brouillon)'}
+              </Button>
+              <Button variant="outline" onClick={() => handleExport('summary')} disabled={busy !== null || Boolean(countWarning)}>
+                <Download className="h-4 w-4 mr-2" /> Résumé exécutif seul
+              </Button>
+            </div>
             {isDirty && <p className="text-xs text-amber-700">Le PDF reprend le texte affiché, modifications non enregistrées comprises.</p>}
           </div>
           <div className="rounded-xl border border-gray-100 p-4 space-y-2 bg-gray-50">
@@ -259,8 +265,17 @@ export default function RapportBureau({ report, cohorte, queryKey }) {
         </CardContent>
       </Card>
 
+      {/* Sommaire : accès direct à chaque section */}
+      <nav className="flex flex-wrap gap-2 text-xs">
+        {analysis.sections.map((s) => (
+          <a key={s.key} href={`#bilan-${s.key}`} className="rounded-full border border-gray-200 bg-white px-3 py-1 text-gray-600 hover:border-emerald-300 hover:text-emerald-800">
+            {s.title || 'Avertissement'}
+          </a>
+        ))}
+      </nav>
+
       {analysis.sections.map((s) => (
-        <Card key={s.key} className="border-0 shadow-md">
+        <Card key={s.key} id={`bilan-${s.key}`} className="border-0 shadow-md scroll-mt-40">
           <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0">
             <CardTitle className="text-base flex items-center gap-2">
               <FileText className="h-4 w-4 text-emerald-700" /> {s.title || 'Avertissement'}
