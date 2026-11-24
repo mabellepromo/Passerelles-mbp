@@ -82,10 +82,21 @@ export default function DeclenchementBinomes() {
   const getMentorInfo = (email) => mentors.find(m => m.email === email) || {};
   const getMentoreInfo = (email) => mentores.find(m => m.email === email) || {};
 
+  // Le bucket fiches-binomes est privé (lecture admin seule, migration
+  // 20261124120000) : on télécharge par l'API de stockage authentifiée, à
+  // partir du chemin contenu dans l'ancienne adresse publique.
   const fetchPdfBase64 = async (pdfUrl) => {
     try {
-      const response = await fetch(pdfUrl);
-      const blob = await response.blob();
+      const match = String(pdfUrl).match(/\/storage\/v1\/object\/(?:public|sign)\/fiches-binomes\/([^?]+)/);
+      let blob;
+      if (match) {
+        const { data, error } = await supabase.storage.from('fiches-binomes').download(decodeURIComponent(match[1]));
+        if (error) throw error;
+        blob = data;
+      } else {
+        const response = await fetch(pdfUrl);
+        blob = await response.blob();
+      }
       return new Promise((resolve) => {
         const reader = new FileReader();
         reader.onloadend = () => resolve(reader.result.split(',')[1]);
