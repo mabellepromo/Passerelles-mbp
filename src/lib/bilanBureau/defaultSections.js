@@ -28,17 +28,53 @@ Les éléments de contexte sur l'association (section 2) proviennent du bureau. 
   {
     key: 'resume',
     title: '1. Résumé exécutif',
-    body: `**Les données de la cohorte 1 ne justifient pas, à elles seules, le lancement d'une cohorte 2 dans les conditions actuelles.** Le programme a produit des résultats réels pour une partie des mentorés. Mais il repose sur des mentors que l'association peine à mobiliser, et ce sont eux qui en tirent le moins de bénéfice.
+    body: `**La question.** Le bureau envisage d'arrêter le programme PASSERELLES, et peut-être l'association. Le sondage de bilan montre-t-il un engouement assez solide pour remettre en cause ce souhait ?
 
-**Ce que le programme a apporté.** Sur {{binomes}} binômes, {{rel_active}} décrivent une relation active, avec des apports concrets cités par les participants : stages, orientation de carrière, aide au mémoire, confiance retrouvée. Les mentorés recommandent nettement le programme : {{mentores_promoteurs}} promoteurs sur {{mentores_repondants}} répondants.
+**La réponse courte.** Non, pas à lui seul. Le programme a réellement aidé une partie des étudiants. Mais il repose sur des mentors que l'association peine à mobiliser, et ce sont eux qui en ont tiré le moins.
 
-**Ce qui n'a pas tenu.** {{rel_difficulte}} binômes sur {{binomes}} ont connu un démarrage limité ({{rel_limitee}}) ou une relation jamais établie ({{rel_non_etablie}}), le plus souvent faute de disponibilité du mentor. L'atteinte des objectifs est jugée faible par les mentorés ({{mentores_objectifs_haut}} sur {{mentores_repondants}} seulement donne 4 ou plus ; moyenne {{mentores_objectifs_moy}} sur 5) ; les mentors sont partagés ({{mentors_objectifs_haut}} sur {{mentors_repondants}} donnent 4, {{mentors_objectifs_1}} donnent 1 ; moyenne {{mentors_objectifs_moy}} sur 5).
+**Ce qui a fonctionné.** Sur {{binomes}} binômes, {{rel_active}} ont eu une relation active, avec des apports concrets : stages, orientation de carrière, aide au mémoire, confiance retrouvée. Les mentorés recommandent le programme : {{mentores_promoteurs}} promoteurs sur {{mentores_repondants}} (NPS {{nps_mentores}}, note moyenne {{mentores_reco_moy}} sur 10).
 
-**Le point décisif : les mentors.** Le recrutement a épuisé le vivier : {{binomes}} mentors engagés sur {{cand_mentors}} candidatures, tous membres de l'association, contre {{cand_mentores}} candidatures de mentorés. Chez les mentors répondants, la recommandation est à l'équilibre ({{mentors_promoteurs}} promoteurs, {{mentors_detracteurs}} détracteurs sur {{mentors_repondants}}, NPS {{nps_mentors}}), et {{mentors_benefice_bas}} sur {{mentors_repondants}} jugent l'expérience peu ou pas bénéfique pour eux (note de 1 ou 2 sur 5, dont {{mentors_benefice_1}} « pas du tout »). {{mentors_non_repondants}} mentors sur {{mentors_invites}} n'ont pas répondu au sondage, malgré les relances.
+**Ce qui n'a pas tenu.**
 
-**L'engouement restant existe, mais il est surtout du côté des bénéficiaires.** L'intérêt déclaré pour une nouvelle expérience ({{mentors_interesses}} mentors sur {{mentors_interet_n}}, {{mentores_interesses}} mentorés sur {{mentores_interet_n}}) est une réponse hypothétique, donnée sous son nom, à l'association dont on est membre. Il ne vaut pas engagement et ne compense pas les autres signaux (section 3).
+- {{rel_difficulte}} binômes sur {{binomes}} ont connu un démarrage limité ({{rel_limitee}}) ou une relation jamais établie ({{rel_non_etablie}}), le plus souvent faute de disponibilité du mentor.
+- Les mentorés jugent l'atteinte de leurs objectifs faible : {{mentores_objectifs_haut}} sur {{mentores_repondants}} seulement donne 4 ou plus.
+- Les mentors sont partagés : {{mentors_objectifs_haut}} sur {{mentors_repondants}} donnent 4, {{mentors_objectifs_1}} donnent 1.
+- La lourdeur de la plateforme a gêné le suivi, mais elle n'explique pas les binômes en difficulté.
 
-**Recommandation.** Ne pas lancer de cohorte 2 sur la seule base de ce sondage. Le bureau a deux options réalistes : une clôture en bon ordre, ou une mise en sommeil avec une condition claire de relance, vérifiable avant tout appel à candidatures (section 6). Dans les deux cas, la cohorte 1 mérite d'être close proprement : attestations, remerciements, sort des données (section 7).`,
+**Le point décisif : les mentors.**
+
+- **Vivier épuisé :** {{binomes}} mentors pour {{cand_mentors}} candidatures, tous membres de l'association, contre {{cand_mentores}} candidatures d'étudiants.
+- **Recommandation mitigée :** chez les {{mentors_repondants}} mentors qui ont répondu, NPS {{nps_mentors}} ({{mentors_promoteurs}} promoteurs, {{mentors_detracteurs}} détracteurs).
+- **Peu de bénéfice :** {{mentors_benefice_bas}} sur {{mentors_repondants}} jugent l'expérience peu ou pas bénéfique pour eux, dont {{mentors_benefice_1}} « pas du tout ».
+- **Silence :** {{mentors_non_repondants}} mentors sur {{mentors_invites}} n'ont pas répondu au sondage.
+
+**L'engouement restant est réel, mais surestimé.** {{mentors_interesses}} mentors sur {{mentors_interet_n}} et {{mentores_interesses}} mentorés sur {{mentores_interet_n}} se disent intéressés par une nouvelle expérience. Mais :
+
+- la question était hypothétique, sans date ni engagement ;
+- le sondage était nominatif ;
+- {{reponses_periode_relance}} réponses sur {{reponses}} sont arrivées pendant la période de relances.
+
+Les résultats négatifs sont probablement fiables ; les résultats positifs sont à lire avec prudence.
+
+**Les options.**
+
+| Option | En bref | Risque principal |
+|---|---|---|
+| **A. Clôture** | Fin nette, conforme au souhait du bureau | {{mentores_non_retenus}} étudiants non retenus et futurs candidats sans offre ; savoir-faire perdu s'il n'est pas transmis |
+| **B. Mise en sommeil conditionnelle** | Relance seulement si des mentors s'engagent par écrit, avant une date limite, au-delà d'un seuil fixé d'avance (par exemple 8) | S'éterniser sans date butoir |
+| **C. Cohorte 2 immédiate** | Répond à la demande étudiante | Binômes sans mentor disponible, étudiants déçus |
+
+**Recommandation.** Choisir entre A et B ; C est l'option la plus risquée. La décision appartient au bureau et, pour l'association, à ses membres.
+
+**Dans tous les cas, clore proprement la cohorte 1 :**
+
+- un message personnel à chaque participant avant toute annonce publique ;
+- des attestations et des remerciements ;
+- une synthèse anonymisée des résultats pour les participants ;
+- une durée de conservation fixée pour les données, puis la suppression de ce qui n'est plus utile, en priorité les {{mentores_non_retenus}} candidatures non retenues ;
+- la transmission éventuelle du savoir-faire à un autre acteur (faculté, association, barreau).
+
+> Effectifs réduits : {{mentors_repondants}} mentors et {{mentores_repondants}} mentorés répondants. Les chiffres sont des tendances, pas des mesures précises.`,
   },
   {
     key: 'contexte',
