@@ -21,7 +21,7 @@ export const DEFAULT_SECTIONS = [
     title: '',
     body: `**Document interne, nominatif, destiné au bureau de Ma Belle Promo.** Il ne doit pas être diffusé aux participants ni à des partenaires en l'état.
 
-Cette version remplace le brouillon n° 6 du rapport de bilan (édité le {{brouillon6_date}}). Les données sont les mêmes : {{binomes}} binômes officiels, binôme de test exclu, sondage clos le {{sondage_fin}}. Ce qui change, c'est la lecture. Le brouillon n° 6 était écrit comme si une cohorte 2 allait suivre. Celui-ci part de la question réelle que se pose le bureau : faut-il arrêter le programme, et peut-être l'association ?
+Périmètre : {{binomes}} binômes officiels, binôme de test exclu ; sondage de bilan clos le {{sondage_fin}}.
 
 Les éléments de contexte sur l'association (section 2) proviennent du bureau. Ils ne sont pas mesurés par le sondage, et sont présentés comme tels.`,
   },
@@ -51,6 +51,8 @@ Les éléments de contexte sur l'association (section 2) proviennent du bureau. 
 - **Un doute sur la capacité à mener une cohorte 2 à son terme.** Le bureau craint de rencontrer les mêmes difficultés, aggravées par la baisse d'engagement.
 - **Le souhait du bureau** est de tout arrêter, le programme et l'association. Il constate pourtant, à la lecture du sondage, qu'un peu d'engouement subsiste.
 
+**Une première lecture du sondage, écrite pour préparer une cohorte 2.** Une première analyse des résultats partait du principe qu'une cohorte 2 allait suivre. Elle voyait l'enjeu principal dans la lourdeur du suivi sur la plateforme, prenait les réponses du sondage telles quelles, présentait l'intérêt pour une nouvelle expérience comme un résultat, et recommandait un nouveau dispositif de suivi. Ce rapport repart des mêmes données, sans changer aucun chiffre, mais avec une autre question : il explique les biais du sondage (sondage nominatif, non-réponse, relances), confronte l'intérêt déclaré aux autres réponses des mentors, et place au centre la disponibilité des mentors et l'état de l'association. Le dispositif de suivi est renvoyé en annexe B.
+
 La question à laquelle ce rapport tente de répondre est donc : **le sondage montre-t-il un engouement assez solide pour remettre en cause le souhait d'arrêter ?**`,
   },
   {
@@ -70,7 +72,7 @@ La question à laquelle ce rapport tente de répondre est donc : **le sondage mo
 
 **Ce qui limite ces biais.** Les répondants n'ont pas tous été complaisants : {{mentors_detracteurs}} mentors sur {{mentors_repondants}} donnent une note de recommandation de 6 ou moins, et plusieurs réponses libres sont critiques. Les résultats négatifs sont donc probablement fiables ; ce sont les résultats positifs qu'il faut lire avec prudence.
 
-**Autres limites, inchangées depuis le brouillon n° 6.**
+**Autres limites.**
 
 - Le nombre de séances n'est pas présenté : une partie des séances n'a pas été enregistrée sur la plateforme ({{binomes_avec_fiche}} binômes sur {{binomes}} ont rempli au moins une fiche).
 - Les objectifs n'ont été saisis sur la plateforme que par {{binomes_avec_objectifs}} binôme sur {{binomes}} : leur atteinte n'est connue que par le sondage.
@@ -125,7 +127,7 @@ Rapporté aux {{mentors_invites}} mentors, l'intérêt déclaré concerne au mie
 
 **3. Les mentors n'ont pas été assez payés de retour.** {{mentors_benefice_1}} mentors répondants sur {{mentors_repondants}} jugent l'expérience peu ou pas bénéfique pour eux, et {{mentors_non_repondants}} sur {{mentors_invites}} ne se sont pas exprimés. Un bénévolat qui ne rend rien se renouvelle mal : relancer les mêmes personnes sans changer ce qu'elles y gagnent exposerait aux mêmes défections.
 
-**4. L'essentiel des échecs vient de la disponibilité, pas de l'outil.** Le brouillon n° 6 mettait l'accent sur la plateforme et les fiches de séance, jugées lourdes ({{suivi_lourd}} répondants sur {{reponses}}) et difficiles ({{suivi_difficile}} sur {{reponses}}). Ces critiques sont réelles, mais elles n'expliquent pas les {{rel_difficulte}} binômes en difficulté : dans 3 cas, c'est le mentor qui a manqué de disponibilité ou cessé de répondre ; dans 2 cas, c'est le mentoré qui n'a pas donné suite. Une personne qui ne répond pas ne répondra pas davantage à un check-in WhatsApp. Simplifier le suivi aurait amélioré la documentation, pas le nombre de binômes actifs.
+**4. L'essentiel des échecs vient de la disponibilité, pas de l'outil.** La première lecture du sondage mettait l'accent sur la plateforme et les fiches de séance, jugées lourdes ({{suivi_lourd}} répondants sur {{reponses}}) et difficiles ({{suivi_difficile}} sur {{reponses}}). Ces critiques sont réelles, mais elles n'expliquent pas les {{rel_difficulte}} binômes en difficulté : dans 3 cas, c'est le mentor qui a manqué de disponibilité ou cessé de répondre ; dans 2 cas, c'est le mentoré qui n'a pas donné suite. Une personne qui ne répond pas ne répondra pas davantage à un check-in WhatsApp. Simplifier le suivi aurait amélioré la documentation, pas le nombre de binômes actifs.
 
 **5. L'engouement restant est réel, mais il n'est pas là où le programme en a besoin.** Il vient surtout des mentorés, qui reçoivent. Chez les mentors, qui donnent, les signaux sont partagés et le sondage nominatif les flatte probablement. Ce reste d'engouement est un argument pour finir proprement et pour transmettre ; ce n'est pas, à lui seul, un argument pour relancer.
 
@@ -156,7 +158,7 @@ Le seuil de 8 mentors est une proposition, pas un chiffre issu des données. L'e
 
 **Une piste à étudier dans les deux cas : la transmission.** Si un autre acteur (la faculté, une autre association de juristes, un barreau) souhaitait reprendre le principe, la documentation de la cohorte 1 et ce rapport lui éviteraient de repartir de zéro. C'est une hypothèse de ce rapport : aucun contact n'a été pris à ce stade.
 
-**Le dispositif de suivi simplifié** (check-in mensuel par lien personnel, rappels WhatsApp) décrit dans le brouillon n° 6 n'a de sens que si une cohorte 2 a lieu. Il est conservé en annexe B pour cette éventualité.`,
+**Le dispositif de suivi simplifié** (check-in mensuel par lien personnel, rappels WhatsApp) n'a de sens que si une cohorte 2 a lieu. Il est décrit en annexe B pour cette éventualité.`,
   },
   {
     key: 'cloture',
@@ -202,12 +204,12 @@ Arrêter n'est pas un échec si c'est fait proprement : en remerciant ceux qui o
     title: 'Annexe A. Situation par binôme (document interne)',
     body: `{{bloc:annexe_binomes}}
 
-Notes : note de recommandation du sondage (0 à 10). État de la relation : classement qualitatif du brouillon n° 6.`,
+Notes : note de recommandation du sondage (0 à 10). État de la relation : classement qualitatif établi à partir des réponses au sondage.`,
   },
   {
     key: 'annexe_b',
     title: "Annexe B. Dispositif de suivi simplifié, à n'utiliser qu'en cas de cohorte 2",
-    body: `Résumé de la note « Passerelles — Simplifier les échanges entre binômes » et des recommandations du brouillon n° 6 :
+    body: `Résumé de la note « Passerelles — Simplifier les échanges entre binômes » :
 
 - Un lien personnel par participant, sans identifiant ni mot de passe.
 - Un check-in mensuel unique de moins d'une minute, à la place des fiches de séance.
@@ -219,23 +221,10 @@ Ce dispositif améliore la documentation du parcours ; il ne résout pas le manq
   },
   {
     key: 'annexe_c',
-    title: 'Annexe C. Ce qui change par rapport au brouillon n° 6',
-    body: `| Point | Brouillon n° 6 | Cette version |
-|---|---|---|
-| Hypothèse de départ | Une cohorte 2 va suivre | L'arrêt du programme et de l'association est envisagé |
-| Enjeu principal | La lourdeur du suivi sur la plateforme | La disponibilité des mentors et l'état de l'association |
-| Lecture du sondage | Résultats pris tels quels | Biais du sondage nominatif, de la non-réponse et des relances expliqués |
-| Intérêt pour une nouvelle expérience | Présenté comme un résultat | Confronté aux autres réponses des mentors |
-| Recommandations | Nouveau dispositif de suivi pour la cohorte 2 | Clôture en bon ordre ou mise en sommeil conditionnelle ; dispositif de suivi renvoyé en annexe |
+    title: 'Annexe C. Figures détaillées',
+    body: `Profil de la cohorte, questions notées et apports du mentorat. Ces figures portent sur les mêmes données que le rapport ; elles n'y sont pas commentées.
 
-Les chiffres sont identiques à ceux du brouillon n° 6. Les figures détaillées (profil de la cohorte, questions notées, apports du mentorat) sont reprises en annexe D.`,
-  },
-  {
-    key: 'annexe_d',
-    title: 'Annexe D. Figures détaillées reprises du brouillon n° 6',
-    body: `Ces figures portent sur les mêmes données. Elles ne sont pas commentées dans le corps du rapport.
-
-{{bloc:figures_brouillon6}}`,
+{{bloc:figures_annexe}}`,
   },
 ];
 

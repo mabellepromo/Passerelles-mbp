@@ -134,8 +134,6 @@ export function buildBureauValues(report) {
     mentors_non_repondants: v(s.mentors_invited != null ? s.mentors_invited - s.mentor_responses : null, 'mentors sans réponse'),
     mentores_invites: v(s.mentores_invited, 'mentorés invités'),
     mentores_repondants: v(s.mentore_responses, 'mentorés répondants'),
-    // Brouillon n° 6 remplacé (date de génération du rapport source)
-    brouillon6_date: v(report?.ai_analysis?.source_generated_at ? formatDateFr(report.ai_analysis.source_generated_at) : null, 'date du brouillon n° 6'),
     // Sondage et relances
     sondage_debut: v(campaign ? dayMonth(campaign.launched_at) : null, 'ouverture du sondage (jour et mois)'),
     sondage_fin: v(campaign ? formatDateFr(campaign.deadline) : null, 'clôture du sondage'),

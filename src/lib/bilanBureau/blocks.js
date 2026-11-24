@@ -140,12 +140,12 @@ export function annexeRows(report) {
 export const ANNEXE_HEAD = ['Binôme (mentor / mentoré)', 'État de la relation', 'Note mentor', 'Note mentoré', 'Constat'];
 export const annexeCells = (r) => [r.pair, RELATION_SHORT[r.status] || r.status, r.mentorScore, r.mentoreScore, r.constat];
 
-// Figures du brouillon n° 6 reprises en annexe D (profil, questions notées, apports).
-const ANNEX_D_FIGURES = ['profile_sexe', 'profile_level', 'profile_country', 'likert_common', 'likert_mentor', 'likert_mentore', 'contributions'];
-export function annexDFigures(report) {
+// Figures détaillées de l'annexe C (profil, questions notées, apports du mentorat).
+const ANNEX_FIGURES = ['profile_sexe', 'profile_level', 'profile_country', 'likert_common', 'likert_mentor', 'likert_mentore', 'contributions'];
+export function annexFigures(report) {
   return buildReportFigures(report, 'internal')
-    .filter((f) => ANNEX_D_FIGURES.includes(f.id))
-    .map((f, i) => ({ ...f, number: `D${i + 1}` }));
+    .filter((f) => ANNEX_FIGURES.includes(f.id))
+    .map((f, i) => ({ ...f, number: `C${i + 1}` }));
 }
 
 /**
@@ -163,9 +163,11 @@ export function buildBlock(name, report) {
     case 'table_relations': return { kind: 'table', ...relationsTable(report) };
     case 'table_envie': return { kind: 'table', ...envieTable(report) };
     case 'annexe_binomes': return { kind: 'annexe', rows: annexeRows(report) };
-    case 'figures_brouillon6': return { kind: 'figures', figures: annexDFigures(report) };
+    case 'figures_annexe':
+    case 'figures_brouillon6': // ancien nom, accepté pour les textes déjà enregistrés
+      return { kind: 'figures', figures: annexFigures(report) };
     default: return null;
   }
 }
 
-export const BLOCK_NAMES = ['nps_roles', 'table_mentores', 'table_mentors', 'table_relations', 'table_envie', 'annexe_binomes', 'figures_brouillon6'];
+export const BLOCK_NAMES = ['nps_roles', 'table_mentores', 'table_mentors', 'table_relations', 'table_envie', 'annexe_binomes', 'figures_annexe'];
