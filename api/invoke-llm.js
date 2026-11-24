@@ -373,7 +373,9 @@ async function handleGenerateBureauReport(req, res, adminUserId) {
       const status = PAIR_STATUSES.includes(prev?.status) ? prev.status : (legacyStatus.get(id) || 'inconnue');
       // Constat : saisi par l'admin dans l'annexe A (vide à la première génération).
       const constat = typeof prev?.constat === 'string' ? prev.constat : '';
-      return { binome_id: id, status, constat: constat.slice(0, 500) };
+      // Message de clôture (fiches binômes) : conservé tel quel s'il existe.
+      const message = typeof prev?.message_cloture === 'string' ? { message_cloture: prev.message_cloture.slice(0, 4000) } : {};
+      return { binome_id: id, status, constat: constat.slice(0, 500), ...message };
     });
 
     const analysis = {
