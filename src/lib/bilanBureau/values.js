@@ -171,7 +171,10 @@ export function buildBureauValues(report) {
     mentors_benefice_haut: v(benefit?.range(4, 5), 'mentors notant leur bénéfice 4 ou 5 sur 5'),
     mentors_benefice_moy: v(benefit ? fr1(benefit.mean) : null, 'bénéfice moyen pour les mentors'),
     mentors_objectifs_moy: v(objM ? fr1(objM.mean) : null, 'atteinte des objectifs, moyenne mentors'),
+    mentors_objectifs_haut: v(objM?.range(4, 5), "mentors notant l'atteinte des objectifs 4 ou 5"),
+    mentors_objectifs_1: v(objM?.count(1), "mentors notant l'atteinte des objectifs 1"),
     mentores_objectifs_moy: v(objE ? fr1(objE.mean) : null, 'atteinte des objectifs, moyenne mentorés'),
+    mentores_objectifs_haut: v(objE?.range(4, 5), "mentorés notant l'atteinte des objectifs 4 ou 5"),
     // Envie de recommencer
     mentors_interesses: v(contM?.yes, 'mentors intéressés par une nouvelle expérience'),
     mentors_interet_n: v(contM?.n, 'mentors ayant répondu à cette question'),

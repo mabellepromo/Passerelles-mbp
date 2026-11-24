@@ -707,9 +707,10 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
         <View style={styles.section}>
           <Text style={styles.h1}>9. Recommandations</Text>
           <Text style={styles.p}>
-            Recommandations formulées dans l'hypothèse d'une cohorte 2, classées par priorité. Sous chaque action figure le constat
-            de la cohorte 1 qui la justifie ; une action qu'aucune donnée n'appuie directement est signalée comme une bonne pratique.
-            Les actions sur le suivi entre les séances sont des pistes à tester, pas un dispositif existant.
+            Le bureau envisage d'arrêter le programme et l'association. La première recommandation porte sur cette décision ; les
+            suivantes ne valent que si une cohorte 2 a lieu. Sous chaque action figure le constat de la cohorte 1 qui la justifie ;
+            une action qu'aucune donnée n'appuie directement est signalée comme une bonne pratique. Les actions sur le suivi entre
+            les séances sont des pistes, pas un dispositif existant.
           </Text>
           <View style={styles.headRow}>
             <Text style={[styles.th, { width: '60%' }]}>Action</Text>
@@ -736,7 +737,7 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
 
         {/* 10. Conclusion */}
         <View style={styles.section}>
-          <Text style={styles.h1}>10. Conclusion et perspectives</Text>
+          <Text style={styles.h1}>10. Conclusion</Text>
           <Text style={styles.p}>{a.conclusion}</Text>
         </View>
 
@@ -863,8 +864,8 @@ export default function ReviewReportPdf({ report, variant = 'internal', scope = 
           <View style={styles.section}>
             <Text style={styles.h1}>11. Annexes — E. Points de vigilance de la nouvelle méthode</Text>
             <Text style={styles.p}>
-              Points à régler avant de tester la piste de suivi présentée en section 9 (check-in mensuel par lien personnel,
-              rappels par WhatsApp). Repris de la note « Passerelles — Simplifier les échanges entre binômes ».
+              Points à régler avant de tester, si une cohorte 2 a lieu, la piste de suivi présentée en section 9 (check-in mensuel
+              par lien personnel, rappels par WhatsApp). Repris de la note « Passerelles — Simplifier les échanges entre binômes ».
             </Text>
             <View style={styles.note}>
               {NEW_METHOD_VIGILANCE.map((t, i) => <Text key={i} style={{ marginBottom: 3 }}>• {t}</Text>)}

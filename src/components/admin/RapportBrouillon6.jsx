@@ -574,7 +574,7 @@ export default function RapportBrouillon6({ report }) {
       </Card>
 
       <Card className="border-0 shadow-md">
-        <CardHeader><CardTitle className="text-base">Recommandations (dans l'hypothèse d'une cohorte 2)</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">Recommandations</CardTitle></CardHeader>
         <CardContent className="space-y-3">
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
@@ -625,7 +625,7 @@ export default function RapportBrouillon6({ report }) {
       </Card>
 
       <Card className="border-0 shadow-md">
-        <CardHeader><CardTitle className="text-base">Conclusion et perspectives</CardTitle></CardHeader>
+        <CardHeader><CardTitle className="text-base">Conclusion</CardTitle></CardHeader>
         <CardContent>
           <Field value={analysis.conclusion} onChange={(v) => setField('conclusion', v)} editable={editable} multiline rows={6} className="text-sm text-gray-700 leading-relaxed whitespace-pre-line" />
         </CardContent>

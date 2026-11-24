@@ -12,6 +12,10 @@ export const SURVEY_SOURCE = 'Sondage de bilan PASSERELLES, novembre 2026';
 
 // « 3 sur 7 donnent 4 » / « 1 sur 10 donne 4 ou plus »
 const giveN = (count, n, what) => `${count} sur ${n} ${count > 1 ? 'donnent' : 'donne'} ${what}`;
+// Règle unique pour toutes les questions notées de 1 à 5 : notes hautes
+// (4-5), notes basses (1-2) et moyenne. Aucune réponse n'est passée sous
+// silence ; les notes de 3 sont le reste (n - hautes - basses).
+const likertSummary = (x) => `${giveN(x.range(4, 5), x.n, '4 ou 5')} ; ${giveN(x.range(1, 2), x.n, '1 ou 2')} ; moyenne ${fr1(x.mean)}`;
 
 // Statut -> ordre d'affichage dans l'annexe A.
 const STATUS_ORDER = { active: 0, limitee: 1, non_etablie: 2, inconnue: 3 };
@@ -62,10 +66,10 @@ function mentoresTable(report) {
     head: [`Indicateur (mentorés, n = ${n ?? '?'})`, 'Résultat'],
     rows: [
       ['Note de recommandation moyenne', na(nps, (x) => `${fr1(x.mean)} sur 10 ; ${x.countOf(10)} mentorés donnent 10`)],
-      ['Qualité de la relation', na(rel, (x) => `${giveN(x.range(4, 5), x.n, '4 ou 5 sur 5')} ; moyenne ${fr1(x.mean)}`)],
-      ['Niveau de confiance avec le mentor', na(trust, (x) => `${giveN(x.range(4, 5), x.n, '4 ou 5')} ; moyenne ${fr1(x.mean)}`)],
-      ['Atteinte des objectifs', na(obj, (x) => `${giveN(x.range(4, 5), x.n, '4 ou plus')} ; ${giveN(x.count(1), x.n, '1')} ; moyenne ${fr1(x.mean)}`)],
-      ["Clarté de l'orientation professionnelle", na(career, (x) => `${giveN(x.range(4, 5), x.n, '4 ou 5')} ; moyenne ${fr1(x.mean)}`)],
+      ['Qualité de la relation', na(rel, likertSummary)],
+      ['Niveau de confiance avec le mentor', na(trust, likertSummary)],
+      ['Atteinte des objectifs', na(obj, likertSummary)],
+      ["Clarté de l'orientation professionnelle", na(career, likertSummary)],
     ],
   };
 }
@@ -82,10 +86,10 @@ function mentorsTable(report) {
     head: [`Indicateur (mentors, n = ${n ?? '?'})`, 'Résultat'],
     rows: [
       ['Note de recommandation moyenne', na(nps, (x) => `${fr1(x.mean)} sur 10 ; notes de ${x.min} à ${x.max}`)],
-      ["Bénéfice de l'expérience pour eux-mêmes", na(benefit, (x) => `${giveN(x.count(4), x.n, '4')} ; ${giveN(x.count(1), x.n, '1')} ; moyenne ${fr1(x.mean)}`)],
-      ['Qualité de la relation', na(rel, (x) => `${giveN(x.range(4, 5), x.n, '4 ou 5')} ; ${giveN(x.count(1), x.n, '1')} ; moyenne ${fr1(x.mean)}`)],
-      ['Engagement de leur mentoré', na(engagement, (x) => `${giveN(x.range(4, 5), x.n, '4 ou 5')} ; moyenne ${fr1(x.mean)}`)],
-      ['Atteinte des objectifs', na(obj, (x) => `${giveN(x.count(4), x.n, '4')} ; ${giveN(x.count(1), x.n, '1')} ; moyenne ${fr1(x.mean)}`)],
+      ["Bénéfice de l'expérience pour eux-mêmes", na(benefit, likertSummary)],
+      ['Qualité de la relation', na(rel, likertSummary)],
+      ['Engagement de leur mentoré', na(engagement, likertSummary)],
+      ['Atteinte des objectifs', na(obj, likertSummary)],
     ],
   };
 }
@@ -111,6 +115,7 @@ function envieTable(report) {
       ['Se disent intéressés par une nouvelle expérience', cont ? String(cont.yes) : NOT_AVAILABLE],
       ['Recommanderaient vraiment le programme (note 9 ou 10)', nps ? String(nps.promoters) : NOT_AVAILABLE],
       ["Jugent l'expérience bénéfique pour eux (note 4 ou 5)", benefit ? String(benefit.range(4, 5)) : NOT_AVAILABLE],
+      ["Jugent l'expérience peu ou pas bénéfique pour eux (note 1 ou 2)", benefit ? String(benefit.range(1, 2)) : NOT_AVAILABLE],
     ],
     narrow: true,
   };

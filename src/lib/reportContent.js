@@ -91,7 +91,7 @@ export function buildMethodology(report) {
 
   const limits = [
     `${missingMentors} mentor(s) sur ${s.mentors_invited} et ${missingMentores} mentoré(s) sur ${s.mentores_invited} n'ont pas répondu au sondage : leur point de vue est absent des résultats.`,
-    'Une partie des séances n\'ayant pas été enregistrée sur la plateforme, le nombre de séances n\'est pas présenté. Les réponses du sondage sur le nombre et la régularité des sessions sont des déclarations des participants, pas un comptage. Cette limite a conduit à repenser le mode de suivi : une piste plus légère, à tester avant toute généralisation, est présentée dans les recommandations (section 9).',
+    'Une partie des séances n\'ayant pas été enregistrée sur la plateforme, le nombre de séances n\'est pas présenté. Les réponses du sondage sur le nombre et la régularité des sessions sont des déclarations des participants, pas un comptage. Un suivi plus léger, qui n\'aurait de sens que si une cohorte 2 avait lieu, est présenté dans les recommandations (section 9) : il améliorerait la documentation du parcours, pas la disponibilité des mentors.',
     `Les résultats reposent sur ${s.responses_total} réponses : chaque réponse pèse lourd${onePointWeight ? ` (une seule réponse déplace le NPS d'environ ${onePointWeight} points)` : ''}. Les chiffres sont à lire comme des tendances.`,
     `Seuls ${share(binomesWithObjectives, binomes.length)} binômes ont saisi des objectifs sur la plateforme : pour les autres, l'atteinte des objectifs n'est connue que par le sondage.`,
     'Le contenu des fiches de séance (objectifs abordés, difficultés) a nourri l\'analyse qualitative. Il ne provient que d\'une partie des binômes et n\'est pas représentatif de l\'ensemble.',
