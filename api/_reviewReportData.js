@@ -170,10 +170,11 @@ async function loadReportSources(supabase) {
     .from('mentor').select('id, city, city_other').in('id', mentorIds);
   if (mentorsError) throw new Error(`Lecture des mentors : ${mentorsError.message}`);
 
-  // Nombre de candidatures reçues (tables mentor et mentore, toutes candidatures).
+  // Nombre de candidatures reçues (tables mentor et mentore), candidatures
+  // de test exclues (colonne is_test, migration 20261124100000).
   const [{ count: mentorApplications }, { count: mentoreApplications }] = await Promise.all([
-    supabase.from('mentor').select('id', { count: 'exact', head: true }),
-    supabase.from('mentore').select('id', { count: 'exact', head: true }),
+    supabase.from('mentor').select('id', { count: 'exact', head: true }).eq('is_test', false),
+    supabase.from('mentore').select('id', { count: 'exact', head: true }).eq('is_test', false),
   ]);
 
   // Tri stable : les pseudonymes B-01, B-02... suivent l'ordre alphabétique des mentors.

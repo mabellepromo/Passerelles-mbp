@@ -36,7 +36,10 @@ const NAV = [
   { id: 'donnees',       label: 'Données & Bilan',  icon: Activity,       group: 'Principal' },
   { id: 'charts',        label: 'Graphiques',        icon: TrendingUp,     group: 'Principal' },
   // Coordination de la cohorte 2 (check-in mensuel par lien personnel).
-  { id: 'cohorte2',      label: 'Cohorte 2',         icon: Sparkles,       group: 'Principal' },
+  // EN PAUSE depuis le 24/11/2026 (bilan « version bureau ») : rubrique masquée
+  // du menu, code conservé. Ses migrations n'ont jamais été appliquées en base.
+  // Pour reprendre : passer paused à false.
+  { id: 'cohorte2',      label: 'Cohorte 2',         icon: Sparkles,       group: 'Principal', paused: true },
   { id: 'mentors',       label: 'Mentors',           icon: UserCheck,      group: 'Participants', count: 'totalMentors' },
   { id: 'mentores',      label: 'Mentorés',          icon: GraduationCap,  group: 'Participants', count: 'totalMentores' },
   { id: 'binomes',       label: 'Binômes',           icon: Users,          group: 'Participants', count: 'activeBinomes' },
@@ -557,7 +560,7 @@ export default function AdminDashboard() {
       {/* Nav */}
       <nav className="flex-1 overflow-y-auto py-3 px-3 space-y-5">
         {GROUPS.map(group => {
-          const items = NAV.filter(n => n.group === group);
+          const items = NAV.filter(n => n.group === group && !n.paused);
           return (
             <div key={group}>
               <p className="text-[9px] font-bold uppercase tracking-widest px-2 mb-1.5" style={{ color: 'rgba(255,255,255,0.35)' }}>{group}</p>
@@ -705,7 +708,7 @@ export default function AdminDashboard() {
           <div className={activeTab !== 'overview' ? 'bg-white rounded-2xl shadow-sm border border-gray-100 p-5' : ''}>
             {activeTab === 'overview'      && <AdminStats stats={stats} onOpenDonnees={() => setActiveTab('donnees')} />}
             {activeTab === 'donnees'       && <DonneesBilan />}
-            {activeTab === 'cohorte2'      && <Cohorte2Space />}
+            {activeTab === 'cohorte2'      && !NAV.find(n => n.id === 'cohorte2').paused && <Cohorte2Space />}
             {activeTab === 'mentors'       && <MentorsList mentors={mentors} />}
             {activeTab === 'mentores'      && <MentoresList mentores={mentores} />}
             {activeTab === 'matching'      && <MatchingTool mentors={mentors.filter(m => m.status === 'approved')} mentores={mentores.filter(m => m.status === 'approved')} />}

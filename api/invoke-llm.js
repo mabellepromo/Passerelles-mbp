@@ -299,6 +299,113 @@ async function handleGenerateReviewReport(req, res, adminUserId) {
 }
 
 // ----------------------------------------------------------------------------
+// Action generate_bureau_report : bilan « version bureau » (24/11/2026)
+//
+// Aucun appel à l'IA. Le serveur :
+//   1. recalcule les métriques SQL et la photographie des données (mêmes
+//      fonctions et mêmes vues filtrées que le brouillon n° 6) ;
+//   2. reprend du dernier brouillon n° 6 (ligne sans report_format) le
+//      classement qualitatif des binômes, les thèmes récurrents et sa date ;
+//   3. enregistre une NOUVELLE ligne en brouillon avec les textes envoyés par
+//      l'onglet « Rapport » (textes par défaut ou textes déjà modifiés).
+// Le brouillon n° 6 n'est jamais modifié.
+// ----------------------------------------------------------------------------
+
+const BUREAU_FORMAT = 'bilan_bureau';
+const PAIR_STATUSES = ['active', 'limitee', 'non_etablie', 'inconnue'];
+
+// Contrôle de forme des textes envoyés par le navigateur.
+function cleanSections(sections) {
+  if (!Array.isArray(sections) || !sections.length || sections.length > 30) return null;
+  const out = [];
+  for (const s of sections) {
+    if (!s || typeof s.key !== 'string' || typeof s.title !== 'string' || typeof s.body !== 'string') return null;
+    if (s.key.length > 40 || s.title.length > 200 || s.body.length > 30000) return null;
+    out.push({ key: s.key, title: s.title, body: s.body });
+  }
+  return out;
+}
+
+async function handleGenerateBureauReport(req, res, adminUserId) {
+  if (!supabaseService) return res.status(503).json({ error: 'SUPABASE_SERVICE_ROLE_KEY manquant côté serveur' });
+  const { cohorte = '1', title, sections, pair_notes = null } = req.body || {};
+
+  const cleanedSections = cleanSections(sections);
+  if (!cleanedSections || typeof title !== 'string' || title.length > 200) {
+    return res.status(400).json({ error: 'Textes du rapport invalides.' });
+  }
+
+  try {
+    // 1. Chiffres : mêmes calculs que le brouillon n° 6.
+    const { data: metrics, error: metricsError } = await supabaseService
+      .rpc('build_review_report_metrics', { p_cohorte: cohorte });
+    if (metricsError) throw new Error(`Agrégation SQL : ${metricsError.message}`);
+    const binomesCount = metrics?.binomes_count ?? 0;
+    if (binomesCount !== EXPECTED_BINOME_COUNT) {
+      return res.status(409).json({
+        error: `Rapport non généré : ${binomesCount} binôme(s) analysé(s) au lieu de ${EXPECTED_BINOME_COUNT} attendus. Vérifie la colonne is_test de la table binome avant de relancer.`,
+      });
+    }
+    const sources = await loadReportSources(supabaseService);
+    const snapshot = buildSnapshot(sources);
+    const binomeIds = new Set(snapshot.binomes.map((b) => b.binome_id));
+
+    // 2. Brouillon n° 6 : dernière ligne de la cohorte sans report_format.
+    const { data: legacyRows, error: legacyError } = await supabaseService
+      .from('review_reports')
+      .select('id, generated_at, ai_analysis')
+      .eq('period_label', cohorte)
+      .is('ai_analysis->>report_format', null)
+      .order('generated_at', { ascending: false })
+      .limit(1);
+    if (legacyError) throw new Error(`Lecture du brouillon n° 6 : ${legacyError.message}`);
+    const legacy = legacyRows?.[0];
+    if (!legacy?.ai_analysis?.pair_status) {
+      return res.status(409).json({ error: 'Brouillon n° 6 introuvable : le classement des binômes ne peut pas être repris.' });
+    }
+
+    // 3. État et constat par binôme. Régénération : on garde ceux du bilan
+    //    en cours (pair_notes) ; première génération : état du brouillon n° 6.
+    const legacyStatus = new Map(legacy.ai_analysis.pair_status.map((p) => [p.binome_id, p.status]));
+    const previous = Array.isArray(pair_notes) ? new Map(pair_notes.map((p) => [p.binome_id, p])) : null;
+    const notes = [...binomeIds].map((id) => {
+      const prev = previous?.get(id);
+      const status = PAIR_STATUSES.includes(prev?.status) ? prev.status : (legacyStatus.get(id) || 'inconnue');
+      // Constat : saisi par l'admin dans l'annexe A (vide à la première génération).
+      const constat = typeof prev?.constat === 'string' ? prev.constat : '';
+      return { binome_id: id, status, constat: constat.slice(0, 500) };
+    });
+
+    const analysis = {
+      report_format: BUREAU_FORMAT,
+      title: title.trim(),
+      sections: cleanedSections,
+      pair_notes: notes,
+      source_report_id: legacy.id,
+      source_generated_at: legacy.generated_at,
+      source_themes: (legacy.ai_analysis.recurring_themes || []).map((t) => ({ theme: t.theme, frequency: t.frequency })),
+    };
+
+    const { data: inserted, error: insertError } = await supabaseService
+      .from('review_reports')
+      .insert({
+        generated_by: adminUserId,
+        period_label: cohorte,
+        metrics: { ...metrics, snapshot },
+        ai_analysis: analysis,
+        status: 'draft',
+      })
+      .select()
+      .single();
+    if (insertError) throw new Error(`Enregistrement du rapport : ${insertError.message}`);
+    return res.status(200).json(inserted);
+  } catch (err) {
+    console.error('generate_bureau_report error:', err.message);
+    return res.status(500).json({ error: err.message });
+  }
+}
+
+// ----------------------------------------------------------------------------
 // Entrée commune : auth, CORS, puis routage par action
 // ----------------------------------------------------------------------------
 
@@ -323,6 +430,9 @@ module.exports = async (req, res) => {
   const { action } = req.body || {};
   if (action === 'generate_review_report') {
     return handleGenerateReviewReport(req, res, userData.user.id);
+  }
+  if (action === 'generate_bureau_report') {
+    return handleGenerateBureauReport(req, res, userData.user.id);
   }
   return handleGenericInvoke(req, res);
 };
