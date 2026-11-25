@@ -10,7 +10,7 @@
 import React from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { LayoutDashboard, Activity, Users, MessageSquare, FileText, ClipboardCheck } from 'lucide-react';
+import { LayoutDashboard, Activity, Users, MessageSquare, FileText, ClipboardCheck, Gavel } from 'lucide-react';
 import { fetchOfficialBinomes, getBinomeCountWarning } from '@/lib/programData';
 import { WarningBanner } from './shared';
 import SyntheseTab from './SyntheseTab';
@@ -19,6 +19,7 @@ import BinomesTab from './BinomesTab';
 import SondageTab from './SondageTab';
 import RapportBilan from '@/components/admin/RapportBilan.jsx';
 import FichesBinomes from '@/components/admin/fiches/FichesBinomes.jsx';
+import ExpertiseBinomes from '@/components/admin/fiches/ExpertiseBinomes.jsx';
 
 const SUB_TABS = [
   { id: 'synthese', label: 'Synthèse', icon: LayoutDashboard },
@@ -28,6 +29,8 @@ const SUB_TABS = [
   { id: 'rapport', label: 'Rapport', icon: FileText },
   // Fiches bilan par binôme pour la clôture de la cohorte 1 (24/11/2026).
   { id: 'fiches', label: 'Fiches binômes', icon: ClipboardCheck },
+  // Fiches d'expertise : sentence par binôme, récapitulatif, synthèse (25/11/2026).
+  { id: 'expertise', label: 'Expertise binômes', icon: Gavel },
 ];
 
 export default function DonneesBilan() {
@@ -83,6 +86,7 @@ export default function DonneesBilan() {
       {activeSubTab === 'sondage' && <SondageTab />}
       {activeSubTab === 'rapport' && <RapportBilan />}
       {activeSubTab === 'fiches' && <FichesBinomes />}
+      {activeSubTab === 'expertise' && <ExpertiseBinomes />}
     </div>
   );
 }
