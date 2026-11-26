@@ -11,6 +11,7 @@ import {
   Mail,
   Users,
 } from 'lucide-react';
+import ExpertiseSummary from '@/components/admin/donnees/ExpertiseSummary';
 
 function StatCard({ label, value, sub, color, icon: Icon }) {
   return (
@@ -25,10 +26,10 @@ function StatCard({ label, value, sub, color, icon: Icon }) {
   );
 }
 
-// Page d'accueil de l'admin, volontairement allégée : candidatures et messages
-// non lus uniquement. Les indicateurs du programme (binômes, sondage,
-// satisfaction...) vivent dans la rubrique « Données & Bilan ».
-export default function AdminStats({ stats, onOpenDonnees }) {
+// Page d'accueil de l'admin, volontairement allégée : candidatures, messages
+// non lus et bilan d'expertise de la cohorte 1 (répartition des sentences).
+// Les autres indicateurs du programme vivent dans la rubrique « Données & Bilan ».
+export default function AdminStats({ stats, onOpenDonnees, onOpenExpertise }) {
   const candidatureRows = [
     {
       label: 'Mentors',
@@ -53,6 +54,9 @@ export default function AdminStats({ stats, onOpenDonnees }) {
         <StatCard label="Messages non lus" value={stats.unreadContacts} sub="Formulaire de contact" icon={Mail} color={stats.unreadContacts > 0 ? '#dc2626' : '#6b7280'} />
         <StatCard label="Total candidatures" value={stats.totalMentors + stats.totalMentores} sub="Mentors + mentorés" icon={Users} color="#1a7a45" />
       </div>
+
+      {/* Bilan d'expertise de la cohorte 1 (sentences par binôme) */}
+      <ExpertiseSummary compact onOpen={onOpenExpertise} />
 
       {/* Renvoi vers la rubrique des indicateurs du programme */}
       <button

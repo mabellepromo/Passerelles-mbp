@@ -1,27 +1,18 @@
 import React, { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import {
-  BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
-  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, Radar, PolarGrid, PolarAngleAxis
+  BarChart, Bar, LineChart, Line,
+  XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 // Note de satisfaction d'une fiche = note de son auteur (voir src/lib/programData.js)
 import { ficheSatisfaction } from '@/lib/programData';
-import { TrendingUp, Users, Star, Activity, Target, Calendar } from 'lucide-react';
+import { Users, Star } from 'lucide-react';
+import ExpertiseSummary from '@/components/admin/donnees/ExpertiseSummary';
 
-const COLORS = ['#1e5631', '#2d7a47', '#f59e0b', '#3b82f6', '#ef4444', '#8b5cf6'];
-
-const StatCard = ({ label, value, sub, icon: IconComp, color }) => (
-  <Card className="border-0 shadow-sm">
-    <CardContent className={`p-4 flex items-center gap-3 rounded-xl ${color}`}>
-      <IconComp className="h-5 w-5 flex-shrink-0" />
-      <div>
-        <p className="text-2xl font-bold">{value}</p>
-        <p className="text-xs font-medium">{label}</p>
-        {sub && <p className="text-xs opacity-70">{sub}</p>}
-      </div>
-    </CardContent>
-  </Card>
-);
+// Graphiques du programme (cohorte 1, binôme test exclu).
+// Aucun indicateur sur le nombre de séances ni les heures : une partie des
+// séances n'a pas été enregistrée (décision du 11/11/2026). Le jugement sur
+// les binômes vient des fiches d'expertise (sentences), pas du statut technique.
 
 export default function ProgrammeCharts({ mentors, mentores, binomes, suivis }) {
 
@@ -51,28 +42,6 @@ export default function ProgrammeCharts({ mentors, mentores, binomes, suivis }) 
       .map(m => ({ ...m, satisfaction: m.count > 0 ? +(m.total / m.count).toFixed(2) : 0 }));
   }, [suivis]);
 
-  // ── 3. Statut des binômes ──
-  const binomsStatuts = useMemo(() => {
-    const map = {};
-    binomes.forEach(b => { map[b.status] = (map[b.status] || 0) + 1; });
-    const labels = { active: 'Actif', paused: 'En pause', completed: 'Terminé', terminated: 'Arrêté' };
-    return Object.entries(map).map(([k, v]) => ({ name: labels[k] || k, value: v }));
-  }, [binomes]);
-
-  // ── 4. Taux d'activité (séances / mois) ──
-  const seancesParMois = useMemo(() => {
-    const map = {};
-    suivis.forEach(s => {
-      const d = s.meeting_date?.slice(0, 7);
-      if (!d) return;
-      if (!map[d]) map[d] = { mois: d, seances: 0, heures: 0 };
-      map[d].seances++;
-      map[d].heures += s.duration_hours || 0;
-    });
-    return Object.values(map).sort((a, b) => a.mois.localeCompare(b.mois)).slice(-12)
-      .map(m => ({ ...m, heures: +m.heures.toFixed(1) }));
-  }, [suivis]);
-
   // ── 5. Statuts candidatures ──
   const statusMentors = useMemo(() => {
     const s = { pending: 0, approved: 0, rejected: 0, matched: 0 };
@@ -97,14 +66,9 @@ export default function ProgrammeCharts({ mentors, mentores, binomes, suivis }) 
     ];
   }, [mentores]);
 
-  // ── Stats globales ──
-  const activeBinomes = binomes.filter(b => b.status === 'active').length;
-  const tauxActivite = binomes.length > 0 ? Math.round(activeBinomes / binomes.length * 100) : 0;
-  const avgSatisfaction = suivis.length > 0
-    ? (suivis.reduce((acc, s) => acc + ficheSatisfaction(s), 0) / suivis.length).toFixed(1)
-    : '–';
-  const totalHeures = suivis.reduce((s, r) => s + (r.duration_hours || 0), 0).toFixed(0);
-  const issuesCount = suivis.filter(s => s.issues_reported).length;
+  // Couverture réelle des fiches de séance notées (la courbe ne vaut que pour elles).
+  const fichesNotees = suivis.filter(s => ficheSatisfaction(s) > 0);
+  const binomesCouverts = new Set(fichesNotees.map(s => s.binome_id)).size;
 
   const formatMois = (m) => {
     if (!m) return '';
@@ -117,106 +81,60 @@ export default function ProgrammeCharts({ mentors, mentores, binomes, suivis }) 
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-bold text-gray-900">Analyse & Graphiques</h2>
-        <p className="text-sm text-gray-500 mt-1">Progression et indicateurs de performance du programme</p>
+        <p className="text-sm text-gray-500 mt-1">Bilan des binômes, candidatures et satisfaction déclarée — cohorte 1</p>
       </div>
 
-      {/* KPIs */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <StatCard label="Taux d'activité" value={`${tauxActivite}%`} sub={`${activeBinomes}/${binomes.length} binômes`} icon={Activity} color="bg-emerald-50 text-emerald-700" />
-        <StatCard label="Satisfaction globale" value={avgSatisfaction !== '–' ? `${avgSatisfaction}/5` : '–'} sub={`${suivis.length} séances`} icon={Star} color="bg-amber-50 text-amber-700" />
-        <StatCard label="Heures de mentorat" value={`${totalHeures}h`} sub="Total programme" icon={Calendar} color="bg-blue-50 text-blue-700" />
-        <StatCard label="Signalements" value={issuesCount} sub="Problèmes reportés" icon={Target} color={issuesCount > 0 ? "bg-red-50 text-red-700" : "bg-gray-50 text-gray-600"} />
-      </div>
+      {/* Jugement sur les binômes : sentences d'expertise */}
+      <ExpertiseSummary />
 
-      {/* Row 1: Candidatures + Statuts binômes */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        <Card className="border-0 shadow-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Users className="h-4 w-4 text-[#1e5631]" /> Candidatures par mois
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={candidaturesParMois} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="mois" tickFormatter={formatMois} tick={{ fontSize: 11 }} />
-                <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                <Tooltip formatter={(v, n) => [v, n === 'mentors' ? 'Mentors' : 'Mentorés']} labelFormatter={formatMois} />
-                <Legend formatter={(v) => v === 'mentors' ? 'Mentors' : 'Mentorés'} />
-                <Bar dataKey="mentors" fill="#1e5631" radius={[3,3,0,0]} />
-                <Bar dataKey="mentores" fill="#3b82f6" radius={[3,3,0,0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
+      <Card className="border-0 shadow-md">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Users className="h-4 w-4 text-[#1e5631]" /> Candidatures par mois
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={candidaturesParMois} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+              <XAxis dataKey="mois" tickFormatter={formatMois} tick={{ fontSize: 11 }} />
+              <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+              <Tooltip formatter={(v, n) => [v, n === 'mentors' ? 'Mentors' : 'Mentorés']} labelFormatter={formatMois} />
+              <Legend formatter={(v) => v === 'mentors' ? 'Mentors' : 'Mentorés'} />
+              <Bar dataKey="mentors" fill="#1e5631" stroke="#ffffff" strokeWidth={2} radius={[3,3,0,0]} />
+              <Bar dataKey="mentores" fill="#3b82f6" stroke="#ffffff" strokeWidth={2} radius={[3,3,0,0]} />
+            </BarChart>
+          </ResponsiveContainer>
+        </CardContent>
+      </Card>
 
-        <Card className="border-0 shadow-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Activity className="h-4 w-4 text-[#1e5631]" /> Répartition des binômes
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="flex items-center justify-center">
-            {binomsStatuts.length === 0 ? (
-              <p className="text-gray-400 text-sm py-8">Aucun binôme</p>
-            ) : (
-              <ResponsiveContainer width="100%" height={240}>
-                <PieChart>
-                  <Pie data={binomsStatuts} cx="50%" cy="50%" outerRadius={90} dataKey="value" label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`} labelLine={false}>
-                    {binomsStatuts.map((_, i) => <Cell key={i} fill={COLORS[i % COLORS.length]} />)}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Row 2: Satisfaction + Séances */}
-      <div className="grid lg:grid-cols-2 gap-6">
-        <Card className="border-0 shadow-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <Star className="h-4 w-4 text-amber-500" /> Satisfaction mensuelle (sur 5)
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+      {/* Satisfaction déclarée dans les fiches de séance */}
+      <Card className="border-0 shadow-md">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-base flex items-center gap-2">
+            <Star className="h-4 w-4 text-amber-500" /> Satisfaction déclarée dans les fiches de séance (sur 5)
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          {fichesNotees.length === 0 ? (
+            <p className="text-sm text-gray-400 py-8 text-center">Donnée non disponible.</p>
+          ) : (
             <ResponsiveContainer width="100%" height={240}>
               <LineChart data={satisfactionParMois} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis dataKey="mois" tickFormatter={formatMois} tick={{ fontSize: 11 }} />
                 <YAxis domain={[0, 5]} tick={{ fontSize: 11 }} />
-                <Tooltip labelFormatter={formatMois} formatter={(v) => [`${v}/5`, 'Satisfaction']} />
-                <Line type="monotone" dataKey="satisfaction" stroke="#f59e0b" strokeWidth={2.5} dot={{ fill: '#f59e0b', r: 4 }} activeDot={{ r: 6 }} />
+                <Tooltip labelFormatter={formatMois} formatter={(v, _n, item) => [`${v}/5 (${item.payload.count} fiche(s))`, 'Satisfaction']} />
+                <Line type="monotone" dataKey="satisfaction" stroke="#f59e0b" strokeWidth={2} dot={{ fill: '#f59e0b', r: 4 }} activeDot={{ r: 6 }} />
               </LineChart>
             </ResponsiveContainer>
-          </CardContent>
-        </Card>
-
-        <Card className="border-0 shadow-md">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-base flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-blue-600" /> Séances & heures par mois
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ResponsiveContainer width="100%" height={240}>
-              <BarChart data={seancesParMois} margin={{ top: 5, right: 10, left: -20, bottom: 5 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis dataKey="mois" tickFormatter={formatMois} tick={{ fontSize: 11 }} />
-                <YAxis yAxisId="left" tick={{ fontSize: 11 }} allowDecimals={false} />
-                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 11 }} />
-                <Tooltip labelFormatter={formatMois} />
-                <Legend />
-                <Bar yAxisId="left" dataKey="seances" fill="#3b82f6" name="Séances" radius={[3,3,0,0]} />
-                <Bar yAxisId="right" dataKey="heures" fill="#8b5cf6" name="Heures" radius={[3,3,0,0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </CardContent>
-        </Card>
-      </div>
+          )}
+          <p className="text-xs text-gray-500 mt-2">
+            {fichesNotees.length} fiche(s) notée(s), saisies par {binomesCouverts} binôme(s) sur {binomes.length} seulement :
+            cette courbe ne représente pas la cohorte. Note retenue : celle de l'auteur de la fiche.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Row 3: Statuts candidatures */}
       <div className="grid lg:grid-cols-2 gap-6">

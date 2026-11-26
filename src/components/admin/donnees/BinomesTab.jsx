@@ -6,8 +6,23 @@ import { useQuery } from '@tanstack/react-query';
 import { ChevronDown, ChevronRight, Check, Minus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { fetchBinomeOverview, fetchOfficialJournal, fetchOfficialSuivis } from '@/lib/programData';
+import { fetchBinomeOverview, fetchOfficialJournal, fetchOfficialSuivis, fetchExpertise } from '@/lib/programData';
+import { SENTENCE, CONFIANCE } from '@/lib/expertiseBinome';
 import { VigilanceBadge, Loader } from './shared';
+
+// Sentence d'expertise : pastille de couleur + libellé + confiance (jamais la couleur seule).
+function SentenceCell({ row }) {
+  if (!row) return <span className="text-xs text-gray-400">fiche non rédigée</span>;
+  const s = SENTENCE[row.sentence];
+  return (
+    <span className="inline-flex flex-col">
+      <span className="inline-flex items-center gap-1.5 font-medium text-gray-800">
+        <span className="inline-block h-2.5 w-2.5 rounded-sm" style={{ background: s?.color }} /> {s?.label || row.sentence}
+      </span>
+      <span className="text-[11px] text-gray-500">confiance {CONFIANCE[row.confiance] || row.confiance}</span>
+    </span>
+  );
+}
 
 const OBJECTIVE_STATUS_LABEL = {
   en_cours: 'En cours',
@@ -89,6 +104,10 @@ export default function BinomesTab() {
     queryKey: ['official_suivis', 'by_date'], queryFn: () => fetchOfficialSuivis('meeting_date'),
   });
 
+  const { data: expertise = [] } = useQuery({
+    queryKey: ['binome_expertise', '1'], queryFn: () => fetchExpertise('1'),
+  });
+
   if (isLoading) return <Loader />;
 
   return (
@@ -103,7 +122,8 @@ export default function BinomesTab() {
               <tr className="text-left text-xs text-gray-500 uppercase tracking-wide border-b border-gray-100">
                 <th className="py-2 pr-2 w-6" />
                 <th className="py-2 pr-4">Binôme</th>
-                <th className="py-2 pr-4">Vigilance</th>
+                <th className="py-2 pr-4">Sentence</th>
+                <th className="py-2 pr-4">Alerte NPS</th>
                 <th className="py-2 pr-4">Sondage mentor</th>
                 <th className="py-2 pr-4">Sondage mentoré</th>
                 <th className="py-2 pr-4">Objectifs saisis</th>
@@ -125,6 +145,7 @@ export default function BinomesTab() {
                         <p className="font-medium text-gray-800">{b.mentor_name}</p>
                         <p className="text-xs text-gray-500">{b.mentore_name}</p>
                       </td>
+                      <td className="py-2.5 pr-4"><SentenceCell row={expertise.find((e) => e.binome_id === b.binome_id)} /></td>
                       <td className="py-2.5 pr-4"><VigilanceBadge level={b.vigilance} /></td>
                       <td className="py-2.5 pr-4"><Responded value={b.mentor_responded} nps={b.mentor_nps} /></td>
                       <td className="py-2.5 pr-4"><Responded value={b.mentore_responded} nps={b.mentore_nps} /></td>
@@ -136,7 +157,7 @@ export default function BinomesTab() {
                     </tr>
                     {isOpen && (
                       <tr>
-                        <td colSpan={6} className="py-3">
+                        <td colSpan={7} className="py-3">
                           <BinomeDetail
                             binome={b}
                             objectives={journal.filter((j) => j.binome_id === b.binome_id && j.type === 'objectif')}
@@ -152,8 +173,9 @@ export default function BinomesTab() {
           </table>
         </div>
         <p className="text-xs text-gray-500 mt-4">
-          Les notes affichées dans les colonnes « Sondage » sont les notes de recommandation (0 à 10). Clique sur un
-          binôme pour voir ses objectifs et le contenu de ses fiches. Les réponses détaillées sont dans l'onglet « Sondage ».
+          La sentence vient des fiches d'expertise (onglet « Expertise binômes ») et fait foi pour juger un binôme.
+          L'alerte NPS et les notes des colonnes « Sondage » portent sur la recommandation du programme (0 à 10), pas sur
+          le fonctionnement du binôme. Clique sur un binôme pour voir ses objectifs et le contenu de ses fiches.
         </p>
       </CardContent>
     </Card>
