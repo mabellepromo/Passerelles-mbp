@@ -8,8 +8,9 @@ import { Users, MessageSquare, CheckCircle2, Target, Star } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { fetchSurveySummary, fetchFicheSatisfaction, fetchBinomeOverview } from '@/lib/programData';
 import { StatCard, NpsBar, VigilanceBadge, WarningBanner, Loader, formatShare, formatNumber } from './shared';
+import ExpertiseSummary from './ExpertiseSummary';
 
-export default function SyntheseTab() {
+export default function SyntheseTab({ onOpenExpertise }) {
   const { data: survey, isLoading: loadingSurvey } = useQuery({
     queryKey: ['official_survey_summary'], queryFn: fetchSurveySummary,
   });
@@ -39,6 +40,8 @@ export default function SyntheseTab() {
 
   return (
     <div className="space-y-6">
+      <ExpertiseSummary onOpen={onOpenExpertise} />
+
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <StatCard label="Binômes" value={survey.binomes_count} sub="binômes officiels, cohorte 1" icon={Users} />
         <StatCard label="Réponses au sondage" value={`${survey.responses_total}/${invitedTotal}`} sub={`${formatShare(survey.responses_total, invitedTotal)} des personnes invitées`} icon={MessageSquare} />
@@ -63,7 +66,7 @@ export default function SyntheseTab() {
 
       <div className="grid md:grid-cols-2 gap-4">
         <Card className="border-0 shadow-md">
-          <CardHeader><CardTitle className="text-base">Niveau de vigilance des binômes</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-base">Alerte sur la note de recommandation (NPS)</CardTitle></CardHeader>
           <CardContent className="space-y-2">
             {vigilanceCounts.map(({ level, count }) => (
               <div key={level} className="flex items-center justify-between text-sm">
@@ -74,6 +77,10 @@ export default function SyntheseTab() {
             <p className="text-xs text-gray-500 pt-2">
               Règle unique, d'après la note de recommandation du sondage : prioritaire si une note ≤ 6 ou un écart
               ≥ 4 points entre mentor et mentoré ; à surveiller si une note de 7 ou 8. Détail dans l'onglet « Binômes ».
+            </p>
+            <p className="text-xs text-amber-800">
+              Cette alerte porte sur la recommandation du programme, pas sur le fonctionnement du binôme : pour juger un
+              binôme, la sentence d'expertise fait foi.
             </p>
           </CardContent>
         </Card>

@@ -80,7 +80,7 @@ export default function DonneesBilan() {
         })}
       </div>
 
-      {activeSubTab === 'synthese' && <SyntheseTab />}
+      {activeSubTab === 'synthese' && <SyntheseTab onOpenExpertise={() => openSubTab('expertise')} />}
       {activeSubTab === 'activite' && <ActiviteTab />}
       {activeSubTab === 'binomes' && <BinomesTab />}
       {activeSubTab === 'sondage' && <SondageTab />}

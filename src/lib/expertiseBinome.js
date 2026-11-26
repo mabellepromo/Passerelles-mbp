@@ -14,11 +14,44 @@
 
 import { QUESTION_LABELS } from '@/lib/surveyLabels';
 
+// color : couleur de statut des graphiques (palette validée en mode clair ;
+// l'ambre est peu contrasté : chaque segment porte un libellé visible).
 export const SENTENCE = {
-  reussite: { label: 'Réussite', plural: 'réussites', tone: 'emerald', order: 0 },
-  reussite_partielle: { label: 'Réussite partielle', plural: 'réussites partielles', tone: 'amber', order: 1 },
-  echec: { label: 'Échec', plural: 'échecs', tone: 'red', order: 2 },
+  reussite: { label: 'Réussite', plural: 'réussites', tone: 'emerald', color: '#047857', order: 0 },
+  reussite_partielle: { label: 'Réussite partielle', plural: 'réussites partielles', tone: 'amber', color: '#f59e0b', order: 1 },
+  echec: { label: 'Échec', plural: 'échecs', tone: 'red', color: '#b91c1c', order: 2 },
 };
+export const SENTENCE_KEYS = Object.keys(SENTENCE);
+
+/**
+ * Répartition des sentences pour les tableaux de bord.
+ * @param {Array} rows     lignes de binome_expertise
+ * @param {Array} overview lignes de official_binome_overview (binômes officiels)
+ * @returns {{ total, written, counts, byResponse, vigilanceMismatch }}
+ *   byResponse : sentences selon que les deux membres ou un seul ont répondu ;
+ *   vigilanceMismatch : binômes dont l'alerte de recommandation (NPS) contredit
+ *   la sentence (vert ou orange pour un échec, rouge pour un binôme qui a
+ *   produit un résultat).
+ */
+export function summarizeExpertise(rows = [], overview = []) {
+  const byId = new Map(rows.map((r) => [r.binome_id, r]));
+  const official = overview.filter((b) => byId.has(b.binome_id));
+  const counts = Object.fromEntries(SENTENCE_KEYS.map((k) => [k, official.filter((b) => byId.get(b.binome_id).sentence === k).length]));
+  const group = (label, list) => ({
+    label, total: list.length,
+    ...Object.fromEntries(SENTENCE_KEYS.map((k) => [k, list.filter((b) => byId.get(b.binome_id).sentence === k).length])),
+  });
+  const both = official.filter((b) => b.mentor_responded && b.mentore_responded);
+  const one = official.filter((b) => b.mentor_responded !== b.mentore_responded);
+  const none = official.filter((b) => !b.mentor_responded && !b.mentore_responded);
+  const byResponse = [group('Les deux ont répondu', both), group('Un seul a répondu', one)];
+  if (none.length) byResponse.push(group('Aucune réponse', none));
+  const vigilanceMismatch = official.filter((b) => {
+    const s = byId.get(b.binome_id).sentence;
+    return (s === 'echec' && ['vert', 'orange'].includes(b.vigilance)) || (s !== 'echec' && b.vigilance === 'rouge');
+  });
+  return { total: overview.length, written: official.length, counts, byResponse, vigilanceMismatch };
+}
 
 // « 3 réussites, 3 réussites partielles, 5 échecs »
 export const summaryLine = (counts) => Object.entries(SENTENCE)

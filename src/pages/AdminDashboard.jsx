@@ -706,7 +706,7 @@ export default function AdminDashboard() {
         {/* Content */}
         <main className="flex-1 px-5 py-4 pb-10">
           <div className={activeTab !== 'overview' ? 'bg-white rounded-2xl shadow-sm border border-gray-100 p-5' : ''}>
-            {activeTab === 'overview'      && <AdminStats stats={stats} onOpenDonnees={() => setActiveTab('donnees')} />}
+            {activeTab === 'overview'      && <AdminStats stats={stats} onOpenDonnees={() => setActiveTab('donnees')} onOpenExpertise={() => setSearchParams({ tab: 'donnees', onglet: 'expertise' })} />}
             {activeTab === 'donnees'       && <DonneesBilan />}
             {activeTab === 'cohorte2'      && !NAV.find(n => n.id === 'cohorte2').paused && <Cohorte2Space />}
             {activeTab === 'mentors'       && <MentorsList mentors={mentors} />}

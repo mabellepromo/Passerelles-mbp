@@ -62,6 +62,19 @@ export const fetchOfficialBilansFinaux = (orderBy = '-created_date') =>
 export const fetchReviewResponses = (orderBy = '-submitted_at') =>
   readView('review_by_participant', orderBy);
 
+// Fiches d'expertise de la cohorte 1 : une sentence par binôme
+// (src/lib/expertiseBinome.js) et la synthèse transversale.
+export async function fetchExpertise(cohorte = '1') {
+  const { data, error } = await supabase.from('binome_expertise').select('*').eq('cohorte', cohorte);
+  if (error) throw error;
+  return data ?? [];
+}
+export async function fetchExpertiseSynthese(cohorte = '1') {
+  const { data, error } = await supabase.from('binome_expertise_synthese').select('points').eq('cohorte', cohorte).maybeSingle();
+  if (error) throw error;
+  return data?.points ?? [];
+}
+
 // ----------------------------------------------------------------------------
 // Indicateurs (définitions : voir src/lib/indicatorDefinitions.js)
 // ----------------------------------------------------------------------------
