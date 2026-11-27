@@ -1,16 +1,5 @@
 import React from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import {
-  UserCheck,
-  GraduationCap,
-  Link2,
-  ClipboardList,
-  Star,
-  AlertTriangle,
-  Mail,
-  Users,
-} from 'lucide-react';
+import { UserCheck, GraduationCap, Mail, Users } from 'lucide-react';
 import ExpertiseSummary from '@/components/admin/donnees/ExpertiseSummary';
 
 function StatCard({ label, value, sub, color, icon: Icon }) {
@@ -26,25 +15,10 @@ function StatCard({ label, value, sub, color, icon: Icon }) {
   );
 }
 
-// Page d'accueil de l'admin, volontairement allégée : candidatures, messages
+// Page d'accueil de l'admin, volontairement allégée : compteurs, messages
 // non lus et bilan d'expertise de la cohorte 1 (répartition des sentences).
 // Les autres indicateurs du programme vivent dans la rubrique « Données & Bilan ».
 export default function AdminStats({ stats, onOpenDonnees, onOpenExpertise }) {
-  const candidatureRows = [
-    {
-      label: 'Mentors',
-      total: stats.totalMentors,
-      pending: stats.pendingMentors,
-      approved: stats.approvedMentors,
-    },
-    {
-      label: 'Mentorés',
-      total: stats.totalMentores,
-      pending: stats.pendingMentores,
-      approved: stats.approvedMentores,
-    },
-  ];
-
   return (
     <div className="space-y-6">
       {/* Stats Grid */}
@@ -68,50 +42,6 @@ export default function AdminStats({ stats, onOpenDonnees, onOpenExpertise }) {
           Binômes, sondage, rapport de bilan : tout est regroupé dans la rubrique « Données & Bilan ».
         </p>
       </button>
-
-      {/* Candidatures */}
-      <Card className="border-0 shadow-md">
-        <CardHeader>
-          <CardTitle className="text-base">État des candidatures</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs text-gray-400 uppercase tracking-wide border-b border-gray-100">
-                  <th className="py-2 pr-4">Catégorie</th>
-                  <th className="py-2 pr-4">Total</th>
-                  <th className="py-2 pr-4">En attente</th>
-                  <th className="py-2 pr-4">Approuvés</th>
-                  <th className="py-2 pr-4">Progression</th>
-                </tr>
-              </thead>
-              <tbody>
-                {candidatureRows.map(row => (
-                  <tr key={row.label} className="border-b border-gray-50">
-                    <td className="py-2.5 pr-4 font-medium text-gray-800">{row.label}</td>
-                    <td className="py-2.5 pr-4 text-gray-600">{row.total}</td>
-                    <td className="py-2.5 pr-4">
-                      <Badge variant="outline" className="text-amber-600 border-amber-200">{row.pending}</Badge>
-                    </td>
-                    <td className="py-2.5 pr-4">
-                      <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">{row.approved}</Badge>
-                    </td>
-                    <td className="py-2.5 pr-4 w-40">
-                      <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                        <div
-                          className="bg-emerald-500 h-full transition-all"
-                          style={{ width: `${row.total > 0 ? (row.approved / row.total * 100) : 0}%` }}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
